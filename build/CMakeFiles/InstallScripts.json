@@ -1,0 +1,12 @@
+{
+	"InstallScripts" : 
+	[
+		"/Users/bytedance/PCA/build/cmake_install.cmake",
+		"/Users/bytedance/PCA/build/_deps/seal-build/cmake_install.cmake",
+		"/Users/bytedance/PCA/build/_deps/seal-build/thirdparty/msgsl-build/cmake_install.cmake",
+		"/Users/bytedance/PCA/build/_deps/seal-build/thirdparty/msgsl-build/include/cmake_install.cmake",
+		"/Users/bytedance/PCA/build/_deps/seal-build/native/src/seal/cmake_install.cmake",
+		"/Users/bytedance/PCA/build/_deps/seal-build/native/src/seal/util/cmake_install.cmake"
+	],
+	"Parallel" : false
+}
