@@ -43,7 +43,15 @@ add_executable(he_pca
     src/main.cpp
     src/client.cpp
     src/server.cpp
+    src/newton_inv_sqrt.cpp
 )
 
 target_link_libraries(he_pca PRIVATE SEAL::seal Eigen3::Eigen)
 target_include_directories(he_pca PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)
+
+add_executable(plaintext_lanczos_tune
+    src/plaintext_lanczos_tune.cpp
+    src/client.cpp
+)
+target_link_libraries(plaintext_lanczos_tune PRIVATE SEAL::seal Eigen3::Eigen)
+target_include_directories(plaintext_lanczos_tune PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)

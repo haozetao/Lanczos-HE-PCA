@@ -5,47 +5,68 @@
 
 #include <seal/seal.h>
 
+#include "newton_inv_sqrt.h"
+
 // ============================================================================
-// Server 类 —— 持有公钥与计算密钥，仅执行密态矩阵乘法
-//
-// 方法签名严格约束: 参数仅含 seal::Ciphertext / seal::Plaintext / int,
-// 不接受任何明文 Eigen 类型.
+// Server —— 公钥 + 计算密钥；方向2：完整密态 Lanczos（p=1）+ Newton 归一化
 // ============================================================================
 class Server {
 public:
     Server(std::shared_ptr<seal::SEALContext> ctx,
-           const seal::PublicKey&  pk,
-           const seal::RelinKeys&  rlk,
-           const seal::GaloisKeys& glk);
+           const seal::PublicKey& pk,
+           const seal::RelinKeys& rlk,
+           const seal::GaloisKeys& glk,
+           double ckks_scale);
 
-    // ── 核心密态操作 ────────────────────────────────────────────────────────
-    //
-    // 密态矩阵乘: enc_C (d 个行打包密文) × enc_V (p 个列打包密文)
-    //
-    // 返回 d*p 个标量密文, 按行优先排列:
-    //   result[i*p + j] 的 slot 0 = dot(C 第 i 行, V 第 j 列)
-    //
-    // 算法:
-    //   对每个 (i, j) 对:
-    //     1. element-wise multiply: enc_C[i] ⊙ enc_V[j]
-    //     2. relinearize (降低密文大小)
-    //     3. rescale (将 scale 从 2^80 降回 2^40)
-    //     4. rotate-and-sum (步长 1,2,4,8) 将 d 个分量累加到 slot 0
-    //
     std::vector<seal::Ciphertext> matmul(
         const std::vector<seal::Ciphertext>& enc_C,
         const std::vector<seal::Ciphertext>& enc_V,
         int d) const;
 
+    struct LanczosResult {
+        std::vector<seal::Ciphertext> alphas; // m 个 [[α_j]]，标量在 slot 0
+        std::vector<seal::Ciphertext> betas;  // m-1 个 [[β_j]]
+    };
+
+    // p 必须为 1（标准 Lanczos）。m_iter 受 CKKS 深度约束，建议 1～2。
+    LanczosResult lanczosIteration(
+        const std::vector<seal::Ciphertext>& enc_C,
+        const std::vector<seal::Ciphertext>& enc_V1,
+        int d,
+        int p,
+        int m_iter,
+        double eigenvalue_guess,
+        int newton_iters);
+
 private:
     std::shared_ptr<seal::SEALContext> context_;
-    seal::Evaluator   evaluator_;
+    seal::Evaluator evaluator_;
     seal::CKKSEncoder encoder_;
-    seal::RelinKeys   relin_keys_;
-    seal::GaloisKeys  galois_keys_;
+    seal::Encryptor encryptor_;
+    seal::RelinKeys relin_keys_;
+    seal::GaloisKeys galois_keys_;
+    double scale_;
 
-    // 辅助: 两个向量密文的内积 (element-wise multiply + rotate-and-sum)
+    std::unique_ptr<NewtonInvSqrt> newton_;
+
+    void align_two_inplace(seal::Ciphertext& a, seal::Ciphertext& b) const;
+
+    // 用 multiply_plain(全 1) 将 moving 的 scale 对齐到 ref（CKKS 同 parms 下 ratio 不变时 mod_switch 无效）
+    void adjust_ckks_scale_to_ref_inplace_(
+        seal::Ciphertext& moving, const seal::Ciphertext& ref) const;
+
     seal::Ciphertext innerProduct(
         const seal::Ciphertext& a,
-        const seal::Ciphertext& b) const;
+        const seal::Ciphertext& b,
+        int dim) const;
+
+    seal::Ciphertext broadcastScalar(const seal::Ciphertext& scalar_ct, int dim) const;
+
+    seal::Ciphertext scalarVecMultiply(
+        const seal::Ciphertext& broadcasted_or_scalar,
+        const seal::Ciphertext& vec_ct,
+        int dim) const;
+
+    seal::Ciphertext packScalarsToVector(
+        const std::vector<seal::Ciphertext>& scalar_cts, int d) const;
 };
