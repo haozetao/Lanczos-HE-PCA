@@ -8,10 +8,8 @@ set(CMAKE_DEPENDS_LANGUAGES
 
 # The set of dependency files which are needed:
 set(CMAKE_DEPENDS_DEPENDENCY_FILES
-  "/Users/bytedance/PCA/src/client.cpp" "CMakeFiles/he_pca.dir/src/client.cpp.o" "gcc" "CMakeFiles/he_pca.dir/src/client.cpp.o.d"
-  "/Users/bytedance/PCA/src/main.cpp" "CMakeFiles/he_pca.dir/src/main.cpp.o" "gcc" "CMakeFiles/he_pca.dir/src/main.cpp.o.d"
-  "/Users/bytedance/PCA/src/newton_inv_sqrt.cpp" "CMakeFiles/he_pca.dir/src/newton_inv_sqrt.cpp.o" "gcc" "CMakeFiles/he_pca.dir/src/newton_inv_sqrt.cpp.o.d"
-  "/Users/bytedance/PCA/src/server.cpp" "CMakeFiles/he_pca.dir/src/server.cpp.o" "gcc" "CMakeFiles/he_pca.dir/src/server.cpp.o.d"
+  "/Users/bytedance/PCA/src/client.cpp" "CMakeFiles/plaintext_lanczos_tune.dir/src/client.cpp.o" "gcc" "CMakeFiles/plaintext_lanczos_tune.dir/src/client.cpp.o.d"
+  "/Users/bytedance/PCA/src/plaintext_lanczos_tune.cpp" "CMakeFiles/plaintext_lanczos_tune.dir/src/plaintext_lanczos_tune.cpp.o" "gcc" "CMakeFiles/plaintext_lanczos_tune.dir/src/plaintext_lanczos_tune.cpp.o.d"
   )
 
 # Targets to which this target links which contain Fortran sources.

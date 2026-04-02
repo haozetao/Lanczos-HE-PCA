@@ -1,5 +1,5 @@
-CMakeFiles/he_pca.dir/src/server.cpp.o: \
-  /Users/bytedance/PCA/src/server.cpp /Users/bytedance/PCA/src/server.h \
+CMakeFiles/plaintext_lanczos_tune.dir/src/client.cpp.o: \
+  /Users/bytedance/PCA/src/client.cpp /Users/bytedance/PCA/src/client.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/memory \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__config \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__config_site \
@@ -753,29 +753,27 @@ CMakeFiles/he_pca.dir/src/server.cpp.o: \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/_types/_nl_item.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__locale_dir/locale_base_api/bsd_locale_defaults.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/cstdarg \
-  /Users/bytedance/PCA/build/_deps/seal-src/native/src/seal/seal.h \
-  /Users/bytedance/PCA/build/_deps/seal-src/native/src/seal/batchencoder.h \
-  /Users/bytedance/PCA/build/_deps/seal-src/native/src/seal/context.h \
-  /Users/bytedance/PCA/build/_deps/seal-src/native/src/seal/encryptionparams.h \
-  /Users/bytedance/PCA/build/_deps/seal-src/native/src/seal/memorymanager.h \
-  /Users/bytedance/PCA/build/_deps/seal-src/native/src/seal/util/defines.h \
-  /Users/bytedance/PCA/build/_deps/seal-src/native/src/seal/util/msvc.h \
-  /Users/bytedance/PCA/build/_deps/seal-src/native/src/seal/util/clang.h \
-  /Users/bytedance/PCA/build/_deps/seal-build/native/src/seal/util/config.h \
+  /Users/bytedance/PCA/build/_deps/eigen-src/Eigen/Dense \
+  /Users/bytedance/PCA/build/_deps/eigen-src/Eigen/Core \
+  /Users/bytedance/PCA/build/_deps/eigen-src/Eigen/src/Core/util/DisableStupidWarnings.h \
+  /Users/bytedance/PCA/build/_deps/eigen-src/Eigen/src/Core/util/Macros.h \
+  /Users/bytedance/PCA/build/_deps/eigen-src/Eigen/src/Core/util/ConfigureVectorization.h \
   /Library/Developer/CommandLineTools/usr/lib/clang/17/include/arm_neon.h \
   /Library/Developer/CommandLineTools/usr/lib/clang/17/include/arm_bf16.h \
   /Library/Developer/CommandLineTools/usr/lib/clang/17/include/arm_vector_types.h \
-  /Users/bytedance/PCA/build/_deps/seal-src/native/src/seal/util/gcc.h \
-  /Users/bytedance/PCA/build/_deps/seal-src/native/src/seal/util/globals.h \
-  /Users/bytedance/PCA/build/_deps/seal-src/native/src/seal/util/hestdparms.h \
-  /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/map \
-  /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__functional/is_transparent.h \
-  /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__iterator/erase_if_container.h \
-  /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__iterator/ranges_iterator_traits.h \
-  /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__node_handle \
-  /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__tree \
-  /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__type_traits/can_extract_key.h \
-  /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__type_traits/remove_const_ref.h \
+  /Library/Developer/CommandLineTools/usr/lib/clang/17/include/arm_fp16.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/complex \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/sstream \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__ostream/basic_ostream.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/bitset \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__type_traits/is_char_like_type.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/istream \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/ostream \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/format \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/queue \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__fwd/deque.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__fwd/queue.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/deque \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/functional \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__functional/binary_negate.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__functional/bind.h \
@@ -791,10 +789,221 @@ CMakeFiles/he_pca.dir/src/server.cpp.o: \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__type_traits/strip_signature.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__functional/boyer_moore_searcher.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/unordered_map \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__functional/is_transparent.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__hash_table \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__type_traits/can_extract_key.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__type_traits/remove_const_ref.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__iterator/erase_if_container.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__iterator/ranges_iterator_traits.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__node_handle \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__functional/default_searcher.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__functional/not_fn.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__functional/perfect_forward.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/stack \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__fwd/stack.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/print \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/unistd.h \
+  /Users/bytedance/PCA/build/_deps/eigen-src/Eigen/src/Core/util/MKL_support.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/cassert \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/assert.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/_static_assert.h \
+  /Users/bytedance/PCA/build/_deps/eigen-src/Eigen/src/Core/util/Constants.h \
+  /Users/bytedance/PCA/build/_deps/eigen-src/Eigen/src/Core/util/Meta.h \
+  /Users/bytedance/PCA/build/_deps/eigen-src/Eigen/src/Core/util/ForwardDeclarations.h \
+  /Users/bytedance/PCA/build/_deps/eigen-src/Eigen/src/Core/util/StaticAssert.h \
+  /Users/bytedance/PCA/build/_deps/eigen-src/Eigen/src/Core/util/XprHelper.h \
+  /Users/bytedance/PCA/build/_deps/eigen-src/Eigen/src/Core/util/Memory.h \
+  /Users/bytedance/PCA/build/_deps/eigen-src/Eigen/src/Core/util/IntegralConstant.h \
+  /Users/bytedance/PCA/build/_deps/eigen-src/Eigen/src/Core/util/SymbolicIndex.h \
+  /Users/bytedance/PCA/build/_deps/eigen-src/Eigen/src/Core/NumTraits.h \
+  /Users/bytedance/PCA/build/_deps/eigen-src/Eigen/src/Core/MathFunctions.h \
+  /Users/bytedance/PCA/build/_deps/eigen-src/Eigen/src/Core/GenericPacketMath.h \
+  /Users/bytedance/PCA/build/_deps/eigen-src/Eigen/src/Core/MathFunctionsImpl.h \
+  /Users/bytedance/PCA/build/_deps/eigen-src/Eigen/src/Core/arch/Default/ConjHelper.h \
+  /Users/bytedance/PCA/build/_deps/eigen-src/Eigen/src/Core/arch/Default/Half.h \
+  /Users/bytedance/PCA/build/_deps/eigen-src/Eigen/src/Core/arch/Default/BFloat16.h \
+  /Users/bytedance/PCA/build/_deps/eigen-src/Eigen/src/Core/arch/Default/TypeCasting.h \
+  /Users/bytedance/PCA/build/_deps/eigen-src/Eigen/src/Core/arch/Default/GenericPacketMathFunctionsFwd.h \
+  /Users/bytedance/PCA/build/_deps/eigen-src/Eigen/src/Core/arch/NEON/PacketMath.h \
+  /Users/bytedance/PCA/build/_deps/eigen-src/Eigen/src/Core/arch/NEON/TypeCasting.h \
+  /Users/bytedance/PCA/build/_deps/eigen-src/Eigen/src/Core/arch/NEON/MathFunctions.h \
+  /Users/bytedance/PCA/build/_deps/eigen-src/Eigen/src/Core/arch/NEON/Complex.h \
+  /Users/bytedance/PCA/build/_deps/eigen-src/Eigen/src/Core/arch/Default/Settings.h \
+  /Users/bytedance/PCA/build/_deps/eigen-src/Eigen/src/Core/arch/Default/GenericPacketMathFunctions.h \
+  /Users/bytedance/PCA/build/_deps/eigen-src/Eigen/src/Core/functors/TernaryFunctors.h \
+  /Users/bytedance/PCA/build/_deps/eigen-src/Eigen/src/Core/functors/BinaryFunctors.h \
+  /Users/bytedance/PCA/build/_deps/eigen-src/Eigen/src/Core/functors/UnaryFunctors.h \
+  /Users/bytedance/PCA/build/_deps/eigen-src/Eigen/src/Core/functors/NullaryFunctors.h \
+  /Users/bytedance/PCA/build/_deps/eigen-src/Eigen/src/Core/functors/StlFunctors.h \
+  /Users/bytedance/PCA/build/_deps/eigen-src/Eigen/src/Core/functors/AssignmentFunctors.h \
+  /Users/bytedance/PCA/build/_deps/eigen-src/Eigen/src/Core/util/IndexedViewHelper.h \
+  /Users/bytedance/PCA/build/_deps/eigen-src/Eigen/src/Core/util/ReshapedHelper.h \
+  /Users/bytedance/PCA/build/_deps/eigen-src/Eigen/src/Core/ArithmeticSequence.h \
+  /Users/bytedance/PCA/build/_deps/eigen-src/Eigen/src/Core/IO.h \
+  /Users/bytedance/PCA/build/_deps/eigen-src/Eigen/src/Core/DenseCoeffsBase.h \
+  /Users/bytedance/PCA/build/_deps/eigen-src/Eigen/src/Core/DenseBase.h \
+  /Users/bytedance/PCA/build/_deps/eigen-src/Eigen/src/Core/../plugins/CommonCwiseUnaryOps.h \
+  /Users/bytedance/PCA/build/_deps/eigen-src/Eigen/src/Core/../plugins/BlockMethods.h \
+  /Users/bytedance/PCA/build/_deps/eigen-src/Eigen/src/Core/../plugins/IndexedViewMethods.h \
+  /Users/bytedance/PCA/build/_deps/eigen-src/Eigen/src/Core/../plugins/ReshapedMethods.h \
+  /Users/bytedance/PCA/build/_deps/eigen-src/Eigen/src/Core/MatrixBase.h \
+  /Users/bytedance/PCA/build/_deps/eigen-src/Eigen/src/Core/../plugins/CommonCwiseBinaryOps.h \
+  /Users/bytedance/PCA/build/_deps/eigen-src/Eigen/src/Core/../plugins/MatrixCwiseUnaryOps.h \
+  /Users/bytedance/PCA/build/_deps/eigen-src/Eigen/src/Core/../plugins/MatrixCwiseBinaryOps.h \
+  /Users/bytedance/PCA/build/_deps/eigen-src/Eigen/src/Core/EigenBase.h \
+  /Users/bytedance/PCA/build/_deps/eigen-src/Eigen/src/Core/Product.h \
+  /Users/bytedance/PCA/build/_deps/eigen-src/Eigen/src/Core/CoreEvaluators.h \
+  /Users/bytedance/PCA/build/_deps/eigen-src/Eigen/src/Core/AssignEvaluator.h \
+  /Users/bytedance/PCA/build/_deps/eigen-src/Eigen/src/Core/Assign.h \
+  /Users/bytedance/PCA/build/_deps/eigen-src/Eigen/src/Core/ArrayBase.h \
+  /Users/bytedance/PCA/build/_deps/eigen-src/Eigen/src/Core/../plugins/ArrayCwiseUnaryOps.h \
+  /Users/bytedance/PCA/build/_deps/eigen-src/Eigen/src/Core/../plugins/ArrayCwiseBinaryOps.h \
+  /Users/bytedance/PCA/build/_deps/eigen-src/Eigen/src/Core/util/BlasUtil.h \
+  /Users/bytedance/PCA/build/_deps/eigen-src/Eigen/src/Core/DenseStorage.h \
+  /Users/bytedance/PCA/build/_deps/eigen-src/Eigen/src/Core/NestByValue.h \
+  /Users/bytedance/PCA/build/_deps/eigen-src/Eigen/src/Core/ReturnByValue.h \
+  /Users/bytedance/PCA/build/_deps/eigen-src/Eigen/src/Core/NoAlias.h \
+  /Users/bytedance/PCA/build/_deps/eigen-src/Eigen/src/Core/PlainObjectBase.h \
+  /Users/bytedance/PCA/build/_deps/eigen-src/Eigen/src/Core/Matrix.h \
+  /Users/bytedance/PCA/build/_deps/eigen-src/Eigen/src/Core/Array.h \
+  /Users/bytedance/PCA/build/_deps/eigen-src/Eigen/src/Core/CwiseTernaryOp.h \
+  /Users/bytedance/PCA/build/_deps/eigen-src/Eigen/src/Core/CwiseBinaryOp.h \
+  /Users/bytedance/PCA/build/_deps/eigen-src/Eigen/src/Core/CwiseUnaryOp.h \
+  /Users/bytedance/PCA/build/_deps/eigen-src/Eigen/src/Core/CwiseNullaryOp.h \
+  /Users/bytedance/PCA/build/_deps/eigen-src/Eigen/src/Core/CwiseUnaryView.h \
+  /Users/bytedance/PCA/build/_deps/eigen-src/Eigen/src/Core/SelfCwiseBinaryOp.h \
+  /Users/bytedance/PCA/build/_deps/eigen-src/Eigen/src/Core/Dot.h \
+  /Users/bytedance/PCA/build/_deps/eigen-src/Eigen/src/Core/StableNorm.h \
+  /Users/bytedance/PCA/build/_deps/eigen-src/Eigen/src/Core/Stride.h \
+  /Users/bytedance/PCA/build/_deps/eigen-src/Eigen/src/Core/MapBase.h \
+  /Users/bytedance/PCA/build/_deps/eigen-src/Eigen/src/Core/Map.h \
+  /Users/bytedance/PCA/build/_deps/eigen-src/Eigen/src/Core/Ref.h \
+  /Users/bytedance/PCA/build/_deps/eigen-src/Eigen/src/Core/Block.h \
+  /Users/bytedance/PCA/build/_deps/eigen-src/Eigen/src/Core/VectorBlock.h \
+  /Users/bytedance/PCA/build/_deps/eigen-src/Eigen/src/Core/IndexedView.h \
+  /Users/bytedance/PCA/build/_deps/eigen-src/Eigen/src/Core/Reshaped.h \
+  /Users/bytedance/PCA/build/_deps/eigen-src/Eigen/src/Core/Transpose.h \
+  /Users/bytedance/PCA/build/_deps/eigen-src/Eigen/src/Core/DiagonalMatrix.h \
+  /Users/bytedance/PCA/build/_deps/eigen-src/Eigen/src/Core/Diagonal.h \
+  /Users/bytedance/PCA/build/_deps/eigen-src/Eigen/src/Core/DiagonalProduct.h \
+  /Users/bytedance/PCA/build/_deps/eigen-src/Eigen/src/Core/Redux.h \
+  /Users/bytedance/PCA/build/_deps/eigen-src/Eigen/src/Core/Visitor.h \
+  /Users/bytedance/PCA/build/_deps/eigen-src/Eigen/src/Core/Fuzzy.h \
+  /Users/bytedance/PCA/build/_deps/eigen-src/Eigen/src/Core/Swap.h \
+  /Users/bytedance/PCA/build/_deps/eigen-src/Eigen/src/Core/CommaInitializer.h \
+  /Users/bytedance/PCA/build/_deps/eigen-src/Eigen/src/Core/GeneralProduct.h \
+  /Users/bytedance/PCA/build/_deps/eigen-src/Eigen/src/Core/Solve.h \
+  /Users/bytedance/PCA/build/_deps/eigen-src/Eigen/src/Core/Inverse.h \
+  /Users/bytedance/PCA/build/_deps/eigen-src/Eigen/src/Core/SolverBase.h \
+  /Users/bytedance/PCA/build/_deps/eigen-src/Eigen/src/Core/PermutationMatrix.h \
+  /Users/bytedance/PCA/build/_deps/eigen-src/Eigen/src/Core/Transpositions.h \
+  /Users/bytedance/PCA/build/_deps/eigen-src/Eigen/src/Core/TriangularMatrix.h \
+  /Users/bytedance/PCA/build/_deps/eigen-src/Eigen/src/Core/SelfAdjointView.h \
+  /Users/bytedance/PCA/build/_deps/eigen-src/Eigen/src/Core/products/GeneralBlockPanelKernel.h \
+  /Users/bytedance/PCA/build/_deps/eigen-src/Eigen/src/Core/products/Parallelizer.h \
+  /Users/bytedance/PCA/build/_deps/eigen-src/Eigen/src/Core/ProductEvaluators.h \
+  /Users/bytedance/PCA/build/_deps/eigen-src/Eigen/src/Core/products/GeneralMatrixVector.h \
+  /Users/bytedance/PCA/build/_deps/eigen-src/Eigen/src/Core/products/GeneralMatrixMatrix.h \
+  /Users/bytedance/PCA/build/_deps/eigen-src/Eigen/src/Core/SolveTriangular.h \
+  /Users/bytedance/PCA/build/_deps/eigen-src/Eigen/src/Core/products/GeneralMatrixMatrixTriangular.h \
+  /Users/bytedance/PCA/build/_deps/eigen-src/Eigen/src/Core/products/SelfadjointMatrixVector.h \
+  /Users/bytedance/PCA/build/_deps/eigen-src/Eigen/src/Core/products/SelfadjointMatrixMatrix.h \
+  /Users/bytedance/PCA/build/_deps/eigen-src/Eigen/src/Core/products/SelfadjointProduct.h \
+  /Users/bytedance/PCA/build/_deps/eigen-src/Eigen/src/Core/products/SelfadjointRank2Update.h \
+  /Users/bytedance/PCA/build/_deps/eigen-src/Eigen/src/Core/products/TriangularMatrixVector.h \
+  /Users/bytedance/PCA/build/_deps/eigen-src/Eigen/src/Core/products/TriangularMatrixMatrix.h \
+  /Users/bytedance/PCA/build/_deps/eigen-src/Eigen/src/Core/products/TriangularSolverMatrix.h \
+  /Users/bytedance/PCA/build/_deps/eigen-src/Eigen/src/Core/products/TriangularSolverVector.h \
+  /Users/bytedance/PCA/build/_deps/eigen-src/Eigen/src/Core/BandMatrix.h \
+  /Users/bytedance/PCA/build/_deps/eigen-src/Eigen/src/Core/CoreIterators.h \
+  /Users/bytedance/PCA/build/_deps/eigen-src/Eigen/src/Core/ConditionEstimator.h \
+  /Users/bytedance/PCA/build/_deps/eigen-src/Eigen/src/Core/arch/NEON/GeneralBlockPanelKernel.h \
+  /Users/bytedance/PCA/build/_deps/eigen-src/Eigen/src/Core/BooleanRedux.h \
+  /Users/bytedance/PCA/build/_deps/eigen-src/Eigen/src/Core/Select.h \
+  /Users/bytedance/PCA/build/_deps/eigen-src/Eigen/src/Core/VectorwiseOp.h \
+  /Users/bytedance/PCA/build/_deps/eigen-src/Eigen/src/Core/PartialReduxEvaluator.h \
+  /Users/bytedance/PCA/build/_deps/eigen-src/Eigen/src/Core/Random.h \
+  /Users/bytedance/PCA/build/_deps/eigen-src/Eigen/src/Core/Replicate.h \
+  /Users/bytedance/PCA/build/_deps/eigen-src/Eigen/src/Core/Reverse.h \
+  /Users/bytedance/PCA/build/_deps/eigen-src/Eigen/src/Core/ArrayWrapper.h \
+  /Users/bytedance/PCA/build/_deps/eigen-src/Eigen/src/Core/StlIterators.h \
+  /Users/bytedance/PCA/build/_deps/eigen-src/Eigen/src/Core/GlobalFunctions.h \
+  /Users/bytedance/PCA/build/_deps/eigen-src/Eigen/src/Core/util/ReenableStupidWarnings.h \
+  /Users/bytedance/PCA/build/_deps/eigen-src/Eigen/LU \
+  /Users/bytedance/PCA/build/_deps/eigen-src/Eigen/src/misc/Kernel.h \
+  /Users/bytedance/PCA/build/_deps/eigen-src/Eigen/src/misc/Image.h \
+  /Users/bytedance/PCA/build/_deps/eigen-src/Eigen/src/LU/FullPivLU.h \
+  /Users/bytedance/PCA/build/_deps/eigen-src/Eigen/src/LU/PartialPivLU.h \
+  /Users/bytedance/PCA/build/_deps/eigen-src/Eigen/src/LU/Determinant.h \
+  /Users/bytedance/PCA/build/_deps/eigen-src/Eigen/src/LU/InverseImpl.h \
+  /Users/bytedance/PCA/build/_deps/eigen-src/Eigen/src/LU/arch/InverseSize4.h \
+  /Users/bytedance/PCA/build/_deps/eigen-src/Eigen/Cholesky \
+  /Users/bytedance/PCA/build/_deps/eigen-src/Eigen/Jacobi \
+  /Users/bytedance/PCA/build/_deps/eigen-src/Eigen/src/Jacobi/Jacobi.h \
+  /Users/bytedance/PCA/build/_deps/eigen-src/Eigen/src/Cholesky/LLT.h \
+  /Users/bytedance/PCA/build/_deps/eigen-src/Eigen/src/Cholesky/LDLT.h \
+  /Users/bytedance/PCA/build/_deps/eigen-src/Eigen/QR \
+  /Users/bytedance/PCA/build/_deps/eigen-src/Eigen/Householder \
+  /Users/bytedance/PCA/build/_deps/eigen-src/Eigen/src/Householder/Householder.h \
+  /Users/bytedance/PCA/build/_deps/eigen-src/Eigen/src/Householder/HouseholderSequence.h \
+  /Users/bytedance/PCA/build/_deps/eigen-src/Eigen/src/Householder/BlockHouseholder.h \
+  /Users/bytedance/PCA/build/_deps/eigen-src/Eigen/src/QR/HouseholderQR.h \
+  /Users/bytedance/PCA/build/_deps/eigen-src/Eigen/src/QR/FullPivHouseholderQR.h \
+  /Users/bytedance/PCA/build/_deps/eigen-src/Eigen/src/QR/ColPivHouseholderQR.h \
+  /Users/bytedance/PCA/build/_deps/eigen-src/Eigen/src/QR/CompleteOrthogonalDecomposition.h \
+  /Users/bytedance/PCA/build/_deps/eigen-src/Eigen/SVD \
+  /Users/bytedance/PCA/build/_deps/eigen-src/Eigen/src/misc/RealSvd2x2.h \
+  /Users/bytedance/PCA/build/_deps/eigen-src/Eigen/src/SVD/UpperBidiagonalization.h \
+  /Users/bytedance/PCA/build/_deps/eigen-src/Eigen/src/SVD/SVDBase.h \
+  /Users/bytedance/PCA/build/_deps/eigen-src/Eigen/src/SVD/JacobiSVD.h \
+  /Users/bytedance/PCA/build/_deps/eigen-src/Eigen/src/SVD/BDCSVD.h \
+  /Users/bytedance/PCA/build/_deps/eigen-src/Eigen/Geometry \
+  /Users/bytedance/PCA/build/_deps/eigen-src/Eigen/src/Geometry/OrthoMethods.h \
+  /Users/bytedance/PCA/build/_deps/eigen-src/Eigen/src/Geometry/EulerAngles.h \
+  /Users/bytedance/PCA/build/_deps/eigen-src/Eigen/src/Geometry/Homogeneous.h \
+  /Users/bytedance/PCA/build/_deps/eigen-src/Eigen/src/Geometry/RotationBase.h \
+  /Users/bytedance/PCA/build/_deps/eigen-src/Eigen/src/Geometry/Rotation2D.h \
+  /Users/bytedance/PCA/build/_deps/eigen-src/Eigen/src/Geometry/Quaternion.h \
+  /Users/bytedance/PCA/build/_deps/eigen-src/Eigen/src/Geometry/AngleAxis.h \
+  /Users/bytedance/PCA/build/_deps/eigen-src/Eigen/src/Geometry/Transform.h \
+  /Users/bytedance/PCA/build/_deps/eigen-src/Eigen/src/Geometry/Translation.h \
+  /Users/bytedance/PCA/build/_deps/eigen-src/Eigen/src/Geometry/Scaling.h \
+  /Users/bytedance/PCA/build/_deps/eigen-src/Eigen/src/Geometry/Hyperplane.h \
+  /Users/bytedance/PCA/build/_deps/eigen-src/Eigen/src/Geometry/ParametrizedLine.h \
+  /Users/bytedance/PCA/build/_deps/eigen-src/Eigen/src/Geometry/AlignedBox.h \
+  /Users/bytedance/PCA/build/_deps/eigen-src/Eigen/src/Geometry/Umeyama.h \
+  /Users/bytedance/PCA/build/_deps/eigen-src/Eigen/src/Geometry/arch/Geometry_SIMD.h \
+  /Users/bytedance/PCA/build/_deps/eigen-src/Eigen/Eigenvalues \
+  /Users/bytedance/PCA/build/_deps/eigen-src/Eigen/src/Eigenvalues/Tridiagonalization.h \
+  /Users/bytedance/PCA/build/_deps/eigen-src/Eigen/src/Eigenvalues/RealSchur.h \
+  /Users/bytedance/PCA/build/_deps/eigen-src/Eigen/src/Eigenvalues/./HessenbergDecomposition.h \
+  /Users/bytedance/PCA/build/_deps/eigen-src/Eigen/src/Eigenvalues/EigenSolver.h \
+  /Users/bytedance/PCA/build/_deps/eigen-src/Eigen/src/Eigenvalues/./RealSchur.h \
+  /Users/bytedance/PCA/build/_deps/eigen-src/Eigen/src/Eigenvalues/SelfAdjointEigenSolver.h \
+  /Users/bytedance/PCA/build/_deps/eigen-src/Eigen/src/Eigenvalues/./Tridiagonalization.h \
+  /Users/bytedance/PCA/build/_deps/eigen-src/Eigen/src/Eigenvalues/GeneralizedSelfAdjointEigenSolver.h \
+  /Users/bytedance/PCA/build/_deps/eigen-src/Eigen/src/Eigenvalues/HessenbergDecomposition.h \
+  /Users/bytedance/PCA/build/_deps/eigen-src/Eigen/src/Eigenvalues/ComplexSchur.h \
+  /Users/bytedance/PCA/build/_deps/eigen-src/Eigen/src/Eigenvalues/ComplexEigenSolver.h \
+  /Users/bytedance/PCA/build/_deps/eigen-src/Eigen/src/Eigenvalues/./ComplexSchur.h \
+  /Users/bytedance/PCA/build/_deps/eigen-src/Eigen/src/Eigenvalues/RealQZ.h \
+  /Users/bytedance/PCA/build/_deps/eigen-src/Eigen/src/Eigenvalues/GeneralizedEigenSolver.h \
+  /Users/bytedance/PCA/build/_deps/eigen-src/Eigen/src/Eigenvalues/./RealQZ.h \
+  /Users/bytedance/PCA/build/_deps/eigen-src/Eigen/src/Eigenvalues/MatrixBaseEigenvalues.h \
+  /Users/bytedance/PCA/build/_deps/seal-src/native/src/seal/seal.h \
+  /Users/bytedance/PCA/build/_deps/seal-src/native/src/seal/batchencoder.h \
+  /Users/bytedance/PCA/build/_deps/seal-src/native/src/seal/context.h \
+  /Users/bytedance/PCA/build/_deps/seal-src/native/src/seal/encryptionparams.h \
+  /Users/bytedance/PCA/build/_deps/seal-src/native/src/seal/memorymanager.h \
+  /Users/bytedance/PCA/build/_deps/seal-src/native/src/seal/util/defines.h \
+  /Users/bytedance/PCA/build/_deps/seal-src/native/src/seal/util/msvc.h \
+  /Users/bytedance/PCA/build/_deps/seal-src/native/src/seal/util/clang.h \
+  /Users/bytedance/PCA/build/_deps/seal-build/native/src/seal/util/config.h \
+  /Users/bytedance/PCA/build/_deps/seal-src/native/src/seal/util/gcc.h \
+  /Users/bytedance/PCA/build/_deps/seal-src/native/src/seal/util/globals.h \
+  /Users/bytedance/PCA/build/_deps/seal-src/native/src/seal/util/hestdparms.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/map \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__tree \
   /Users/bytedance/PCA/build/_deps/seal-src/native/src/seal/util/mempool.h \
   /Users/bytedance/PCA/build/_deps/seal-src/native/src/seal/util/common.h \
   /Users/bytedance/PCA/build/_deps/seal-src/native/src/seal/util/locks.h \
@@ -809,21 +1018,6 @@ CMakeFiles/he_pca.dir/src/server.cpp.o: \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__stop_token/intrusive_list_view.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__stop_token/stop_token.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__thread/thread.h \
-  /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/sstream \
-  /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__ostream/basic_ostream.h \
-  /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/bitset \
-  /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__type_traits/is_char_like_type.h \
-  /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/istream \
-  /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/ostream \
-  /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/format \
-  /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/queue \
-  /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__fwd/deque.h \
-  /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__fwd/queue.h \
-  /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/deque \
-  /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/stack \
-  /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__fwd/stack.h \
-  /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/print \
-  /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/unistd.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__thread/this_thread.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/chrono \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__chrono/file_clock.h \
@@ -874,7 +1068,6 @@ CMakeFiles/he_pca.dir/src/server.cpp.o: \
   /Users/bytedance/PCA/build/_deps/seal-src/native/src/seal/ciphertext.h \
   /Users/bytedance/PCA/build/_deps/seal-src/native/src/seal/ckks.h \
   /Users/bytedance/PCA/build/_deps/seal-src/native/src/seal/util/croots.h \
-  /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/complex \
   /Users/bytedance/PCA/build/_deps/seal-src/native/src/seal/decryptor.h \
   /Users/bytedance/PCA/build/_deps/seal-src/native/src/seal/secretkey.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/random \
@@ -921,6 +1114,4 @@ CMakeFiles/he_pca.dir/src/server.cpp.o: \
   /Users/bytedance/PCA/build/_deps/seal-src/native/src/seal/kswitchkeys.h \
   /Users/bytedance/PCA/build/_deps/seal-src/native/src/seal/relinkeys.h \
   /Users/bytedance/PCA/build/_deps/seal-src/native/src/seal/keygenerator.h \
-  /Users/bytedance/PCA/build/_deps/seal-src/native/src/seal/randomtostd.h \
-  /Users/bytedance/PCA/src/newton_inv_sqrt.h \
-  /Users/bytedance/PCA/src/ckks_scale_align.h
+  /Users/bytedance/PCA/build/_deps/seal-src/native/src/seal/randomtostd.h

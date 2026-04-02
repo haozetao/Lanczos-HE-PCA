@@ -175,6 +175,19 @@ he_pca/fast:
 .PHONY : he_pca/fast
 
 #=============================================================================
+# Target rules for targets named plaintext_lanczos_tune
+
+# Build rule for target.
+plaintext_lanczos_tune: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 plaintext_lanczos_tune
+.PHONY : plaintext_lanczos_tune
+
+# fast build rule for target.
+plaintext_lanczos_tune/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/plaintext_lanczos_tune.dir/build.make CMakeFiles/plaintext_lanczos_tune.dir/build
+.PHONY : plaintext_lanczos_tune/fast
+
+#=============================================================================
 # Target rules for targets named seal
 
 # Build rule for target.
@@ -193,6 +206,7 @@ src/client.o: src/client.cpp.o
 # target to build an object file
 src/client.cpp.o:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/he_pca.dir/build.make CMakeFiles/he_pca.dir/src/client.cpp.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/plaintext_lanczos_tune.dir/build.make CMakeFiles/plaintext_lanczos_tune.dir/src/client.cpp.o
 .PHONY : src/client.cpp.o
 
 src/client.i: src/client.cpp.i
@@ -201,6 +215,7 @@ src/client.i: src/client.cpp.i
 # target to preprocess a source file
 src/client.cpp.i:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/he_pca.dir/build.make CMakeFiles/he_pca.dir/src/client.cpp.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/plaintext_lanczos_tune.dir/build.make CMakeFiles/plaintext_lanczos_tune.dir/src/client.cpp.i
 .PHONY : src/client.cpp.i
 
 src/client.s: src/client.cpp.s
@@ -209,6 +224,7 @@ src/client.s: src/client.cpp.s
 # target to generate assembly for a file
 src/client.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/he_pca.dir/build.make CMakeFiles/he_pca.dir/src/client.cpp.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/plaintext_lanczos_tune.dir/build.make CMakeFiles/plaintext_lanczos_tune.dir/src/client.cpp.s
 .PHONY : src/client.cpp.s
 
 src/main.o: src/main.cpp.o
@@ -234,6 +250,54 @@ src/main.s: src/main.cpp.s
 src/main.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/he_pca.dir/build.make CMakeFiles/he_pca.dir/src/main.cpp.s
 .PHONY : src/main.cpp.s
+
+src/newton_inv_sqrt.o: src/newton_inv_sqrt.cpp.o
+.PHONY : src/newton_inv_sqrt.o
+
+# target to build an object file
+src/newton_inv_sqrt.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/he_pca.dir/build.make CMakeFiles/he_pca.dir/src/newton_inv_sqrt.cpp.o
+.PHONY : src/newton_inv_sqrt.cpp.o
+
+src/newton_inv_sqrt.i: src/newton_inv_sqrt.cpp.i
+.PHONY : src/newton_inv_sqrt.i
+
+# target to preprocess a source file
+src/newton_inv_sqrt.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/he_pca.dir/build.make CMakeFiles/he_pca.dir/src/newton_inv_sqrt.cpp.i
+.PHONY : src/newton_inv_sqrt.cpp.i
+
+src/newton_inv_sqrt.s: src/newton_inv_sqrt.cpp.s
+.PHONY : src/newton_inv_sqrt.s
+
+# target to generate assembly for a file
+src/newton_inv_sqrt.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/he_pca.dir/build.make CMakeFiles/he_pca.dir/src/newton_inv_sqrt.cpp.s
+.PHONY : src/newton_inv_sqrt.cpp.s
+
+src/plaintext_lanczos_tune.o: src/plaintext_lanczos_tune.cpp.o
+.PHONY : src/plaintext_lanczos_tune.o
+
+# target to build an object file
+src/plaintext_lanczos_tune.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/plaintext_lanczos_tune.dir/build.make CMakeFiles/plaintext_lanczos_tune.dir/src/plaintext_lanczos_tune.cpp.o
+.PHONY : src/plaintext_lanczos_tune.cpp.o
+
+src/plaintext_lanczos_tune.i: src/plaintext_lanczos_tune.cpp.i
+.PHONY : src/plaintext_lanczos_tune.i
+
+# target to preprocess a source file
+src/plaintext_lanczos_tune.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/plaintext_lanczos_tune.dir/build.make CMakeFiles/plaintext_lanczos_tune.dir/src/plaintext_lanczos_tune.cpp.i
+.PHONY : src/plaintext_lanczos_tune.cpp.i
+
+src/plaintext_lanczos_tune.s: src/plaintext_lanczos_tune.cpp.s
+.PHONY : src/plaintext_lanczos_tune.s
+
+# target to generate assembly for a file
+src/plaintext_lanczos_tune.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/plaintext_lanczos_tune.dir/build.make CMakeFiles/plaintext_lanczos_tune.dir/src/plaintext_lanczos_tune.cpp.s
+.PHONY : src/plaintext_lanczos_tune.cpp.s
 
 src/server.o: src/server.cpp.o
 .PHONY : src/server.o
@@ -272,6 +336,7 @@ help:
 	@echo "... list_install_components"
 	@echo "... rebuild_cache"
 	@echo "... he_pca"
+	@echo "... plaintext_lanczos_tune"
 	@echo "... seal"
 	@echo "... src/client.o"
 	@echo "... src/client.i"
@@ -279,6 +344,12 @@ help:
 	@echo "... src/main.o"
 	@echo "... src/main.i"
 	@echo "... src/main.s"
+	@echo "... src/newton_inv_sqrt.o"
+	@echo "... src/newton_inv_sqrt.i"
+	@echo "... src/newton_inv_sqrt.s"
+	@echo "... src/plaintext_lanczos_tune.o"
+	@echo "... src/plaintext_lanczos_tune.i"
+	@echo "... src/plaintext_lanczos_tune.s"
 	@echo "... src/server.o"
 	@echo "... src/server.i"
 	@echo "... src/server.s"
