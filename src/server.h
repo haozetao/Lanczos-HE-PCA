@@ -26,9 +26,11 @@ public:
     struct LanczosResult {
         std::vector<seal::Ciphertext> alphas; // m 个 [[α_j]]，标量在 slot 0
         std::vector<seal::Ciphertext> betas;  // m-1 个 [[β_j]]
+        std::vector<seal::Ciphertext> V_all;  // m 个基向量密文（用于特征向量重构）
     };
 
-    // p 必须为 1（标准 Lanczos）。m_iter 受 CKKS 深度约束，建议 1～2。
+    // p 必须为 1（标准 Lanczos）。m_iter 受 CKKS 深度约束，建议 1。
+    // asor_k_factors 非空时使用 aSOR Newton，为空时使用标准 Newton。
     LanczosResult lanczosIteration(
         const std::vector<seal::Ciphertext>& enc_C,
         const std::vector<seal::Ciphertext>& enc_V1,
@@ -36,7 +38,8 @@ public:
         int p,
         int m_iter,
         double eigenvalue_guess,
-        int newton_iters);
+        int newton_iters,
+        const std::vector<double>& asor_k_factors = {});
 
 private:
     std::shared_ptr<seal::SEALContext> context_;

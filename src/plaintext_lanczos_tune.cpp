@@ -38,10 +38,19 @@ int main()
 
     Client client(d, p, m_max);
     client.generateCovarianceMatrix();
-    Eigen::VectorXd v0 = randomUnitVector(d, v_seed);
 
     Eigen::SelfAdjointEigenSolver<Eigen::MatrixXd> true_solver(client.covMatrix());
     Eigen::VectorXd true_evals = true_solver.eigenvalues().reverse();
+
+    double trace_C = client.normalizeCovariance();
+    std::cout << "trace(C)=" << std::fixed << std::setprecision(2) << trace_C
+              << "  归一化后特征值:";
+    for (int i = 0; i < std::min(K + 1, d); ++i) {
+        std::cout << " " << std::setprecision(4) << true_evals(i) / trace_C;
+    }
+    std::cout << "\n\n";
+
+    Eigen::VectorXd v0 = randomUnitVector(d, v_seed);
 
     auto scan_and_report = [&](const char* title,
                                const std::function<Eigen::MatrixXd(const Client&, const Eigen::VectorXd&, int)>&
@@ -56,19 +65,24 @@ int main()
 
             const int n = static_cast<int>(cw.good_eigenvalues.size());
             double max_rel_pct = 0.0;
+            std::string ritz_str;
             for (int i = 0; i < std::min(K, n); ++i) {
                 const double tv = true_evals(i);
-                const double rv = cw.good_eigenvalues(i);
+                const double rv = cw.good_eigenvalues(i) * trace_C;
                 const double pct =
                     (std::abs(tv) > 1e-15) ? (std::abs(rv - tv) / std::abs(tv) * 100.0) : 0.0;
                 max_rel_pct = std::max(max_rel_pct, pct);
+                char buf[64];
+                std::snprintf(buf, sizeof(buf), " λ%d=%.2f(%.1f%%)", i + 1, rv, pct);
+                ritz_str += buf;
             }
             if (n < K) {
                 max_rel_pct = 9999.0;
             }
 
-            std::cout << "m=" << std::setw(2) << m << "  T 阶=" << T.rows() << "  CW 保留=" << n
-                      << "  最大相对误差=" << std::fixed << std::setprecision(3) << max_rel_pct << "%\n";
+            std::cout << "m=" << std::setw(2) << m << "  CW=" << n
+                      << "  max_err=" << std::fixed << std::setprecision(1) << max_rel_pct << "%"
+                      << ritz_str << "\n";
 
             if (best_m < 0 && n >= K && max_rel_pct <= target_rel_pct) {
                 best_m = m;

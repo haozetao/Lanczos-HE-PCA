@@ -8,13 +8,14 @@
 
 namespace {
 
-std::vector<int> galoisStepsForDim(int d)
+std::vector<int> galoisStepsForDim(int d, int poly_modulus_degree)
 {
     std::vector<int> steps;
     for (int s = 1; s <= std::max(16, d + 6); ++s) {
         steps.push_back(s);
     }
-    for (int s : {24, 32}) {
+    int half_slots = poly_modulus_degree / 2;
+    for (int s = 1; s < half_slots; s *= 2) {
         steps.push_back(s);
     }
     std::sort(steps.begin(), steps.end());
@@ -58,7 +59,7 @@ Client::Client(int d, int p, int m)
     keygen.create_public_key(public_key_);
     keygen.create_relin_keys(relin_keys_);
 
-    std::vector<int> rot_steps = galoisStepsForDim(d_);
+    std::vector<int> rot_steps = galoisStepsForDim(d_, 32768);
     keygen.create_galois_keys(rot_steps, galois_keys_);
 
     encoder_ = std::make_unique<seal::CKKSEncoder>(*context_);
@@ -367,4 +368,90 @@ Eigen::MatrixXd Client::trueTopEigenvectors(int K) const
 double Client::eigenvalueMagnitudeGuess() const
 {
     return C_.norm() / std::sqrt(static_cast<double>(d_));
+}
+
+double Client::lanczosResidualNormSqGuess() const
+{
+    // 对随机单位向量 v, E[||Cv - (v^T C v)v||²] = trace(C²)/d - (trace(C)/d)²
+    // 归一化后 trace(C)=1, 所以 = trace(C²)/d - 1/d²
+    double trace_C2 = (C_ * C_).trace();
+    double d = static_cast<double>(d_);
+    double est = trace_C2 / d - 1.0 / (d * d);
+    return std::max(est, 1e-9);
+}
+
+double Client::normalizeCovariance()
+{
+    trace_C_ = C_.trace();
+    if (trace_C_ < 1e-15) {
+        throw std::runtime_error("normalizeCovariance: trace(C) is near zero");
+    }
+    C_ /= trace_C_;
+    return trace_C_;
+}
+
+Eigen::MatrixXd Client::decryptLanczosVectors(
+    const std::vector<seal::Ciphertext>& V_all) const
+{
+    const int m = static_cast<int>(V_all.size());
+    Eigen::MatrixXd V_total(d_, m);
+
+    for (int j = 0; j < m; ++j) {
+        seal::Plaintext pt;
+        decryptor_->decrypt(V_all[j], pt);
+        std::vector<double> vals;
+        encoder_->decode(pt, vals);
+        for (int i = 0; i < d_; ++i) {
+            V_total(i, j) = (i < static_cast<int>(vals.size())) ? vals[i] : 0.0;
+        }
+    }
+    return V_total;
+}
+
+Eigen::MatrixXd Client::reconstructEigenvectors(
+    const Eigen::MatrixXd& V_total_raw,
+    const CWFilterResult& cw,
+    int K) const
+{
+    const int m = static_cast<int>(V_total_raw.cols());
+    const int n_good = static_cast<int>(cw.good_eigenvalues.size());
+    const int take = std::min(K, n_good);
+
+    if (take == 0 || m == 0) {
+        return Eigen::MatrixXd::Zero(d_, std::max(1, K));
+    }
+
+    // Gram-Schmidt reorthogonalization on decrypted Lanczos basis
+    Eigen::MatrixXd Q(d_, m);
+    for (int j = 0; j < m; ++j) {
+        Eigen::VectorXd v = V_total_raw.col(j);
+        for (int k = 0; k < j; ++k) {
+            v -= Q.col(k) * (Q.col(k).dot(v));
+        }
+        double nrm = v.norm();
+        if (nrm > 1e-14) {
+            Q.col(j) = v / nrm;
+        } else {
+            Q.col(j).setZero();
+        }
+    }
+
+    // Ritz vectors s_i are the CW eigenvectors of T_m (size m x n_good)
+    // Reconstruct approximate eigenvectors: u_i = Q * s_i
+    const Eigen::MatrixXd& S = cw.good_eigenvectors; // m x n_good
+    Eigen::MatrixXd U(d_, take);
+    for (int i = 0; i < take; ++i) {
+        Eigen::VectorXd s_i = S.col(i);
+        if (s_i.size() > m) {
+            s_i = s_i.head(m);
+        }
+        Eigen::VectorXd u = Q.leftCols(s_i.size()) * s_i;
+        double nrm = u.norm();
+        if (nrm > 1e-14) {
+            U.col(i) = u / nrm;
+        } else {
+            U.col(i).setZero();
+        }
+    }
+    return U;
 }

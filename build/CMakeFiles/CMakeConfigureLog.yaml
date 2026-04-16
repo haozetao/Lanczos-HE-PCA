@@ -2557,3 +2557,42 @@ events:
         
       exitCode: 0
 ...
+
+---
+events:
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "/opt/homebrew/share/cmake/Modules/Internal/CheckSourceCompiles.cmake:104 (try_compile)"
+      - "/opt/homebrew/share/cmake/Modules/CheckCXXSourceCompiles.cmake:103 (cmake_check_source_compiles)"
+      - "build/_deps/seal-src/cmake/EnableCXX17.cmake:28 (check_cxx_source_compiles)"
+      - "build/_deps/seal-src/CMakeLists.txt:68 (include)"
+    directories:
+      source: "/Users/bytedance/PCA/build/CMakeFiles/CMakeScratch/TryCompile-83hsLP"
+      binary: "/Users/bytedance/PCA/build/CMakeFiles/CMakeScratch/TryCompile-83hsLP"
+    cmakeVariables:
+      CMAKE_CXX_FLAGS: ""
+      CMAKE_CXX_FLAGS_DEBUG: "-g"
+      CMAKE_EXE_LINKER_FLAGS: ""
+      CMAKE_MODULE_PATH: "/Users/bytedance/PCA/build/_deps/seal-src/cmake"
+      CMAKE_OSX_ARCHITECTURES: ""
+      CMAKE_OSX_DEPLOYMENT_TARGET: ""
+      CMAKE_OSX_SYSROOT: ""
+      CMAKE_POSITION_INDEPENDENT_CODE: "ON"
+      CMAKE_WARN_DEPRECATED: "FALSE"
+    buildResult:
+      variable: "USE_STD_FOR_EACH_N"
+      cached: true
+      stdout: |
+        Change Dir: '/Users/bytedance/PCA/build/CMakeFiles/CMakeScratch/TryCompile-83hsLP'
+        
+        Run Build Command(s): /opt/homebrew/bin/cmake -E env VERBOSE=1 /usr/bin/make -f Makefile cmTC_41478/fast
+        /Library/Developer/CommandLineTools/usr/bin/make  -f CMakeFiles/cmTC_41478.dir/build.make CMakeFiles/cmTC_41478.dir/build
+        Building CXX object CMakeFiles/cmTC_41478.dir/src.cxx.o
+        /usr/bin/c++ -DUSE_STD_FOR_EACH_N  -O0 -std=c++17 -std=gnu++17 -arch arm64 -fPIE -MD -MT CMakeFiles/cmTC_41478.dir/src.cxx.o -MF CMakeFiles/cmTC_41478.dir/src.cxx.o.d -o CMakeFiles/cmTC_41478.dir/src.cxx.o -c /Users/bytedance/PCA/build/CMakeFiles/CMakeScratch/TryCompile-83hsLP/src.cxx
+        Linking CXX executable cmTC_41478
+        /opt/homebrew/bin/cmake -E cmake_link_script CMakeFiles/cmTC_41478.dir/link.txt --verbose=1
+        /usr/bin/c++   -O0 -std=c++17 -arch arm64 -Wl,-search_paths_first -Wl,-headerpad_max_install_names CMakeFiles/cmTC_41478.dir/src.cxx.o -o cmTC_41478
+        
+      exitCode: 0
+...

@@ -1,12 +1,9 @@
-// 方向2（DIRECTION2_REFACTOR_PLAN）：纯 Server 密态 Lanczos + Client 解密后 CW 过滤
+// FHE-PCA: 密态 Lanczos + Newton 归一化 + 特征向量重构
 //
-// 可行性说明：
-// - 无 Bootstrapping 时，CKKS 乘法深度有限；32768 环下 coeff 链长度由 MaxBitCount 约束。
-// - Newton 迭代次数压低，是因为每轮含多次密文乘+rescale，会吃模链；不是数学上只能 2～3 轮。
-//   若接入 CKKS 自举（SEAL 无内置实现，常见为 OpenFHE 或论文级电路），可在刷新深度后提高 newton_iters / m_iter。
-// - 单步 Lanczos 消耗大量层级；无边自举时 m_iter=2 与当前电路组合易 end of modulus switching chain。
-// - p=1（标准三对角）；p>1 的块 Lanczos 需进一步扩展 Server。
+// 优化: 明文归一化 + 末步跳过 Newton + 明文预模拟初始猜测
+// m_iter=2, Newton 2 次迭代, 总深度 18/19 层
 
+#include <chrono>
 #include <cmath>
 #include <iomanip>
 #include <iostream>
@@ -14,8 +11,11 @@
 
 #include <Eigen/Dense>
 
+#include "asor.h"
 #include "client.h"
 #include "server.h"
+
+using Clock = std::chrono::high_resolution_clock;
 
 static Eigen::VectorXd randomUnitVector(int d)
 {
@@ -29,81 +29,118 @@ static Eigen::VectorXd randomUnitVector(int d)
     return v;
 }
 
+static double cosineSimilarity(const Eigen::VectorXd& a, const Eigen::VectorXd& b)
+{
+    double na = a.norm();
+    double nb = b.norm();
+    if (na < 1e-15 || nb < 1e-15) return 0.0;
+    return std::abs(a.dot(b)) / (na * nb);
+}
+
 int main()
 {
-    // 协方差矩阵 C 为 d×d（Client: C = A^T A + I，A 元素 i.i.d. 标准正态）。
     constexpr int d = 10;
     constexpr int p = 1;
-    // 无边自举：m_iter=2 在当前 Lanczos+Newton 深度下会耗尽模链；有自举后再调大。
-    constexpr int m_iter = 1;
-    // 无边自举：4 轮 Newton 易在末轮 rescale 时耗尽链；自举刷新后可尝试提高到 4～8 等。
-    constexpr int newton_iters = 3;
-    constexpr int K = 2;
+    constexpr int m_iter = 2;
+    constexpr int K = 3;
+    constexpr int newton_iters = 2;
 
-    std::cout << "=== HE-Lanczos PCA (方向2: 纯 Server + CW) ===" << std::endl;
-    std::cout << "d=" << d << ", p=" << p << ", m_iter=" << m_iter
-              << ", newton_iters=" << newton_iters << ", K=" << K << std::endl;
-    std::cout << std::string(55, '-') << std::endl;
+    std::cout << "=== FHE-PCA (d=" << d << ", m_iter=" << m_iter
+              << ", Newton=" << newton_iters << ") ===" << std::endl;
 
+    // ── Phase 1: Client 初始化 ──
+    std::cout << "\n[Phase 1] Client setup" << std::endl;
     Client client(d, p, m_iter);
     client.generateCovarianceMatrix();
 
-    auto enc_C = client.encryptCovMatrix();
+    Eigen::MatrixXd C_original = client.covMatrix();
+    Eigen::SelfAdjointEigenSolver<Eigen::MatrixXd> true_solver(C_original);
+    Eigen::VectorXd true_evals = true_solver.eigenvalues().reverse();
+    Eigen::MatrixXd true_evecs = true_solver.eigenvectors().rowwise().reverse();
+
+    double trace_C = client.normalizeCovariance();
+    std::cout << "  trace(C) = " << std::fixed << std::setprecision(4) << trace_C << std::endl;
+
     Eigen::VectorXd v0 = randomUnitVector(d);
+
+    // 明文预模拟第一步 Lanczos: 获取精确的 ||W_new||² 作为 Newton 初始猜测
+    const Eigen::MatrixXd& C_hat = client.covMatrix();
+    Eigen::VectorXd w_sim = C_hat * v0;
+    double alpha0_sim = v0.dot(w_sim);
+    Eigen::VectorXd w_res = w_sim - alpha0_sim * v0;
+    double norm_sq_sim = w_res.squaredNorm();
+    double ev_guess = norm_sq_sim;
+
+    std::cout << "  plaintext sim: α_0=" << std::setprecision(6) << alpha0_sim
+              << "  ||W||²=" << std::scientific << std::setprecision(4) << norm_sq_sim
+              << "  guess=1/√x=" << std::fixed << std::setprecision(2)
+              << 1.0 / std::sqrt(norm_sq_sim) << std::endl;
+
+    // ── Phase 2: Server 密态 Lanczos ──
+    std::cout << "\n[Phase 2] Server HE-Lanczos" << std::endl;
+
+    auto enc_C = client.encryptCovMatrix();
     auto enc_v = client.encryptColumnVector(v0);
 
-    double ev_guess = client.eigenvalueMagnitudeGuess();
-
     Server server(
-        client.context(),
-        client.publicKey(),
-        client.relinKeys(),
-        client.galoisKeys(),
-        client.ckksScale());
+        client.context(), client.publicKey(), client.relinKeys(),
+        client.galoisKeys(), client.ckksScale());
 
-    std::cout << "\n[Phase 1] 已发送 enc_C 与 enc_v0 至 Server。" << std::endl;
-
-    std::cout << "\n[Phase 2] Server 密态 Lanczos（单轮交互）..." << std::endl;
+    auto t0 = Clock::now();
     Server::LanczosResult lr = server.lanczosIteration(
         enc_C, enc_v, d, p, m_iter, ev_guess, newton_iters);
+    auto t1 = Clock::now();
+    double server_ms = std::chrono::duration<double, std::milli>(t1 - t0).count();
 
-    std::cout << "  返回 α 密文: " << lr.alphas.size()
-              << " ，β 密文: " << lr.betas.size() << std::endl;
+    std::cout << "  耗时: " << std::fixed << std::setprecision(1)
+              << server_ms << " ms" << std::endl;
+    std::cout << "  α: " << lr.alphas.size() << "  β: " << lr.betas.size()
+              << "  V_all: " << lr.V_all.size() << std::endl;
+
+    // ── Phase 3: Client 后处理 ──
+    std::cout << "\n[Phase 3] Client post-processing" << std::endl;
 
     int m = static_cast<int>(lr.alphas.size());
-    Eigen::MatrixXd T = client.buildTridiagonalFromEncrypted(
-        lr.alphas, lr.betas, m);
-
-    std::cout << "\n[Phase 3] Client 解密构造 T_" << m << "，并做 CW 过滤..." << std::endl;
-    std::cout << "  T_m =\n" << T << std::endl;
+    Eigen::MatrixXd T = client.buildTridiagonalFromEncrypted(lr.alphas, lr.betas, m);
+    std::cout << "  T_" << m << " =\n" << T << std::endl;
 
     CWFilterResult cw = client.cullumWilloughbyFilter(T, K);
-    int n_found = static_cast<int>(cw.good_eigenvalues.size());
-    std::cout << "  过滤后保留特征值个数: " << n_found << std::endl;
+    int n_good = static_cast<int>(cw.good_eigenvalues.size());
+    std::cout << "  CW 保留特征值: " << n_good << std::endl;
 
-    Eigen::SelfAdjointEigenSolver<Eigen::MatrixXd> true_solver(client.covMatrix());
-    Eigen::VectorXd true_evals = true_solver.eigenvalues().reverse();
+    Eigen::MatrixXd V_total = client.decryptLanczosVectors(lr.V_all);
+    Eigen::MatrixXd U = client.reconstructEigenvectors(V_total, cw, K);
 
-    std::cout << "\n" << std::string(55, '=') << std::endl;
-    std::cout << "  特征值对比（Ritz / CW vs 真实 C 的前若干大特征值）" << std::endl;
-    std::cout << std::string(55, '=') << std::endl;
-    std::cout << std::fixed << std::setprecision(4);
+    // ── Phase 4: 验证 ──
+    std::cout << "\n" << std::string(60, '=') << std::endl;
+    std::cout << "  结果验证 (反归一化: ×" << std::setprecision(2) << trace_C << ")" << std::endl;
+    std::cout << std::string(60, '=') << std::endl;
 
-    int show = std::min(n_found, K);
+    std::cout << "\n  真实特征值:";
+    for (int i = 0; i < std::min(K + 1, d); ++i) {
+        std::cout << "  λ_" << (i + 1) << "=" << std::setprecision(2) << true_evals(i);
+    }
+    std::cout << std::endl;
+
+    int show = std::min(K, n_good);
     for (int i = 0; i < show; ++i) {
-        double he_val = cw.good_eigenvalues(i);
+        double he_val = cw.good_eigenvalues(i) * trace_C;
         double tv = true_evals(i);
-        double err_pct = tv != 0.0 ? std::abs(he_val - tv) / std::abs(tv) * 100.0 : 0.0;
-        std::cout << "  #" << (i + 1) << "  Lanczos/CW: " << he_val
-                  << "  |  真实: " << tv
-                  << "  |  相对误差: " << err_pct << "%" << std::endl;
+        double err_pct = (std::abs(tv) > 1e-15)
+            ? std::abs(he_val - tv) / std::abs(tv) * 100.0 : 0.0;
+
+        std::cout << "\n  #" << (i + 1) << "  HE: " << std::setprecision(4) << he_val
+                  << "  真实: " << tv
+                  << "  误差: " << std::setprecision(2) << err_pct << "%";
+
+        if (i < U.cols()) {
+            double cs = cosineSimilarity(U.col(i), true_evecs.col(i));
+            std::cout << "  cos_sim=" << std::setprecision(4) << cs;
+        }
+        std::cout << std::endl;
     }
 
-    if (m_iter < K) {
-        std::cout << "\n  提示: m_iter < K 时 Krylov 子空间维度过小，"
-                  << "Ritz 值不一定逼近前 K 个主特征值；增大 m_iter（并控制深度）。" << std::endl;
-    }
-
+    std::cout << "\n  Server 耗时: " << std::setprecision(1) << server_ms << " ms" << std::endl;
     std::cout << "\n=== 完成 ===" << std::endl;
     return 0;
 }

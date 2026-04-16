@@ -53,9 +53,13 @@ seal::Ciphertext Server::innerProduct(
     evaluator_.relinearize_inplace(product, relin_keys_);
     evaluator_.rescale_to_next_inplace(product);
 
+    // 全 slot 旋转求和：2的幂步长直到 slot_count/2
+    // 结果：所有 slot 都包含完整内积（不仅是 slot[0]）
+    // 这使得后续 broadcastScalar 成为恒等操作
+    size_t half_slots = encoder_.slot_count();
     seal::Ciphertext rotated;
-    for (int step = dim / 2; step >= 1; step /= 2) {
-        evaluator_.rotate_vector(product, step, galois_keys_, rotated);
+    for (size_t step = 1; step < half_slots; step *= 2) {
+        evaluator_.rotate_vector(product, static_cast<int>(step), galois_keys_, rotated);
         adjust_ckks_scale_to_ref_inplace_(rotated, product);
         evaluator_.add_inplace(product, rotated);
     }
@@ -63,17 +67,10 @@ seal::Ciphertext Server::innerProduct(
 }
 
 seal::Ciphertext Server::broadcastScalar(
-    const seal::Ciphertext& scalar_ct, int dim) const
+    const seal::Ciphertext& scalar_ct, int /*dim*/) const
 {
-    seal::Ciphertext result = scalar_ct;
-    for (int k = 1; k < dim; ++k) {
-        seal::Ciphertext rot;
-        evaluator_.rotate_vector(scalar_ct, k, galois_keys_, rot);
-        align_two_inplace(rot, result);
-        adjust_ckks_scale_to_ref_inplace_(rot, result);
-        evaluator_.add_inplace(result, rot);
-    }
-    return result;
+    // innerProduct 已在全 slot 填充标量值，无需额外广播
+    return scalar_ct;
 }
 
 seal::Ciphertext Server::scalarVecMultiply(
@@ -95,15 +92,29 @@ seal::Ciphertext Server::scalarVecMultiply(
 seal::Ciphertext Server::packScalarsToVector(
     const std::vector<seal::Ciphertext>& scalar_cts, int d) const
 {
-    seal::Ciphertext result = scalar_cts[0];
-    for (int i = 1; i < d; ++i) {
-        seal::Ciphertext si = scalar_cts[i];
-        align_two_inplace(si, result);
-        seal::Ciphertext rot;
-        evaluator_.rotate_vector(si, i, galois_keys_, rot);
-        align_two_inplace(rot, result);
-        adjust_ckks_scale_to_ref_inplace_(rot, result);
-        evaluator_.add_inplace(result, rot);
+    // 每个 scalar_cts[i] 的所有 slot 都包含标量值（来自 full-slot innerProduct）
+    // 用掩码 [0,...,1,...,0]（位置 i 为 1）提取到正确 slot，然后累加
+    size_t slot_count = encoder_.slot_count();
+    seal::Ciphertext result;
+
+    for (int i = 0; i < d; ++i) {
+        std::vector<double> mask(slot_count, 0.0);
+        mask[i] = 1.0;
+        seal::Plaintext mask_pt;
+        encoder_.encode(mask, scalar_cts[i].scale(), mask_pt);
+        evaluator_.mod_switch_to_inplace(mask_pt, scalar_cts[i].parms_id());
+
+        seal::Ciphertext masked;
+        evaluator_.multiply_plain(scalar_cts[i], mask_pt, masked);
+        evaluator_.rescale_to_next_inplace(masked);
+
+        if (i == 0) {
+            result = std::move(masked);
+        } else {
+            align_two_inplace(masked, result);
+            adjust_ckks_scale_to_ref_inplace_(masked, result);
+            evaluator_.add_inplace(result, masked);
+        }
     }
     return result;
 }
@@ -151,7 +162,8 @@ Server::LanczosResult Server::lanczosIteration(
     int p,
     int m_iter,
     double eigenvalue_guess,
-    int newton_iters)
+    int newton_iters,
+    const std::vector<double>& asor_k_factors)
 {
     if (p != 1) {
         throw std::invalid_argument("lanczosIteration: 当前实现仅支持 p=1");
@@ -160,9 +172,12 @@ Server::LanczosResult Server::lanczosIteration(
         throw std::invalid_argument("lanczosIteration: m_iter 至少为 1");
     }
 
+    const bool use_asor = !asor_k_factors.empty();
+
     LanczosResult out;
     out.alphas.reserve(m_iter);
     out.betas.reserve(static_cast<size_t>(std::max(0, m_iter - 1)));
+    out.V_all.reserve(m_iter);
 
     seal::Ciphertext V = enc_V1[0];
     seal::Ciphertext V_prev;
@@ -171,6 +186,8 @@ Server::LanczosResult Server::lanczosIteration(
         1.0 / std::sqrt(std::max(eigenvalue_guess, 1e-9));
 
     for (int iter = 0; iter < m_iter; ++iter) {
+        out.V_all.push_back(V);
+
         // Step 1: W = C · V
         std::vector<seal::Ciphertext> scalars(d);
         for (int i = 0; i < d; ++i) {
@@ -181,7 +198,7 @@ Server::LanczosResult Server::lanczosIteration(
         }
         seal::Ciphertext Wvec = packScalarsToVector(scalars, d);
 
-        // Step 1b: W = W − β_{j-1} · v_{j-1}（三项递推关键项）
+        // Step 1b: W = W − β_{j-1} · v_{j-1}
         if (iter > 0) {
             seal::Ciphertext bv = scalarVecMultiply(beta_prev_ct, V_prev, d);
             align_two_inplace(Wvec, bv);
@@ -196,28 +213,30 @@ Server::LanczosResult Server::lanczosIteration(
         seal::Ciphertext alpha = innerProduct(V_for_ip, W_for_ip, d);
         out.alphas.push_back(alpha);
 
-        // Step 3: W_new = W − α · V
-        seal::Ciphertext alphaV = scalarVecMultiply(alpha, V, d);
-        seal::Ciphertext W_sub = Wvec;
-        seal::Ciphertext av_sub = alphaV;
-        align_two_inplace(W_sub, av_sub);
-        adjust_ckks_scale_to_ref_inplace_(av_sub, W_sub);
-        seal::Ciphertext Wnew;
-        evaluator_.sub(W_sub, av_sub, Wnew);
+        const bool is_last = (iter == m_iter - 1);
+        if (!is_last) {
+            // Step 3: W_new = W − α · V
+            seal::Ciphertext alphaV = scalarVecMultiply(alpha, V, d);
+            seal::Ciphertext W_sub = Wvec;
+            seal::Ciphertext av_sub = alphaV;
+            align_two_inplace(W_sub, av_sub);
+            adjust_ckks_scale_to_ref_inplace_(av_sub, W_sub);
+            seal::Ciphertext Wnew;
+            evaluator_.sub(W_sub, av_sub, Wnew);
 
-        // Step 4: β = ‖W_new‖ via Newton 1/√x
-        seal::Ciphertext norm_sq = innerProduct(Wnew, Wnew, d);
-        InvSqrtResult inv = newton_->compute(norm_sq, guess_inv_sqrt, newton_iters);
-
-        if (iter < m_iter - 1) {
+            // Step 4: β = ‖W_new‖ via Newton 1/√x
+            seal::Ciphertext norm_sq = innerProduct(Wnew, Wnew, d);
+            InvSqrtResult inv = use_asor
+                ? newton_->computeWithASOR(norm_sq, guess_inv_sqrt, asor_k_factors)
+                : newton_->compute(norm_sq, guess_inv_sqrt, newton_iters);
             out.betas.push_back(inv.sqrt_val);
-        }
 
-        // Step 5: v_{j+1} = W_new / β，保留 v_j 和 β_j 供下一轮三项递推
-        V_prev = V;
-        beta_prev_ct = inv.sqrt_val;
-        seal::Ciphertext Vnext = scalarVecMultiply(inv.inv_sqrt, Wnew, d);
-        V = std::move(Vnext);
+            // Step 5: v_{j+1} = W_new / β
+            V_prev = V;
+            beta_prev_ct = inv.sqrt_val;
+            seal::Ciphertext Vnext = scalarVecMultiply(inv.inv_sqrt, Wnew, d);
+            V = std::move(Vnext);
+        }
     }
 
     return out;

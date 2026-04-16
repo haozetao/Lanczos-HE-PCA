@@ -58,6 +58,20 @@ public:
 
     Eigen::MatrixXd trueTopEigenvectors(int K) const;
 
+    // 明文空间归一化：C_hat = C / trace(C)，返回 trace 值用于反归一化
+    double normalizeCovariance();
+
+    // 解密 Lanczos 基向量密文 → 明文矩阵 V_total (d x m)
+    Eigen::MatrixXd decryptLanczosVectors(
+        const std::vector<seal::Ciphertext>& V_all) const;
+
+    // 从 CW 结果和 Lanczos 基向量重构特征向量
+    // 包含明文 Gram-Schmidt 正交化以修复三项递推导致的正交性丧失
+    Eigen::MatrixXd reconstructEigenvectors(
+        const Eigen::MatrixXd& V_total,
+        const CWFilterResult& cw,
+        int K) const;
+
     std::shared_ptr<seal::SEALContext> context() const { return context_; }
     const seal::PublicKey& publicKey() const { return public_key_; }
     const seal::RelinKeys& relinKeys() const { return relin_keys_; }
@@ -70,12 +84,16 @@ public:
     int p() const { return p_; }
     int m() const { return m_; }
 
-    // 用于 Newton 初值：||C||_F / sqrt(d) 量级估计
     double eigenvalueMagnitudeGuess() const;
+
+    // 估计 Lanczos 第一步残差向量的 ||W_new||²
+    // 用作 Newton 1/√x 的初始猜测，比 eigenvalueMagnitudeGuess 精确得多
+    double lanczosResidualNormSqGuess() const;
 
 private:
     int d_, p_, m_;
     double scale_;
+    double trace_C_{0.0};
 
     std::shared_ptr<seal::SEALContext> context_;
     seal::SecretKey secret_key_;
