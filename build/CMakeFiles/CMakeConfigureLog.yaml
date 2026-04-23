@@ -20,6 +20,11 @@ events:
     names:
       - "uname"
     candidate_directories:
+      - "/opt/homebrew/opt/libomp/bin/"
+      - "/opt/homebrew/opt/libomp/sbin/"
+      - "/opt/homebrew/opt/libomp/"
+      - "/Users/bytedance/Library/Python/3.9/bin/"
+      - "/Users/bytedance/.local/bin/"
       - "/Users/bytedance/.gvm/bin/"
       - "/Users/bytedance/go/bin/"
       - "/usr/local/bytesuite-box/homebrew/bin/"
@@ -36,7 +41,13 @@ events:
       - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin/"
       - "/usr/local/go/bin/"
       - "/opt/puppetlabs/bin/"
+      - "/Applications/Cursor.app/Contents/Resources/app/resources/helpers/"
     searched_directories:
+      - "/opt/homebrew/opt/libomp/bin/uname"
+      - "/opt/homebrew/opt/libomp/sbin/uname"
+      - "/opt/homebrew/opt/libomp/uname"
+      - "/Users/bytedance/Library/Python/3.9/bin/uname"
+      - "/Users/bytedance/.local/bin/uname"
       - "/Users/bytedance/.gvm/bin/uname"
       - "/Users/bytedance/go/bin/uname"
       - "/usr/local/bytesuite-box/homebrew/bin/uname"
@@ -46,7 +57,12 @@ events:
       - "/System/Cryptexes/App/usr/bin/uname"
     found: "/usr/bin/uname"
     search_context:
+      CMAKE_PREFIX_PATH:
+        - "/opt/homebrew/opt/libomp"
       ENV{PATH}:
+        - "/Users/bytedance/Library/Python/3.9/bin"
+        - "/Users/bytedance/.local/bin"
+        - "/Users/bytedance/.local/bin"
         - "/Users/bytedance/.gvm/bin"
         - "/Users/bytedance/go/bin"
         - "/usr/local/bytesuite-box/homebrew/bin"
@@ -63,6 +79,8 @@ events:
         - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin"
         - "/usr/local/go/bin"
         - "/opt/puppetlabs/bin"
+        - "/Applications/Cursor.app/Contents/Resources/app/resources/helpers"
+        - "/Users/bytedance/.local/bin"
   -
     kind: "message-v1"
     backtrace:
@@ -91,6 +109,11 @@ events:
       - "make"
       - "smake"
     candidate_directories:
+      - "/opt/homebrew/opt/libomp/bin/"
+      - "/opt/homebrew/opt/libomp/sbin/"
+      - "/opt/homebrew/opt/libomp/"
+      - "/Users/bytedance/Library/Python/3.9/bin/"
+      - "/Users/bytedance/.local/bin/"
       - "/Users/bytedance/.gvm/bin/"
       - "/Users/bytedance/go/bin/"
       - "/usr/local/bytesuite-box/homebrew/bin/"
@@ -107,7 +130,13 @@ events:
       - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin/"
       - "/usr/local/go/bin/"
       - "/opt/puppetlabs/bin/"
+      - "/Applications/Cursor.app/Contents/Resources/app/resources/helpers/"
     searched_directories:
+      - "/opt/homebrew/opt/libomp/bin/gmake"
+      - "/opt/homebrew/opt/libomp/sbin/gmake"
+      - "/opt/homebrew/opt/libomp/gmake"
+      - "/Users/bytedance/Library/Python/3.9/bin/gmake"
+      - "/Users/bytedance/.local/bin/gmake"
       - "/Users/bytedance/.gvm/bin/gmake"
       - "/Users/bytedance/go/bin/gmake"
       - "/usr/local/bytesuite-box/homebrew/bin/gmake"
@@ -124,6 +153,12 @@ events:
       - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin/gmake"
       - "/usr/local/go/bin/gmake"
       - "/opt/puppetlabs/bin/gmake"
+      - "/Applications/Cursor.app/Contents/Resources/app/resources/helpers/gmake"
+      - "/opt/homebrew/opt/libomp/bin/make"
+      - "/opt/homebrew/opt/libomp/sbin/make"
+      - "/opt/homebrew/opt/libomp/make"
+      - "/Users/bytedance/Library/Python/3.9/bin/make"
+      - "/Users/bytedance/.local/bin/make"
       - "/Users/bytedance/.gvm/bin/make"
       - "/Users/bytedance/go/bin/make"
       - "/usr/local/bytesuite-box/homebrew/bin/make"
@@ -133,7 +168,12 @@ events:
       - "/System/Cryptexes/App/usr/bin/make"
     found: "/usr/bin/make"
     search_context:
+      CMAKE_PREFIX_PATH:
+        - "/opt/homebrew/opt/libomp"
       ENV{PATH}:
+        - "/Users/bytedance/Library/Python/3.9/bin"
+        - "/Users/bytedance/.local/bin"
+        - "/Users/bytedance/.local/bin"
         - "/Users/bytedance/.gvm/bin"
         - "/Users/bytedance/go/bin"
         - "/usr/local/bytesuite-box/homebrew/bin"
@@ -150,6 +190,8 @@ events:
         - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin"
         - "/usr/local/go/bin"
         - "/opt/puppetlabs/bin"
+        - "/Applications/Cursor.app/Contents/Resources/app/resources/helpers"
+        - "/Users/bytedance/.local/bin"
   -
     kind: "find-v1"
     backtrace:
@@ -176,6 +218,11 @@ events:
       - "icx"
       - "clang++"
     candidate_directories:
+      - "/opt/homebrew/opt/libomp/bin/"
+      - "/opt/homebrew/opt/libomp/sbin/"
+      - "/opt/homebrew/opt/libomp/"
+      - "/Users/bytedance/Library/Python/3.9/bin/"
+      - "/Users/bytedance/.local/bin/"
       - "/Users/bytedance/.gvm/bin/"
       - "/Users/bytedance/go/bin/"
       - "/usr/local/bytesuite-box/homebrew/bin/"
@@ -192,7 +239,13 @@ events:
       - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin/"
       - "/usr/local/go/bin/"
       - "/opt/puppetlabs/bin/"
+      - "/Applications/Cursor.app/Contents/Resources/app/resources/helpers/"
     searched_directories:
+      - "/opt/homebrew/opt/libomp/bin/c++"
+      - "/opt/homebrew/opt/libomp/sbin/c++"
+      - "/opt/homebrew/opt/libomp/c++"
+      - "/Users/bytedance/Library/Python/3.9/bin/c++"
+      - "/Users/bytedance/.local/bin/c++"
       - "/Users/bytedance/.gvm/bin/c++"
       - "/Users/bytedance/go/bin/c++"
       - "/usr/local/bytesuite-box/homebrew/bin/c++"
@@ -202,7 +255,12 @@ events:
       - "/System/Cryptexes/App/usr/bin/c++"
     found: "/usr/bin/c++"
     search_context:
+      CMAKE_PREFIX_PATH:
+        - "/opt/homebrew/opt/libomp"
       ENV{PATH}:
+        - "/Users/bytedance/Library/Python/3.9/bin"
+        - "/Users/bytedance/.local/bin"
+        - "/Users/bytedance/.local/bin"
         - "/Users/bytedance/.gvm/bin"
         - "/Users/bytedance/go/bin"
         - "/usr/local/bytesuite-box/homebrew/bin"
@@ -219,6 +277,8 @@ events:
         - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin"
         - "/usr/local/go/bin"
         - "/opt/puppetlabs/bin"
+        - "/Applications/Cursor.app/Contents/Resources/app/resources/helpers"
+        - "/Users/bytedance/.local/bin"
   -
     kind: "find-v1"
     backtrace:
@@ -245,7 +305,12 @@ events:
       - "/opt/homebrew/share/cmake/Modules/"
     found: "/opt/homebrew/share/cmake/Modules/CMakeCXXCompilerId.cpp.in"
     search_context:
+      CMAKE_PREFIX_PATH:
+        - "/opt/homebrew/opt/libomp"
       ENV{PATH}:
+        - "/Users/bytedance/Library/Python/3.9/bin"
+        - "/Users/bytedance/.local/bin"
+        - "/Users/bytedance/.local/bin"
         - "/Users/bytedance/.gvm/bin"
         - "/Users/bytedance/go/bin"
         - "/usr/local/bytesuite-box/homebrew/bin"
@@ -262,6 +327,8 @@ events:
         - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin"
         - "/usr/local/go/bin"
         - "/opt/puppetlabs/bin"
+        - "/Applications/Cursor.app/Contents/Resources/app/resources/helpers"
+        - "/Users/bytedance/.local/bin"
   -
     kind: "message-v1"
     backtrace:
@@ -346,6 +413,8 @@ events:
       - "ar"
     candidate_directories:
       - "/usr/bin/"
+      - "/Users/bytedance/Library/Python/3.9/bin/"
+      - "/Users/bytedance/.local/bin/"
       - "/Users/bytedance/.gvm/bin/"
       - "/Users/bytedance/go/bin/"
       - "/usr/local/bytesuite-box/homebrew/bin/"
@@ -361,9 +430,15 @@ events:
       - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin/"
       - "/usr/local/go/bin/"
       - "/opt/puppetlabs/bin/"
+      - "/Applications/Cursor.app/Contents/Resources/app/resources/helpers/"
     found: "/usr/bin/ar"
     search_context:
+      CMAKE_PREFIX_PATH:
+        - "/opt/homebrew/opt/libomp"
       ENV{PATH}:
+        - "/Users/bytedance/Library/Python/3.9/bin"
+        - "/Users/bytedance/.local/bin"
+        - "/Users/bytedance/.local/bin"
         - "/Users/bytedance/.gvm/bin"
         - "/Users/bytedance/go/bin"
         - "/usr/local/bytesuite-box/homebrew/bin"
@@ -380,6 +455,8 @@ events:
         - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin"
         - "/usr/local/go/bin"
         - "/opt/puppetlabs/bin"
+        - "/Applications/Cursor.app/Contents/Resources/app/resources/helpers"
+        - "/Users/bytedance/.local/bin"
   -
     kind: "find-v1"
     backtrace:
@@ -401,6 +478,8 @@ events:
       - "ranlib"
     candidate_directories:
       - "/usr/bin/"
+      - "/Users/bytedance/Library/Python/3.9/bin/"
+      - "/Users/bytedance/.local/bin/"
       - "/Users/bytedance/.gvm/bin/"
       - "/Users/bytedance/go/bin/"
       - "/usr/local/bytesuite-box/homebrew/bin/"
@@ -416,9 +495,15 @@ events:
       - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin/"
       - "/usr/local/go/bin/"
       - "/opt/puppetlabs/bin/"
+      - "/Applications/Cursor.app/Contents/Resources/app/resources/helpers/"
     found: "/usr/bin/ranlib"
     search_context:
+      CMAKE_PREFIX_PATH:
+        - "/opt/homebrew/opt/libomp"
       ENV{PATH}:
+        - "/Users/bytedance/Library/Python/3.9/bin"
+        - "/Users/bytedance/.local/bin"
+        - "/Users/bytedance/.local/bin"
         - "/Users/bytedance/.gvm/bin"
         - "/Users/bytedance/go/bin"
         - "/usr/local/bytesuite-box/homebrew/bin"
@@ -435,6 +520,8 @@ events:
         - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin"
         - "/usr/local/go/bin"
         - "/opt/puppetlabs/bin"
+        - "/Applications/Cursor.app/Contents/Resources/app/resources/helpers"
+        - "/Users/bytedance/.local/bin"
   -
     kind: "find-v1"
     backtrace:
@@ -456,6 +543,8 @@ events:
       - "strip"
     candidate_directories:
       - "/usr/bin/"
+      - "/Users/bytedance/Library/Python/3.9/bin/"
+      - "/Users/bytedance/.local/bin/"
       - "/Users/bytedance/.gvm/bin/"
       - "/Users/bytedance/go/bin/"
       - "/usr/local/bytesuite-box/homebrew/bin/"
@@ -471,9 +560,15 @@ events:
       - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin/"
       - "/usr/local/go/bin/"
       - "/opt/puppetlabs/bin/"
+      - "/Applications/Cursor.app/Contents/Resources/app/resources/helpers/"
     found: "/usr/bin/strip"
     search_context:
+      CMAKE_PREFIX_PATH:
+        - "/opt/homebrew/opt/libomp"
       ENV{PATH}:
+        - "/Users/bytedance/Library/Python/3.9/bin"
+        - "/Users/bytedance/.local/bin"
+        - "/Users/bytedance/.local/bin"
         - "/Users/bytedance/.gvm/bin"
         - "/Users/bytedance/go/bin"
         - "/usr/local/bytesuite-box/homebrew/bin"
@@ -490,6 +585,8 @@ events:
         - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin"
         - "/usr/local/go/bin"
         - "/opt/puppetlabs/bin"
+        - "/Applications/Cursor.app/Contents/Resources/app/resources/helpers"
+        - "/Users/bytedance/.local/bin"
   -
     kind: "find-v1"
     backtrace:
@@ -511,6 +608,8 @@ events:
       - "ld"
     candidate_directories:
       - "/usr/bin/"
+      - "/Users/bytedance/Library/Python/3.9/bin/"
+      - "/Users/bytedance/.local/bin/"
       - "/Users/bytedance/.gvm/bin/"
       - "/Users/bytedance/go/bin/"
       - "/usr/local/bytesuite-box/homebrew/bin/"
@@ -526,9 +625,15 @@ events:
       - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin/"
       - "/usr/local/go/bin/"
       - "/opt/puppetlabs/bin/"
+      - "/Applications/Cursor.app/Contents/Resources/app/resources/helpers/"
     found: "/usr/bin/ld"
     search_context:
+      CMAKE_PREFIX_PATH:
+        - "/opt/homebrew/opt/libomp"
       ENV{PATH}:
+        - "/Users/bytedance/Library/Python/3.9/bin"
+        - "/Users/bytedance/.local/bin"
+        - "/Users/bytedance/.local/bin"
         - "/Users/bytedance/.gvm/bin"
         - "/Users/bytedance/go/bin"
         - "/usr/local/bytesuite-box/homebrew/bin"
@@ -545,6 +650,8 @@ events:
         - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin"
         - "/usr/local/go/bin"
         - "/opt/puppetlabs/bin"
+        - "/Applications/Cursor.app/Contents/Resources/app/resources/helpers"
+        - "/Users/bytedance/.local/bin"
   -
     kind: "find-v1"
     backtrace:
@@ -566,6 +673,8 @@ events:
       - "nm"
     candidate_directories:
       - "/usr/bin/"
+      - "/Users/bytedance/Library/Python/3.9/bin/"
+      - "/Users/bytedance/.local/bin/"
       - "/Users/bytedance/.gvm/bin/"
       - "/Users/bytedance/go/bin/"
       - "/usr/local/bytesuite-box/homebrew/bin/"
@@ -581,9 +690,15 @@ events:
       - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin/"
       - "/usr/local/go/bin/"
       - "/opt/puppetlabs/bin/"
+      - "/Applications/Cursor.app/Contents/Resources/app/resources/helpers/"
     found: "/usr/bin/nm"
     search_context:
+      CMAKE_PREFIX_PATH:
+        - "/opt/homebrew/opt/libomp"
       ENV{PATH}:
+        - "/Users/bytedance/Library/Python/3.9/bin"
+        - "/Users/bytedance/.local/bin"
+        - "/Users/bytedance/.local/bin"
         - "/Users/bytedance/.gvm/bin"
         - "/Users/bytedance/go/bin"
         - "/usr/local/bytesuite-box/homebrew/bin"
@@ -600,6 +715,8 @@ events:
         - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin"
         - "/usr/local/go/bin"
         - "/opt/puppetlabs/bin"
+        - "/Applications/Cursor.app/Contents/Resources/app/resources/helpers"
+        - "/Users/bytedance/.local/bin"
   -
     kind: "find-v1"
     backtrace:
@@ -621,6 +738,8 @@ events:
       - "objdump"
     candidate_directories:
       - "/usr/bin/"
+      - "/Users/bytedance/Library/Python/3.9/bin/"
+      - "/Users/bytedance/.local/bin/"
       - "/Users/bytedance/.gvm/bin/"
       - "/Users/bytedance/go/bin/"
       - "/usr/local/bytesuite-box/homebrew/bin/"
@@ -636,9 +755,15 @@ events:
       - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin/"
       - "/usr/local/go/bin/"
       - "/opt/puppetlabs/bin/"
+      - "/Applications/Cursor.app/Contents/Resources/app/resources/helpers/"
     found: "/usr/bin/objdump"
     search_context:
+      CMAKE_PREFIX_PATH:
+        - "/opt/homebrew/opt/libomp"
       ENV{PATH}:
+        - "/Users/bytedance/Library/Python/3.9/bin"
+        - "/Users/bytedance/.local/bin"
+        - "/Users/bytedance/.local/bin"
         - "/Users/bytedance/.gvm/bin"
         - "/Users/bytedance/go/bin"
         - "/usr/local/bytesuite-box/homebrew/bin"
@@ -655,6 +780,8 @@ events:
         - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin"
         - "/usr/local/go/bin"
         - "/opt/puppetlabs/bin"
+        - "/Applications/Cursor.app/Contents/Resources/app/resources/helpers"
+        - "/Users/bytedance/.local/bin"
   -
     kind: "find-v1"
     backtrace:
@@ -676,6 +803,8 @@ events:
       - "objcopy"
     candidate_directories:
       - "/usr/bin/"
+      - "/Users/bytedance/Library/Python/3.9/bin/"
+      - "/Users/bytedance/.local/bin/"
       - "/Users/bytedance/.gvm/bin/"
       - "/Users/bytedance/go/bin/"
       - "/usr/local/bytesuite-box/homebrew/bin/"
@@ -691,8 +820,11 @@ events:
       - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin/"
       - "/usr/local/go/bin/"
       - "/opt/puppetlabs/bin/"
+      - "/Applications/Cursor.app/Contents/Resources/app/resources/helpers/"
     searched_directories:
       - "/usr/bin/objcopy"
+      - "/Users/bytedance/Library/Python/3.9/bin/objcopy"
+      - "/Users/bytedance/.local/bin/objcopy"
       - "/Users/bytedance/.gvm/bin/objcopy"
       - "/Users/bytedance/go/bin/objcopy"
       - "/usr/local/bytesuite-box/homebrew/bin/objcopy"
@@ -708,9 +840,15 @@ events:
       - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin/objcopy"
       - "/usr/local/go/bin/objcopy"
       - "/opt/puppetlabs/bin/objcopy"
+      - "/Applications/Cursor.app/Contents/Resources/app/resources/helpers/objcopy"
     found: false
     search_context:
+      CMAKE_PREFIX_PATH:
+        - "/opt/homebrew/opt/libomp"
       ENV{PATH}:
+        - "/Users/bytedance/Library/Python/3.9/bin"
+        - "/Users/bytedance/.local/bin"
+        - "/Users/bytedance/.local/bin"
         - "/Users/bytedance/.gvm/bin"
         - "/Users/bytedance/go/bin"
         - "/usr/local/bytesuite-box/homebrew/bin"
@@ -727,6 +865,8 @@ events:
         - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin"
         - "/usr/local/go/bin"
         - "/opt/puppetlabs/bin"
+        - "/Applications/Cursor.app/Contents/Resources/app/resources/helpers"
+        - "/Users/bytedance/.local/bin"
   -
     kind: "find-v1"
     backtrace:
@@ -748,6 +888,8 @@ events:
       - "readelf"
     candidate_directories:
       - "/usr/bin/"
+      - "/Users/bytedance/Library/Python/3.9/bin/"
+      - "/Users/bytedance/.local/bin/"
       - "/Users/bytedance/.gvm/bin/"
       - "/Users/bytedance/go/bin/"
       - "/usr/local/bytesuite-box/homebrew/bin/"
@@ -763,8 +905,11 @@ events:
       - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin/"
       - "/usr/local/go/bin/"
       - "/opt/puppetlabs/bin/"
+      - "/Applications/Cursor.app/Contents/Resources/app/resources/helpers/"
     searched_directories:
       - "/usr/bin/readelf"
+      - "/Users/bytedance/Library/Python/3.9/bin/readelf"
+      - "/Users/bytedance/.local/bin/readelf"
       - "/Users/bytedance/.gvm/bin/readelf"
       - "/Users/bytedance/go/bin/readelf"
       - "/usr/local/bytesuite-box/homebrew/bin/readelf"
@@ -780,9 +925,15 @@ events:
       - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin/readelf"
       - "/usr/local/go/bin/readelf"
       - "/opt/puppetlabs/bin/readelf"
+      - "/Applications/Cursor.app/Contents/Resources/app/resources/helpers/readelf"
     found: false
     search_context:
+      CMAKE_PREFIX_PATH:
+        - "/opt/homebrew/opt/libomp"
       ENV{PATH}:
+        - "/Users/bytedance/Library/Python/3.9/bin"
+        - "/Users/bytedance/.local/bin"
+        - "/Users/bytedance/.local/bin"
         - "/Users/bytedance/.gvm/bin"
         - "/Users/bytedance/go/bin"
         - "/usr/local/bytesuite-box/homebrew/bin"
@@ -799,6 +950,8 @@ events:
         - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin"
         - "/usr/local/go/bin"
         - "/opt/puppetlabs/bin"
+        - "/Applications/Cursor.app/Contents/Resources/app/resources/helpers"
+        - "/Users/bytedance/.local/bin"
   -
     kind: "find-v1"
     backtrace:
@@ -820,6 +973,8 @@ events:
       - "dlltool"
     candidate_directories:
       - "/usr/bin/"
+      - "/Users/bytedance/Library/Python/3.9/bin/"
+      - "/Users/bytedance/.local/bin/"
       - "/Users/bytedance/.gvm/bin/"
       - "/Users/bytedance/go/bin/"
       - "/usr/local/bytesuite-box/homebrew/bin/"
@@ -835,8 +990,11 @@ events:
       - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin/"
       - "/usr/local/go/bin/"
       - "/opt/puppetlabs/bin/"
+      - "/Applications/Cursor.app/Contents/Resources/app/resources/helpers/"
     searched_directories:
       - "/usr/bin/dlltool"
+      - "/Users/bytedance/Library/Python/3.9/bin/dlltool"
+      - "/Users/bytedance/.local/bin/dlltool"
       - "/Users/bytedance/.gvm/bin/dlltool"
       - "/Users/bytedance/go/bin/dlltool"
       - "/usr/local/bytesuite-box/homebrew/bin/dlltool"
@@ -852,9 +1010,15 @@ events:
       - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin/dlltool"
       - "/usr/local/go/bin/dlltool"
       - "/opt/puppetlabs/bin/dlltool"
+      - "/Applications/Cursor.app/Contents/Resources/app/resources/helpers/dlltool"
     found: false
     search_context:
+      CMAKE_PREFIX_PATH:
+        - "/opt/homebrew/opt/libomp"
       ENV{PATH}:
+        - "/Users/bytedance/Library/Python/3.9/bin"
+        - "/Users/bytedance/.local/bin"
+        - "/Users/bytedance/.local/bin"
         - "/Users/bytedance/.gvm/bin"
         - "/Users/bytedance/go/bin"
         - "/usr/local/bytesuite-box/homebrew/bin"
@@ -871,6 +1035,8 @@ events:
         - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin"
         - "/usr/local/go/bin"
         - "/opt/puppetlabs/bin"
+        - "/Applications/Cursor.app/Contents/Resources/app/resources/helpers"
+        - "/Users/bytedance/.local/bin"
   -
     kind: "find-v1"
     backtrace:
@@ -892,6 +1058,8 @@ events:
       - "addr2line"
     candidate_directories:
       - "/usr/bin/"
+      - "/Users/bytedance/Library/Python/3.9/bin/"
+      - "/Users/bytedance/.local/bin/"
       - "/Users/bytedance/.gvm/bin/"
       - "/Users/bytedance/go/bin/"
       - "/usr/local/bytesuite-box/homebrew/bin/"
@@ -907,8 +1075,11 @@ events:
       - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin/"
       - "/usr/local/go/bin/"
       - "/opt/puppetlabs/bin/"
+      - "/Applications/Cursor.app/Contents/Resources/app/resources/helpers/"
     searched_directories:
       - "/usr/bin/addr2line"
+      - "/Users/bytedance/Library/Python/3.9/bin/addr2line"
+      - "/Users/bytedance/.local/bin/addr2line"
       - "/Users/bytedance/.gvm/bin/addr2line"
       - "/Users/bytedance/go/bin/addr2line"
       - "/usr/local/bytesuite-box/homebrew/bin/addr2line"
@@ -924,9 +1095,15 @@ events:
       - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin/addr2line"
       - "/usr/local/go/bin/addr2line"
       - "/opt/puppetlabs/bin/addr2line"
+      - "/Applications/Cursor.app/Contents/Resources/app/resources/helpers/addr2line"
     found: false
     search_context:
+      CMAKE_PREFIX_PATH:
+        - "/opt/homebrew/opt/libomp"
       ENV{PATH}:
+        - "/Users/bytedance/Library/Python/3.9/bin"
+        - "/Users/bytedance/.local/bin"
+        - "/Users/bytedance/.local/bin"
         - "/Users/bytedance/.gvm/bin"
         - "/Users/bytedance/go/bin"
         - "/usr/local/bytesuite-box/homebrew/bin"
@@ -943,6 +1120,8 @@ events:
         - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin"
         - "/usr/local/go/bin"
         - "/opt/puppetlabs/bin"
+        - "/Applications/Cursor.app/Contents/Resources/app/resources/helpers"
+        - "/Users/bytedance/.local/bin"
   -
     kind: "find-v1"
     backtrace:
@@ -964,6 +1143,8 @@ events:
       - "tapi"
     candidate_directories:
       - "/usr/bin/"
+      - "/Users/bytedance/Library/Python/3.9/bin/"
+      - "/Users/bytedance/.local/bin/"
       - "/Users/bytedance/.gvm/bin/"
       - "/Users/bytedance/go/bin/"
       - "/usr/local/bytesuite-box/homebrew/bin/"
@@ -979,8 +1160,11 @@ events:
       - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin/"
       - "/usr/local/go/bin/"
       - "/opt/puppetlabs/bin/"
+      - "/Applications/Cursor.app/Contents/Resources/app/resources/helpers/"
     searched_directories:
       - "/usr/bin/tapi"
+      - "/Users/bytedance/Library/Python/3.9/bin/tapi"
+      - "/Users/bytedance/.local/bin/tapi"
       - "/Users/bytedance/.gvm/bin/tapi"
       - "/Users/bytedance/go/bin/tapi"
       - "/usr/local/bytesuite-box/homebrew/bin/tapi"
@@ -996,9 +1180,15 @@ events:
       - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin/tapi"
       - "/usr/local/go/bin/tapi"
       - "/opt/puppetlabs/bin/tapi"
+      - "/Applications/Cursor.app/Contents/Resources/app/resources/helpers/tapi"
     found: false
     search_context:
+      CMAKE_PREFIX_PATH:
+        - "/opt/homebrew/opt/libomp"
       ENV{PATH}:
+        - "/Users/bytedance/Library/Python/3.9/bin"
+        - "/Users/bytedance/.local/bin"
+        - "/Users/bytedance/.local/bin"
         - "/Users/bytedance/.gvm/bin"
         - "/Users/bytedance/go/bin"
         - "/usr/local/bytesuite-box/homebrew/bin"
@@ -1015,6 +1205,8 @@ events:
         - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin"
         - "/usr/local/go/bin"
         - "/opt/puppetlabs/bin"
+        - "/Applications/Cursor.app/Contents/Resources/app/resources/helpers"
+        - "/Users/bytedance/.local/bin"
   -
     kind: "find-v1"
     backtrace:
@@ -1035,6 +1227,11 @@ events:
     names:
       - "install_name_tool"
     candidate_directories:
+      - "/opt/homebrew/opt/libomp/bin/"
+      - "/opt/homebrew/opt/libomp/sbin/"
+      - "/opt/homebrew/opt/libomp/"
+      - "/Users/bytedance/Library/Python/3.9/bin/"
+      - "/Users/bytedance/.local/bin/"
       - "/Users/bytedance/.gvm/bin/"
       - "/Users/bytedance/go/bin/"
       - "/usr/local/bytesuite-box/homebrew/bin/"
@@ -1051,7 +1248,13 @@ events:
       - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin/"
       - "/usr/local/go/bin/"
       - "/opt/puppetlabs/bin/"
+      - "/Applications/Cursor.app/Contents/Resources/app/resources/helpers/"
     searched_directories:
+      - "/opt/homebrew/opt/libomp/bin/install_name_tool"
+      - "/opt/homebrew/opt/libomp/sbin/install_name_tool"
+      - "/opt/homebrew/opt/libomp/install_name_tool"
+      - "/Users/bytedance/Library/Python/3.9/bin/install_name_tool"
+      - "/Users/bytedance/.local/bin/install_name_tool"
       - "/Users/bytedance/.gvm/bin/install_name_tool"
       - "/Users/bytedance/go/bin/install_name_tool"
       - "/usr/local/bytesuite-box/homebrew/bin/install_name_tool"
@@ -1061,7 +1264,12 @@ events:
       - "/System/Cryptexes/App/usr/bin/install_name_tool"
     found: "/usr/bin/install_name_tool"
     search_context:
+      CMAKE_PREFIX_PATH:
+        - "/opt/homebrew/opt/libomp"
       ENV{PATH}:
+        - "/Users/bytedance/Library/Python/3.9/bin"
+        - "/Users/bytedance/.local/bin"
+        - "/Users/bytedance/.local/bin"
         - "/Users/bytedance/.gvm/bin"
         - "/Users/bytedance/go/bin"
         - "/usr/local/bytesuite-box/homebrew/bin"
@@ -1078,6 +1286,8 @@ events:
         - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin"
         - "/usr/local/go/bin"
         - "/opt/puppetlabs/bin"
+        - "/Applications/Cursor.app/Contents/Resources/app/resources/helpers"
+        - "/Users/bytedance/.local/bin"
       CMAKE_INSTALL_PREFIX: "/usr/local"
   -
     kind: "try_compile-v1"
@@ -1088,8 +1298,8 @@ events:
     checks:
       - "Detecting CXX compiler ABI info"
     directories:
-      source: "/Users/bytedance/PCA/build/CMakeFiles/CMakeScratch/TryCompile-DC5BwG"
-      binary: "/Users/bytedance/PCA/build/CMakeFiles/CMakeScratch/TryCompile-DC5BwG"
+      source: "/Users/bytedance/PCA/build/CMakeFiles/CMakeScratch/TryCompile-z3hapT"
+      binary: "/Users/bytedance/PCA/build/CMakeFiles/CMakeScratch/TryCompile-z3hapT"
     cmakeVariables:
       CMAKE_CXX_FLAGS: ""
       CMAKE_CXX_FLAGS_DEBUG: "-g"
@@ -1103,19 +1313,19 @@ events:
       variable: "CMAKE_CXX_ABI_COMPILED"
       cached: true
       stdout: |
-        Change Dir: '/Users/bytedance/PCA/build/CMakeFiles/CMakeScratch/TryCompile-DC5BwG'
+        Change Dir: '/Users/bytedance/PCA/build/CMakeFiles/CMakeScratch/TryCompile-z3hapT'
         
-        Run Build Command(s): /opt/homebrew/bin/cmake -E env VERBOSE=1 /usr/bin/make -f Makefile cmTC_9e761/fast
-        /Library/Developer/CommandLineTools/usr/bin/make  -f CMakeFiles/cmTC_9e761.dir/build.make CMakeFiles/cmTC_9e761.dir/build
-        Building CXX object CMakeFiles/cmTC_9e761.dir/CMakeCXXCompilerABI.cpp.o
-        /usr/bin/c++   -arch arm64   -v -Wl,-v -MD -MT CMakeFiles/cmTC_9e761.dir/CMakeCXXCompilerABI.cpp.o -MF CMakeFiles/cmTC_9e761.dir/CMakeCXXCompilerABI.cpp.o.d -o CMakeFiles/cmTC_9e761.dir/CMakeCXXCompilerABI.cpp.o -c /opt/homebrew/share/cmake/Modules/CMakeCXXCompilerABI.cpp
+        Run Build Command(s): /opt/homebrew/bin/cmake -E env VERBOSE=1 /usr/bin/make -f Makefile cmTC_53be1/fast
+        /Library/Developer/CommandLineTools/usr/bin/make  -f CMakeFiles/cmTC_53be1.dir/build.make CMakeFiles/cmTC_53be1.dir/build
+        Building CXX object CMakeFiles/cmTC_53be1.dir/CMakeCXXCompilerABI.cpp.o
+        /usr/bin/c++   -arch arm64   -v -Wl,-v -MD -MT CMakeFiles/cmTC_53be1.dir/CMakeCXXCompilerABI.cpp.o -MF CMakeFiles/cmTC_53be1.dir/CMakeCXXCompilerABI.cpp.o.d -o CMakeFiles/cmTC_53be1.dir/CMakeCXXCompilerABI.cpp.o -c /opt/homebrew/share/cmake/Modules/CMakeCXXCompilerABI.cpp
         Apple clang version 17.0.0 (clang-1700.0.13.5)
         Target: arm64-apple-darwin24.6.0
         Thread model: posix
         InstalledDir: /Library/Developer/CommandLineTools/usr/bin
         clang++: warning: -Wl,-v: 'linker' input unused [-Wunused-command-line-argument]
         ignoring nonexistent directory "/Library/Developer/CommandLineTools/usr/bin/../include/c++/v1"
-         "/Library/Developer/CommandLineTools/usr/bin/clang" -cc1 -triple arm64-apple-macosx15.0.0 -Wundef-prefix=TARGET_OS_ -Wdeprecated-objc-isa-usage -Werror=deprecated-objc-isa-usage -Werror=implicit-function-declaration -emit-obj -disable-free -clear-ast-before-backend -disable-llvm-verifier -discard-value-names -main-file-name CMakeCXXCompilerABI.cpp -mrelocation-model pic -pic-level 2 -mframe-pointer=non-leaf -fno-strict-return -ffp-contract=on -fno-rounding-math -funwind-tables=1 -fobjc-msgsend-selector-stubs -target-sdk-version=15.5 -fvisibility-inlines-hidden-static-local-var -fdefine-target-os-macros -fno-assume-unique-vtables -fno-modulemap-allow-subdirectory-search -target-cpu apple-m1 -target-feature +zcm -target-feature +zcz -target-feature +v8.5a -target-feature +aes -target-feature +altnzcv -target-feature +ccdp -target-feature +complxnum -target-feature +crc -target-feature +dotprod -target-feature +fp-armv8 -target-feature +fp16fml -target-feature +fptoint -target-feature +fullfp16 -target-feature +jsconv -target-feature +lse -target-feature +neon -target-feature +pauth -target-feature +perfmon -target-feature +predres -target-feature +ras -target-feature +rcpc -target-feature +rdm -target-feature +sb -target-feature +sha2 -target-feature +sha3 -target-feature +specrestrict -target-feature +ssbs -target-abi darwinpcs -debugger-tuning=lldb -fdebug-compilation-dir=/Users/bytedance/PCA/build/CMakeFiles/CMakeScratch/TryCompile-DC5BwG -target-linker-version 1167.5 -v -fcoverage-compilation-dir=/Users/bytedance/PCA/build/CMakeFiles/CMakeScratch/TryCompile-DC5BwG -resource-dir /Library/Developer/CommandLineTools/usr/lib/clang/17 -dependency-file CMakeFiles/cmTC_9e761.dir/CMakeCXXCompilerABI.cpp.o.d -skip-unused-modulemap-deps -MT CMakeFiles/cmTC_9e761.dir/CMakeCXXCompilerABI.cpp.o -sys-header-deps -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk -I/usr/local/include -internal-isystem /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1 -internal-isystem /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/local/include -internal-isystem /Library/Developer/CommandLineTools/usr/lib/clang/17/include -internal-externc-isystem /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include -internal-externc-isystem /Library/Developer/CommandLineTools/usr/include -Wno-reorder-init-list -Wno-implicit-int-float-conversion -Wno-c99-designator -Wno-final-dtor-non-final-class -Wno-extra-semi-stmt -Wno-misleading-indentation -Wno-quoted-include-in-framework-header -Wno-implicit-fallthrough -Wno-enum-enum-conversion -Wno-enum-float-conversion -Wno-elaborated-enum-base -Wno-reserved-identifier -Wno-gnu-folding-constant -fdeprecated-macro -ferror-limit 19 -stack-protector 1 -fstack-check -mdarwin-stkchk-strong-link -fblocks -fencode-extended-block-signature -fregister-global-dtors-with-atexit -fgnuc-version=4.2.1 -fno-cxx-modules -fskip-odr-check-in-gmf -fcxx-exceptions -fexceptions -fmax-type-align=16 -fcommon -clang-vendor-feature=+disableNonDependentMemberExprInCurrentInstantiation -fno-odr-hash-protocols -clang-vendor-feature=+enableAggressiveVLAFolding -clang-vendor-feature=+revert09abecef7bbf -clang-vendor-feature=+thisNoAlignAttr -clang-vendor-feature=+thisNoNullAttr -clang-vendor-feature=+disableAtImportPrivateFrameworkInImplementationError -D__GCC_HAVE_DWARF2_CFI_ASM=1 -o CMakeFiles/cmTC_9e761.dir/CMakeCXXCompilerABI.cpp.o -x c++ /opt/homebrew/share/cmake/Modules/CMakeCXXCompilerABI.cpp
+         "/Library/Developer/CommandLineTools/usr/bin/clang" -cc1 -triple arm64-apple-macosx15.0.0 -Wundef-prefix=TARGET_OS_ -Wdeprecated-objc-isa-usage -Werror=deprecated-objc-isa-usage -Werror=implicit-function-declaration -emit-obj -disable-free -clear-ast-before-backend -disable-llvm-verifier -discard-value-names -main-file-name CMakeCXXCompilerABI.cpp -mrelocation-model pic -pic-level 2 -mframe-pointer=non-leaf -fno-strict-return -ffp-contract=on -fno-rounding-math -funwind-tables=1 -fobjc-msgsend-selector-stubs -target-sdk-version=15.5 -fvisibility-inlines-hidden-static-local-var -fdefine-target-os-macros -fno-assume-unique-vtables -fno-modulemap-allow-subdirectory-search -target-cpu apple-m1 -target-feature +zcm -target-feature +zcz -target-feature +v8.5a -target-feature +aes -target-feature +altnzcv -target-feature +ccdp -target-feature +complxnum -target-feature +crc -target-feature +dotprod -target-feature +fp-armv8 -target-feature +fp16fml -target-feature +fptoint -target-feature +fullfp16 -target-feature +jsconv -target-feature +lse -target-feature +neon -target-feature +pauth -target-feature +perfmon -target-feature +predres -target-feature +ras -target-feature +rcpc -target-feature +rdm -target-feature +sb -target-feature +sha2 -target-feature +sha3 -target-feature +specrestrict -target-feature +ssbs -target-abi darwinpcs -debugger-tuning=lldb -fdebug-compilation-dir=/Users/bytedance/PCA/build/CMakeFiles/CMakeScratch/TryCompile-z3hapT -target-linker-version 1167.5 -v -fcoverage-compilation-dir=/Users/bytedance/PCA/build/CMakeFiles/CMakeScratch/TryCompile-z3hapT -resource-dir /Library/Developer/CommandLineTools/usr/lib/clang/17 -dependency-file CMakeFiles/cmTC_53be1.dir/CMakeCXXCompilerABI.cpp.o.d -skip-unused-modulemap-deps -MT CMakeFiles/cmTC_53be1.dir/CMakeCXXCompilerABI.cpp.o -sys-header-deps -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk -I/usr/local/include -internal-isystem /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1 -internal-isystem /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/local/include -internal-isystem /Library/Developer/CommandLineTools/usr/lib/clang/17/include -internal-externc-isystem /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include -internal-externc-isystem /Library/Developer/CommandLineTools/usr/include -Wno-reorder-init-list -Wno-implicit-int-float-conversion -Wno-c99-designator -Wno-final-dtor-non-final-class -Wno-extra-semi-stmt -Wno-misleading-indentation -Wno-quoted-include-in-framework-header -Wno-implicit-fallthrough -Wno-enum-enum-conversion -Wno-enum-float-conversion -Wno-elaborated-enum-base -Wno-reserved-identifier -Wno-gnu-folding-constant -fdeprecated-macro -ferror-limit 19 -stack-protector 1 -fstack-check -mdarwin-stkchk-strong-link -fblocks -fencode-extended-block-signature -fregister-global-dtors-with-atexit -fgnuc-version=4.2.1 -fno-cxx-modules -fskip-odr-check-in-gmf -fcxx-exceptions -fexceptions -fmax-type-align=16 -fcommon -clang-vendor-feature=+disableNonDependentMemberExprInCurrentInstantiation -fno-odr-hash-protocols -clang-vendor-feature=+enableAggressiveVLAFolding -clang-vendor-feature=+revert09abecef7bbf -clang-vendor-feature=+thisNoAlignAttr -clang-vendor-feature=+thisNoNullAttr -clang-vendor-feature=+disableAtImportPrivateFrameworkInImplementationError -D__GCC_HAVE_DWARF2_CFI_ASM=1 -o CMakeFiles/cmTC_53be1.dir/CMakeCXXCompilerABI.cpp.o -x c++ /opt/homebrew/share/cmake/Modules/CMakeCXXCompilerABI.cpp
         clang -cc1 version 17.0.0 (clang-1700.0.13.5) default target arm64-apple-darwin24.6.0
         ignoring nonexistent directory "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/local/include"
         ignoring nonexistent directory "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/System/Library/SubFrameworks"
@@ -1129,13 +1339,13 @@ events:
          /Library/Developer/CommandLineTools/usr/include
          /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/System/Library/Frameworks (framework directory)
         End of search list.
-        Linking CXX executable cmTC_9e761
-        /opt/homebrew/bin/cmake -E cmake_link_script CMakeFiles/cmTC_9e761.dir/link.txt --verbose=1
+        Linking CXX executable cmTC_53be1
+        /opt/homebrew/bin/cmake -E cmake_link_script CMakeFiles/cmTC_53be1.dir/link.txt --verbose=1
         Apple clang version 17.0.0 (clang-1700.0.13.5)
         Target: arm64-apple-darwin24.6.0
         Thread model: posix
         InstalledDir: /Library/Developer/CommandLineTools/usr/bin
-         "/Library/Developer/CommandLineTools/usr/bin/ld" -demangle -lto_library /Library/Developer/CommandLineTools/usr/lib/libLTO.dylib -dynamic -arch arm64 -platform_version macos 15.0.0 15.5 -syslibroot /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk -mllvm -enable-linkonceodr-outlining -o cmTC_9e761 -L/usr/local/lib -search_paths_first -headerpad_max_install_names -v CMakeFiles/cmTC_9e761.dir/CMakeCXXCompilerABI.cpp.o -lc++ -lSystem /Library/Developer/CommandLineTools/usr/lib/clang/17/lib/darwin/libclang_rt.osx.a
+         "/Library/Developer/CommandLineTools/usr/bin/ld" -demangle -lto_library /Library/Developer/CommandLineTools/usr/lib/libLTO.dylib -dynamic -arch arm64 -platform_version macos 15.0.0 15.5 -syslibroot /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk -mllvm -enable-linkonceodr-outlining -o cmTC_53be1 -L/usr/local/lib -search_paths_first -headerpad_max_install_names -v CMakeFiles/cmTC_53be1.dir/CMakeCXXCompilerABI.cpp.o -lc++ -lSystem /Library/Developer/CommandLineTools/usr/lib/clang/17/lib/darwin/libclang_rt.osx.a
         @(#)PROGRAM:ld PROJECT:ld-1167.5
         BUILD 01:45:05 Apr 30 2025
         configured to support archs: armv6 armv7 armv7s arm64 arm64e arm64_32 i386 x86_64 x86_64h armv6m armv7k armv7m armv7em
@@ -1148,7 +1358,7 @@ events:
         	/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/lib/swift
         Framework search paths:
         	/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/System/Library/Frameworks
-        /usr/bin/c++  -arch arm64 -Wl,-search_paths_first -Wl,-headerpad_max_install_names  -v -Wl,-v CMakeFiles/cmTC_9e761.dir/CMakeCXXCompilerABI.cpp.o -o cmTC_9e761
+        /usr/bin/c++  -arch arm64 -Wl,-search_paths_first -Wl,-headerpad_max_install_names  -v -Wl,-v CMakeFiles/cmTC_53be1.dir/CMakeCXXCompilerABI.cpp.o -o cmTC_53be1
         
       exitCode: 0
   -
@@ -1194,19 +1404,19 @@ events:
       Parsed CXX implicit link information:
         link line regex: [^( *|.*[/\\])(ld[0-9]*(|\\.[a-rt-z][a-z]*|\\.s[a-np-z][a-z]*|\\.so[a-z]+)|CMAKE_LINK_STARTFILE-NOTFOUND|([^/\\]+-)?ld|collect2)[^/\\]*( |$)]
         linker tool regex: [^[ 	]*(->|"|[0-9]+>[ 	-]*Build:[ 	0-9]+ ms[ 	]*)?[ 	]*(([^"]*[/\\])?(ld[0-9]*(|\\.[a-rt-z][a-z]*|\\.s[a-np-z][a-z]*|\\.so[a-z]+)))("|,| |$)]
-        ignore line: [Change Dir: '/Users/bytedance/PCA/build/CMakeFiles/CMakeScratch/TryCompile-DC5BwG']
+        ignore line: [Change Dir: '/Users/bytedance/PCA/build/CMakeFiles/CMakeScratch/TryCompile-z3hapT']
         ignore line: []
-        ignore line: [Run Build Command(s): /opt/homebrew/bin/cmake -E env VERBOSE=1 /usr/bin/make -f Makefile cmTC_9e761/fast]
-        ignore line: [/Library/Developer/CommandLineTools/usr/bin/make  -f CMakeFiles/cmTC_9e761.dir/build.make CMakeFiles/cmTC_9e761.dir/build]
-        ignore line: [Building CXX object CMakeFiles/cmTC_9e761.dir/CMakeCXXCompilerABI.cpp.o]
-        ignore line: [/usr/bin/c++   -arch arm64   -v -Wl -v -MD -MT CMakeFiles/cmTC_9e761.dir/CMakeCXXCompilerABI.cpp.o -MF CMakeFiles/cmTC_9e761.dir/CMakeCXXCompilerABI.cpp.o.d -o CMakeFiles/cmTC_9e761.dir/CMakeCXXCompilerABI.cpp.o -c /opt/homebrew/share/cmake/Modules/CMakeCXXCompilerABI.cpp]
+        ignore line: [Run Build Command(s): /opt/homebrew/bin/cmake -E env VERBOSE=1 /usr/bin/make -f Makefile cmTC_53be1/fast]
+        ignore line: [/Library/Developer/CommandLineTools/usr/bin/make  -f CMakeFiles/cmTC_53be1.dir/build.make CMakeFiles/cmTC_53be1.dir/build]
+        ignore line: [Building CXX object CMakeFiles/cmTC_53be1.dir/CMakeCXXCompilerABI.cpp.o]
+        ignore line: [/usr/bin/c++   -arch arm64   -v -Wl -v -MD -MT CMakeFiles/cmTC_53be1.dir/CMakeCXXCompilerABI.cpp.o -MF CMakeFiles/cmTC_53be1.dir/CMakeCXXCompilerABI.cpp.o.d -o CMakeFiles/cmTC_53be1.dir/CMakeCXXCompilerABI.cpp.o -c /opt/homebrew/share/cmake/Modules/CMakeCXXCompilerABI.cpp]
         ignore line: [Apple clang version 17.0.0 (clang-1700.0.13.5)]
         ignore line: [Target: arm64-apple-darwin24.6.0]
         ignore line: [Thread model: posix]
         ignore line: [InstalledDir: /Library/Developer/CommandLineTools/usr/bin]
         ignore line: [clang++: warning: -Wl -v: 'linker' input unused [-Wunused-command-line-argument]]
         ignore line: [ignoring nonexistent directory "/Library/Developer/CommandLineTools/usr/bin/../include/c++/v1"]
-        ignore line: [ "/Library/Developer/CommandLineTools/usr/bin/clang" -cc1 -triple arm64-apple-macosx15.0.0 -Wundef-prefix=TARGET_OS_ -Wdeprecated-objc-isa-usage -Werror=deprecated-objc-isa-usage -Werror=implicit-function-declaration -emit-obj -disable-free -clear-ast-before-backend -disable-llvm-verifier -discard-value-names -main-file-name CMakeCXXCompilerABI.cpp -mrelocation-model pic -pic-level 2 -mframe-pointer=non-leaf -fno-strict-return -ffp-contract=on -fno-rounding-math -funwind-tables=1 -fobjc-msgsend-selector-stubs -target-sdk-version=15.5 -fvisibility-inlines-hidden-static-local-var -fdefine-target-os-macros -fno-assume-unique-vtables -fno-modulemap-allow-subdirectory-search -target-cpu apple-m1 -target-feature +zcm -target-feature +zcz -target-feature +v8.5a -target-feature +aes -target-feature +altnzcv -target-feature +ccdp -target-feature +complxnum -target-feature +crc -target-feature +dotprod -target-feature +fp-armv8 -target-feature +fp16fml -target-feature +fptoint -target-feature +fullfp16 -target-feature +jsconv -target-feature +lse -target-feature +neon -target-feature +pauth -target-feature +perfmon -target-feature +predres -target-feature +ras -target-feature +rcpc -target-feature +rdm -target-feature +sb -target-feature +sha2 -target-feature +sha3 -target-feature +specrestrict -target-feature +ssbs -target-abi darwinpcs -debugger-tuning=lldb -fdebug-compilation-dir=/Users/bytedance/PCA/build/CMakeFiles/CMakeScratch/TryCompile-DC5BwG -target-linker-version 1167.5 -v -fcoverage-compilation-dir=/Users/bytedance/PCA/build/CMakeFiles/CMakeScratch/TryCompile-DC5BwG -resource-dir /Library/Developer/CommandLineTools/usr/lib/clang/17 -dependency-file CMakeFiles/cmTC_9e761.dir/CMakeCXXCompilerABI.cpp.o.d -skip-unused-modulemap-deps -MT CMakeFiles/cmTC_9e761.dir/CMakeCXXCompilerABI.cpp.o -sys-header-deps -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk -I/usr/local/include -internal-isystem /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1 -internal-isystem /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/local/include -internal-isystem /Library/Developer/CommandLineTools/usr/lib/clang/17/include -internal-externc-isystem /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include -internal-externc-isystem /Library/Developer/CommandLineTools/usr/include -Wno-reorder-init-list -Wno-implicit-int-float-conversion -Wno-c99-designator -Wno-final-dtor-non-final-class -Wno-extra-semi-stmt -Wno-misleading-indentation -Wno-quoted-include-in-framework-header -Wno-implicit-fallthrough -Wno-enum-enum-conversion -Wno-enum-float-conversion -Wno-elaborated-enum-base -Wno-reserved-identifier -Wno-gnu-folding-constant -fdeprecated-macro -ferror-limit 19 -stack-protector 1 -fstack-check -mdarwin-stkchk-strong-link -fblocks -fencode-extended-block-signature -fregister-global-dtors-with-atexit -fgnuc-version=4.2.1 -fno-cxx-modules -fskip-odr-check-in-gmf -fcxx-exceptions -fexceptions -fmax-type-align=16 -fcommon -clang-vendor-feature=+disableNonDependentMemberExprInCurrentInstantiation -fno-odr-hash-protocols -clang-vendor-feature=+enableAggressiveVLAFolding -clang-vendor-feature=+revert09abecef7bbf -clang-vendor-feature=+thisNoAlignAttr -clang-vendor-feature=+thisNoNullAttr -clang-vendor-feature=+disableAtImportPrivateFrameworkInImplementationError -D__GCC_HAVE_DWARF2_CFI_ASM=1 -o CMakeFiles/cmTC_9e761.dir/CMakeCXXCompilerABI.cpp.o -x c++ /opt/homebrew/share/cmake/Modules/CMakeCXXCompilerABI.cpp]
+        ignore line: [ "/Library/Developer/CommandLineTools/usr/bin/clang" -cc1 -triple arm64-apple-macosx15.0.0 -Wundef-prefix=TARGET_OS_ -Wdeprecated-objc-isa-usage -Werror=deprecated-objc-isa-usage -Werror=implicit-function-declaration -emit-obj -disable-free -clear-ast-before-backend -disable-llvm-verifier -discard-value-names -main-file-name CMakeCXXCompilerABI.cpp -mrelocation-model pic -pic-level 2 -mframe-pointer=non-leaf -fno-strict-return -ffp-contract=on -fno-rounding-math -funwind-tables=1 -fobjc-msgsend-selector-stubs -target-sdk-version=15.5 -fvisibility-inlines-hidden-static-local-var -fdefine-target-os-macros -fno-assume-unique-vtables -fno-modulemap-allow-subdirectory-search -target-cpu apple-m1 -target-feature +zcm -target-feature +zcz -target-feature +v8.5a -target-feature +aes -target-feature +altnzcv -target-feature +ccdp -target-feature +complxnum -target-feature +crc -target-feature +dotprod -target-feature +fp-armv8 -target-feature +fp16fml -target-feature +fptoint -target-feature +fullfp16 -target-feature +jsconv -target-feature +lse -target-feature +neon -target-feature +pauth -target-feature +perfmon -target-feature +predres -target-feature +ras -target-feature +rcpc -target-feature +rdm -target-feature +sb -target-feature +sha2 -target-feature +sha3 -target-feature +specrestrict -target-feature +ssbs -target-abi darwinpcs -debugger-tuning=lldb -fdebug-compilation-dir=/Users/bytedance/PCA/build/CMakeFiles/CMakeScratch/TryCompile-z3hapT -target-linker-version 1167.5 -v -fcoverage-compilation-dir=/Users/bytedance/PCA/build/CMakeFiles/CMakeScratch/TryCompile-z3hapT -resource-dir /Library/Developer/CommandLineTools/usr/lib/clang/17 -dependency-file CMakeFiles/cmTC_53be1.dir/CMakeCXXCompilerABI.cpp.o.d -skip-unused-modulemap-deps -MT CMakeFiles/cmTC_53be1.dir/CMakeCXXCompilerABI.cpp.o -sys-header-deps -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk -I/usr/local/include -internal-isystem /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1 -internal-isystem /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/local/include -internal-isystem /Library/Developer/CommandLineTools/usr/lib/clang/17/include -internal-externc-isystem /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include -internal-externc-isystem /Library/Developer/CommandLineTools/usr/include -Wno-reorder-init-list -Wno-implicit-int-float-conversion -Wno-c99-designator -Wno-final-dtor-non-final-class -Wno-extra-semi-stmt -Wno-misleading-indentation -Wno-quoted-include-in-framework-header -Wno-implicit-fallthrough -Wno-enum-enum-conversion -Wno-enum-float-conversion -Wno-elaborated-enum-base -Wno-reserved-identifier -Wno-gnu-folding-constant -fdeprecated-macro -ferror-limit 19 -stack-protector 1 -fstack-check -mdarwin-stkchk-strong-link -fblocks -fencode-extended-block-signature -fregister-global-dtors-with-atexit -fgnuc-version=4.2.1 -fno-cxx-modules -fskip-odr-check-in-gmf -fcxx-exceptions -fexceptions -fmax-type-align=16 -fcommon -clang-vendor-feature=+disableNonDependentMemberExprInCurrentInstantiation -fno-odr-hash-protocols -clang-vendor-feature=+enableAggressiveVLAFolding -clang-vendor-feature=+revert09abecef7bbf -clang-vendor-feature=+thisNoAlignAttr -clang-vendor-feature=+thisNoNullAttr -clang-vendor-feature=+disableAtImportPrivateFrameworkInImplementationError -D__GCC_HAVE_DWARF2_CFI_ASM=1 -o CMakeFiles/cmTC_53be1.dir/CMakeCXXCompilerABI.cpp.o -x c++ /opt/homebrew/share/cmake/Modules/CMakeCXXCompilerABI.cpp]
         ignore line: [clang -cc1 version 17.0.0 (clang-1700.0.13.5) default target arm64-apple-darwin24.6.0]
         ignore line: [ignoring nonexistent directory "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/local/include"]
         ignore line: [ignoring nonexistent directory "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/System/Library/SubFrameworks"]
@@ -1220,13 +1430,13 @@ events:
         ignore line: [ /Library/Developer/CommandLineTools/usr/include]
         ignore line: [ /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/System/Library/Frameworks (framework directory)]
         ignore line: [End of search list.]
-        ignore line: [Linking CXX executable cmTC_9e761]
-        ignore line: [/opt/homebrew/bin/cmake -E cmake_link_script CMakeFiles/cmTC_9e761.dir/link.txt --verbose=1]
+        ignore line: [Linking CXX executable cmTC_53be1]
+        ignore line: [/opt/homebrew/bin/cmake -E cmake_link_script CMakeFiles/cmTC_53be1.dir/link.txt --verbose=1]
         ignore line: [Apple clang version 17.0.0 (clang-1700.0.13.5)]
         ignore line: [Target: arm64-apple-darwin24.6.0]
         ignore line: [Thread model: posix]
         ignore line: [InstalledDir: /Library/Developer/CommandLineTools/usr/bin]
-        link line: [ "/Library/Developer/CommandLineTools/usr/bin/ld" -demangle -lto_library /Library/Developer/CommandLineTools/usr/lib/libLTO.dylib -dynamic -arch arm64 -platform_version macos 15.0.0 15.5 -syslibroot /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk -mllvm -enable-linkonceodr-outlining -o cmTC_9e761 -L/usr/local/lib -search_paths_first -headerpad_max_install_names -v CMakeFiles/cmTC_9e761.dir/CMakeCXXCompilerABI.cpp.o -lc++ -lSystem /Library/Developer/CommandLineTools/usr/lib/clang/17/lib/darwin/libclang_rt.osx.a]
+        link line: [ "/Library/Developer/CommandLineTools/usr/bin/ld" -demangle -lto_library /Library/Developer/CommandLineTools/usr/lib/libLTO.dylib -dynamic -arch arm64 -platform_version macos 15.0.0 15.5 -syslibroot /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk -mllvm -enable-linkonceodr-outlining -o cmTC_53be1 -L/usr/local/lib -search_paths_first -headerpad_max_install_names -v CMakeFiles/cmTC_53be1.dir/CMakeCXXCompilerABI.cpp.o -lc++ -lSystem /Library/Developer/CommandLineTools/usr/lib/clang/17/lib/darwin/libclang_rt.osx.a]
           arg [/Library/Developer/CommandLineTools/usr/bin/ld] ==> ignore
           arg [-demangle] ==> ignore
           arg [-lto_library] ==> ignore, skip following value
@@ -1243,12 +1453,12 @@ events:
           arg [-mllvm] ==> ignore
           arg [-enable-linkonceodr-outlining] ==> ignore
           arg [-o] ==> ignore
-          arg [cmTC_9e761] ==> ignore
+          arg [cmTC_53be1] ==> ignore
           arg [-L/usr/local/lib] ==> dir [/usr/local/lib]
           arg [-search_paths_first] ==> ignore
           arg [-headerpad_max_install_names] ==> ignore
           arg [-v] ==> ignore
-          arg [CMakeFiles/cmTC_9e761.dir/CMakeCXXCompilerABI.cpp.o] ==> ignore
+          arg [CMakeFiles/cmTC_53be1.dir/CMakeCXXCompilerABI.cpp.o] ==> ignore
           arg [-lc++] ==> lib [c++]
           arg [-lSystem] ==> lib [System]
           arg [/Library/Developer/CommandLineTools/usr/lib/clang/17/lib/darwin/libclang_rt.osx.a] ==> lib [/Library/Developer/CommandLineTools/usr/lib/clang/17/lib/darwin/libclang_rt.osx.a]
@@ -1292,7 +1502,7 @@ events:
       - "/opt/homebrew/share/cmake/Modules/FetchContent.cmake:2155:EVAL:2 (__FetchContent_doPopulation)"
       - "/opt/homebrew/share/cmake/Modules/FetchContent.cmake:2155 (cmake_language)"
       - "/opt/homebrew/share/cmake/Modules/FetchContent.cmake:2394 (__FetchContent_Populate)"
-      - "CMakeLists.txt:23 (FetchContent_MakeAvailable)"
+      - "CMakeLists.txt:39 (FetchContent_MakeAvailable)"
     mode: "program"
     variable: "GIT_EXECUTABLE"
     description: "Git command line client"
@@ -1307,6 +1517,11 @@ events:
     names:
       - "git"
     candidate_directories:
+      - "/opt/homebrew/opt/libomp/bin/"
+      - "/opt/homebrew/opt/libomp/sbin/"
+      - "/opt/homebrew/opt/libomp/"
+      - "/Users/bytedance/Library/Python/3.9/bin/"
+      - "/Users/bytedance/.local/bin/"
       - "/Users/bytedance/.gvm/bin/"
       - "/Users/bytedance/go/bin/"
       - "/usr/local/bytesuite-box/homebrew/bin/"
@@ -1323,6 +1538,7 @@ events:
       - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin/"
       - "/usr/local/go/bin/"
       - "/opt/puppetlabs/bin/"
+      - "/Applications/Cursor.app/Contents/Resources/app/resources/helpers/"
       - "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/bin/"
       - "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/sbin/"
       - "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/"
@@ -1355,6 +1571,11 @@ events:
       - "/Users/bytedance/Applications/"
       - "/Applications/"
     searched_directories:
+      - "/opt/homebrew/opt/libomp/bin/git"
+      - "/opt/homebrew/opt/libomp/sbin/git"
+      - "/opt/homebrew/opt/libomp/git"
+      - "/Users/bytedance/Library/Python/3.9/bin/git"
+      - "/Users/bytedance/.local/bin/git"
       - "/Users/bytedance/.gvm/bin/git"
       - "/Users/bytedance/go/bin/git"
       - "/usr/local/bytesuite-box/homebrew/bin/git"
@@ -1364,7 +1585,13 @@ events:
       - "/System/Cryptexes/App/usr/bin/git"
     found: "/usr/bin/git"
     search_context:
+      CMAKE_PREFIX_PATH:
+        - "/opt/homebrew/opt/libomp"
+        - "/opt/homebrew/opt/libomp"
       ENV{PATH}:
+        - "/Users/bytedance/Library/Python/3.9/bin"
+        - "/Users/bytedance/.local/bin"
+        - "/Users/bytedance/.local/bin"
         - "/Users/bytedance/.gvm/bin"
         - "/Users/bytedance/go/bin"
         - "/usr/local/bytesuite-box/homebrew/bin"
@@ -1381,6 +1608,177 @@ events:
         - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin"
         - "/usr/local/go/bin"
         - "/opt/puppetlabs/bin"
+        - "/Applications/Cursor.app/Contents/Resources/app/resources/helpers"
+        - "/Users/bytedance/.local/bin"
+      CMAKE_INSTALL_PREFIX: "/usr/local"
+      CMAKE_SYSTEM_PREFIX_PATH:
+        - "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr"
+        - "/opt/homebrew"
+        - "/usr/local"
+        - "/usr"
+        - "/"
+        - "/opt/homebrew"
+        - "/usr/local"
+        - "/usr/X11R6"
+        - "/usr/pkg"
+        - "/opt"
+        - "/sw"
+        - "/opt/local"
+      CMAKE_SYSTEM_APPBUNDLE_PATH:
+        - "/Users/bytedance/Applications"
+        - "/Applications"
+  -
+    kind: "find-v1"
+    backtrace:
+      - "build/_deps/openfhe-src/CMakeLists.txt:13 (find_program)"
+    mode: "program"
+    variable: "CCACHE_PROGRAM"
+    description: "Path to a program."
+    settings:
+      SearchFramework: "FIRST"
+      SearchAppBundle: "FIRST"
+      CMAKE_FIND_USE_CMAKE_PATH: true
+      CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
+      CMAKE_FIND_USE_INSTALL_PREFIX: true
+    names:
+      - "ccache"
+    candidate_directories:
+      - "/opt/homebrew/opt/libomp/bin/"
+      - "/opt/homebrew/opt/libomp/sbin/"
+      - "/opt/homebrew/opt/libomp/"
+      - "/Users/bytedance/Library/Python/3.9/bin/"
+      - "/Users/bytedance/.local/bin/"
+      - "/Users/bytedance/.gvm/bin/"
+      - "/Users/bytedance/go/bin/"
+      - "/usr/local/bytesuite-box/homebrew/bin/"
+      - "/opt/homebrew/bin/"
+      - "/usr/local/bytesuite-box/bin/"
+      - "/usr/local/bin/"
+      - "/System/Cryptexes/App/usr/bin/"
+      - "/usr/bin/"
+      - "/bin/"
+      - "/usr/sbin/"
+      - "/sbin/"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin/"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin/"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin/"
+      - "/usr/local/go/bin/"
+      - "/opt/puppetlabs/bin/"
+      - "/Applications/Cursor.app/Contents/Resources/app/resources/helpers/"
+      - "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/bin/"
+      - "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/sbin/"
+      - "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/"
+      - "/opt/homebrew/bin/"
+      - "/opt/homebrew/sbin/"
+      - "/opt/homebrew/"
+      - "/usr/local/bin/"
+      - "/usr/local/sbin/"
+      - "/usr/local/"
+      - "/usr/bin/"
+      - "/usr/sbin/"
+      - "/usr/"
+      - "/bin/"
+      - "/sbin/"
+      - "/usr/X11R6/bin/"
+      - "/usr/X11R6/sbin/"
+      - "/usr/X11R6/"
+      - "/usr/pkg/bin/"
+      - "/usr/pkg/sbin/"
+      - "/usr/pkg/"
+      - "/opt/bin/"
+      - "/opt/sbin/"
+      - "/opt/"
+      - "/sw/bin/"
+      - "/sw/sbin/"
+      - "/sw/"
+      - "/opt/local/bin/"
+      - "/opt/local/sbin/"
+      - "/opt/local/"
+      - "/Users/bytedance/Applications/"
+      - "/Applications/"
+    searched_directories:
+      - "/opt/homebrew/opt/libomp/bin/ccache"
+      - "/opt/homebrew/opt/libomp/sbin/ccache"
+      - "/opt/homebrew/opt/libomp/ccache"
+      - "/Users/bytedance/Library/Python/3.9/bin/ccache"
+      - "/Users/bytedance/.local/bin/ccache"
+      - "/Users/bytedance/.gvm/bin/ccache"
+      - "/Users/bytedance/go/bin/ccache"
+      - "/usr/local/bytesuite-box/homebrew/bin/ccache"
+      - "/opt/homebrew/bin/ccache"
+      - "/usr/local/bytesuite-box/bin/ccache"
+      - "/usr/local/bin/ccache"
+      - "/System/Cryptexes/App/usr/bin/ccache"
+      - "/usr/bin/ccache"
+      - "/bin/ccache"
+      - "/usr/sbin/ccache"
+      - "/sbin/ccache"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin/ccache"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin/ccache"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin/ccache"
+      - "/usr/local/go/bin/ccache"
+      - "/opt/puppetlabs/bin/ccache"
+      - "/Applications/Cursor.app/Contents/Resources/app/resources/helpers/ccache"
+      - "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/bin/ccache"
+      - "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/sbin/ccache"
+      - "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/ccache"
+      - "/opt/homebrew/bin/ccache"
+      - "/opt/homebrew/sbin/ccache"
+      - "/opt/homebrew/ccache"
+      - "/usr/local/bin/ccache"
+      - "/usr/local/sbin/ccache"
+      - "/usr/local/ccache"
+      - "/usr/bin/ccache"
+      - "/usr/sbin/ccache"
+      - "/usr/ccache"
+      - "/bin/ccache"
+      - "/sbin/ccache"
+      - "/usr/X11R6/bin/ccache"
+      - "/usr/X11R6/sbin/ccache"
+      - "/usr/X11R6/ccache"
+      - "/usr/pkg/bin/ccache"
+      - "/usr/pkg/sbin/ccache"
+      - "/usr/pkg/ccache"
+      - "/opt/bin/ccache"
+      - "/opt/sbin/ccache"
+      - "/opt/ccache"
+      - "/sw/bin/ccache"
+      - "/sw/sbin/ccache"
+      - "/sw/ccache"
+      - "/opt/local/bin/ccache"
+      - "/opt/local/sbin/ccache"
+      - "/opt/local/ccache"
+      - "/Users/bytedance/Applications/ccache"
+      - "/Applications/ccache"
+    found: false
+    search_context:
+      CMAKE_PREFIX_PATH:
+        - "/opt/homebrew/opt/libomp"
+        - "/opt/homebrew/opt/libomp"
+      ENV{PATH}:
+        - "/Users/bytedance/Library/Python/3.9/bin"
+        - "/Users/bytedance/.local/bin"
+        - "/Users/bytedance/.local/bin"
+        - "/Users/bytedance/.gvm/bin"
+        - "/Users/bytedance/go/bin"
+        - "/usr/local/bytesuite-box/homebrew/bin"
+        - "/opt/homebrew/bin"
+        - "/usr/local/bytesuite-box/bin"
+        - "/usr/local/bin"
+        - "/System/Cryptexes/App/usr/bin"
+        - "/usr/bin"
+        - "/bin"
+        - "/usr/sbin"
+        - "/sbin"
+        - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin"
+        - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin"
+        - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin"
+        - "/usr/local/go/bin"
+        - "/opt/puppetlabs/bin"
+        - "/Applications/Cursor.app/Contents/Resources/app/resources/helpers"
+        - "/Users/bytedance/.local/bin"
       CMAKE_INSTALL_PREFIX: "/usr/local"
       CMAKE_SYSTEM_PREFIX_PATH:
         - "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr"
@@ -1403,7 +1801,7 @@ events:
     backtrace:
       - "/opt/homebrew/share/cmake/Modules/CMakeDetermineCompiler.cmake:54 (find_program)"
       - "/opt/homebrew/share/cmake/Modules/CMakeDetermineCCompiler.cmake:64 (_cmake_find_compiler)"
-      - "build/_deps/seal-src/CMakeLists.txt:26 (project)"
+      - "build/_deps/openfhe-src/CMakeLists.txt:28 (project)"
     mode: "program"
     variable: "CMAKE_C_COMPILER"
     description: "C compiler"
@@ -1427,7 +1825,13 @@ events:
       - "/usr/bin/"
     found: "/usr/bin/cc"
     search_context:
+      CMAKE_PREFIX_PATH:
+        - "/opt/homebrew/opt/libomp"
+        - "/opt/homebrew/opt/libomp"
       ENV{PATH}:
+        - "/Users/bytedance/Library/Python/3.9/bin"
+        - "/Users/bytedance/.local/bin"
+        - "/Users/bytedance/.local/bin"
         - "/Users/bytedance/.gvm/bin"
         - "/Users/bytedance/go/bin"
         - "/usr/local/bytesuite-box/homebrew/bin"
@@ -1444,6 +1848,8 @@ events:
         - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin"
         - "/usr/local/go/bin"
         - "/opt/puppetlabs/bin"
+        - "/Applications/Cursor.app/Contents/Resources/app/resources/helpers"
+        - "/Users/bytedance/.local/bin"
       CMAKE_INSTALL_PREFIX: "/usr/local"
       CMAKE_SYSTEM_PREFIX_PATH:
         - "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr"
@@ -1469,7 +1875,7 @@ events:
       - "/opt/homebrew/share/cmake/Modules/CMakeDetermineCompilerId.cmake:8 (CMAKE_DETERMINE_COMPILER_ID_BUILD)"
       - "/opt/homebrew/share/cmake/Modules/CMakeDetermineCompilerId.cmake:64 (__determine_compiler_id_test)"
       - "/opt/homebrew/share/cmake/Modules/CMakeDetermineCCompiler.cmake:122 (CMAKE_DETERMINE_COMPILER_ID)"
-      - "build/_deps/seal-src/CMakeLists.txt:26 (project)"
+      - "build/_deps/openfhe-src/CMakeLists.txt:28 (project)"
     mode: "file"
     variable: "src_in"
     description: "Path to a file."
@@ -1487,7 +1893,13 @@ events:
       - "/opt/homebrew/share/cmake/Modules/"
     found: "/opt/homebrew/share/cmake/Modules/CMakeCCompilerId.c.in"
     search_context:
+      CMAKE_PREFIX_PATH:
+        - "/opt/homebrew/opt/libomp"
+        - "/opt/homebrew/opt/libomp"
       ENV{PATH}:
+        - "/Users/bytedance/Library/Python/3.9/bin"
+        - "/Users/bytedance/.local/bin"
+        - "/Users/bytedance/.local/bin"
         - "/Users/bytedance/.gvm/bin"
         - "/Users/bytedance/go/bin"
         - "/usr/local/bytesuite-box/homebrew/bin"
@@ -1504,6 +1916,8 @@ events:
         - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin"
         - "/usr/local/go/bin"
         - "/opt/puppetlabs/bin"
+        - "/Applications/Cursor.app/Contents/Resources/app/resources/helpers"
+        - "/Users/bytedance/.local/bin"
       CMAKE_INSTALL_PREFIX: "/usr/local"
       CMAKE_SYSTEM_PREFIX_PATH:
         - "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr"
@@ -1536,7 +1950,7 @@ events:
       - "/opt/homebrew/share/cmake/Modules/CMakeDetermineCompilerId.cmake:17 (message)"
       - "/opt/homebrew/share/cmake/Modules/CMakeDetermineCompilerId.cmake:64 (__determine_compiler_id_test)"
       - "/opt/homebrew/share/cmake/Modules/CMakeDetermineCCompiler.cmake:122 (CMAKE_DETERMINE_COMPILER_ID)"
-      - "build/_deps/seal-src/CMakeLists.txt:26 (project)"
+      - "build/_deps/openfhe-src/CMakeLists.txt:28 (project)"
     message: |
       Compiling the C compiler identification source file "CMakeCCompilerId.c" succeeded.
       Compiler: /usr/bin/cc 
@@ -1557,7 +1971,7 @@ events:
     backtrace:
       - "/opt/homebrew/share/cmake/Modules/CMakeDetermineCompilerId.cmake:290 (message)"
       - "/opt/homebrew/share/cmake/Modules/CMakeDetermineCCompiler.cmake:122 (CMAKE_DETERMINE_COMPILER_ID)"
-      - "build/_deps/seal-src/CMakeLists.txt:26 (project)"
+      - "build/_deps/openfhe-src/CMakeLists.txt:28 (project)"
     message: |
       Detecting C compiler apple sysroot: "/usr/bin/cc" "-E" "apple-sdk.c"
         # 1 "apple-sdk.c"
@@ -1598,12 +2012,12 @@ events:
     backtrace:
       - "/opt/homebrew/share/cmake/Modules/CMakeDetermineCompilerABI.cmake:83 (try_compile)"
       - "/opt/homebrew/share/cmake/Modules/CMakeTestCCompiler.cmake:26 (CMAKE_DETERMINE_COMPILER_ABI)"
-      - "build/_deps/seal-src/CMakeLists.txt:26 (project)"
+      - "build/_deps/openfhe-src/CMakeLists.txt:28 (project)"
     checks:
       - "Detecting C compiler ABI info"
     directories:
-      source: "/Users/bytedance/PCA/build/CMakeFiles/CMakeScratch/TryCompile-blIs4b"
-      binary: "/Users/bytedance/PCA/build/CMakeFiles/CMakeScratch/TryCompile-blIs4b"
+      source: "/Users/bytedance/PCA/build/CMakeFiles/CMakeScratch/TryCompile-Klt9LE"
+      binary: "/Users/bytedance/PCA/build/CMakeFiles/CMakeScratch/TryCompile-Klt9LE"
     cmakeVariables:
       CMAKE_C_FLAGS: ""
       CMAKE_C_FLAGS_DEBUG: "-g"
@@ -1616,18 +2030,18 @@ events:
       variable: "CMAKE_C_ABI_COMPILED"
       cached: true
       stdout: |
-        Change Dir: '/Users/bytedance/PCA/build/CMakeFiles/CMakeScratch/TryCompile-blIs4b'
+        Change Dir: '/Users/bytedance/PCA/build/CMakeFiles/CMakeScratch/TryCompile-Klt9LE'
         
-        Run Build Command(s): /opt/homebrew/bin/cmake -E env VERBOSE=1 /usr/bin/make -f Makefile cmTC_6ea4d/fast
-        /Library/Developer/CommandLineTools/usr/bin/make  -f CMakeFiles/cmTC_6ea4d.dir/build.make CMakeFiles/cmTC_6ea4d.dir/build
-        Building C object CMakeFiles/cmTC_6ea4d.dir/CMakeCCompilerABI.c.o
-        /usr/bin/cc   -arch arm64   -v -Wl,-v -MD -MT CMakeFiles/cmTC_6ea4d.dir/CMakeCCompilerABI.c.o -MF CMakeFiles/cmTC_6ea4d.dir/CMakeCCompilerABI.c.o.d -o CMakeFiles/cmTC_6ea4d.dir/CMakeCCompilerABI.c.o -c /opt/homebrew/share/cmake/Modules/CMakeCCompilerABI.c
+        Run Build Command(s): /opt/homebrew/bin/cmake -E env VERBOSE=1 /usr/bin/make -f Makefile cmTC_88dde/fast
+        /Library/Developer/CommandLineTools/usr/bin/make  -f CMakeFiles/cmTC_88dde.dir/build.make CMakeFiles/cmTC_88dde.dir/build
+        Building C object CMakeFiles/cmTC_88dde.dir/CMakeCCompilerABI.c.o
+        /usr/bin/cc   -arch arm64   -v -Wl,-v -MD -MT CMakeFiles/cmTC_88dde.dir/CMakeCCompilerABI.c.o -MF CMakeFiles/cmTC_88dde.dir/CMakeCCompilerABI.c.o.d -o CMakeFiles/cmTC_88dde.dir/CMakeCCompilerABI.c.o -c /opt/homebrew/share/cmake/Modules/CMakeCCompilerABI.c
         Apple clang version 17.0.0 (clang-1700.0.13.5)
         Target: arm64-apple-darwin24.6.0
         Thread model: posix
         InstalledDir: /Library/Developer/CommandLineTools/usr/bin
         clang: warning: -Wl,-v: 'linker' input unused [-Wunused-command-line-argument]
-         "/Library/Developer/CommandLineTools/usr/bin/clang" -cc1 -triple arm64-apple-macosx15.0.0 -Wundef-prefix=TARGET_OS_ -Wdeprecated-objc-isa-usage -Werror=deprecated-objc-isa-usage -Werror=implicit-function-declaration -emit-obj -disable-free -clear-ast-before-backend -disable-llvm-verifier -discard-value-names -main-file-name CMakeCCompilerABI.c -mrelocation-model pic -pic-level 2 -mframe-pointer=non-leaf -fno-strict-return -ffp-contract=on -fno-rounding-math -funwind-tables=1 -fobjc-msgsend-selector-stubs -target-sdk-version=15.5 -fvisibility-inlines-hidden-static-local-var -fdefine-target-os-macros -fno-assume-unique-vtables -fno-modulemap-allow-subdirectory-search -target-cpu apple-m1 -target-feature +zcm -target-feature +zcz -target-feature +v8.5a -target-feature +aes -target-feature +altnzcv -target-feature +ccdp -target-feature +complxnum -target-feature +crc -target-feature +dotprod -target-feature +fp-armv8 -target-feature +fp16fml -target-feature +fptoint -target-feature +fullfp16 -target-feature +jsconv -target-feature +lse -target-feature +neon -target-feature +pauth -target-feature +perfmon -target-feature +predres -target-feature +ras -target-feature +rcpc -target-feature +rdm -target-feature +sb -target-feature +sha2 -target-feature +sha3 -target-feature +specrestrict -target-feature +ssbs -target-abi darwinpcs -debugger-tuning=lldb -fdebug-compilation-dir=/Users/bytedance/PCA/build/CMakeFiles/CMakeScratch/TryCompile-blIs4b -target-linker-version 1167.5 -v -fcoverage-compilation-dir=/Users/bytedance/PCA/build/CMakeFiles/CMakeScratch/TryCompile-blIs4b -resource-dir /Library/Developer/CommandLineTools/usr/lib/clang/17 -dependency-file CMakeFiles/cmTC_6ea4d.dir/CMakeCCompilerABI.c.o.d -skip-unused-modulemap-deps -MT CMakeFiles/cmTC_6ea4d.dir/CMakeCCompilerABI.c.o -sys-header-deps -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk -I/usr/local/include -internal-isystem /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/local/include -internal-isystem /Library/Developer/CommandLineTools/usr/lib/clang/17/include -internal-externc-isystem /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include -internal-externc-isystem /Library/Developer/CommandLineTools/usr/include -Wno-reorder-init-list -Wno-implicit-int-float-conversion -Wno-c99-designator -Wno-final-dtor-non-final-class -Wno-extra-semi-stmt -Wno-misleading-indentation -Wno-quoted-include-in-framework-header -Wno-implicit-fallthrough -Wno-enum-enum-conversion -Wno-enum-float-conversion -Wno-elaborated-enum-base -Wno-reserved-identifier -Wno-gnu-folding-constant -ferror-limit 19 -stack-protector 1 -fstack-check -mdarwin-stkchk-strong-link -fblocks -fencode-extended-block-signature -fregister-global-dtors-with-atexit -fgnuc-version=4.2.1 -fskip-odr-check-in-gmf -fmax-type-align=16 -fcommon -clang-vendor-feature=+disableNonDependentMemberExprInCurrentInstantiation -fno-odr-hash-protocols -clang-vendor-feature=+enableAggressiveVLAFolding -clang-vendor-feature=+revert09abecef7bbf -clang-vendor-feature=+thisNoAlignAttr -clang-vendor-feature=+thisNoNullAttr -clang-vendor-feature=+disableAtImportPrivateFrameworkInImplementationError -D__GCC_HAVE_DWARF2_CFI_ASM=1 -o CMakeFiles/cmTC_6ea4d.dir/CMakeCCompilerABI.c.o -x c /opt/homebrew/share/cmake/Modules/CMakeCCompilerABI.c
+         "/Library/Developer/CommandLineTools/usr/bin/clang" -cc1 -triple arm64-apple-macosx15.0.0 -Wundef-prefix=TARGET_OS_ -Wdeprecated-objc-isa-usage -Werror=deprecated-objc-isa-usage -Werror=implicit-function-declaration -emit-obj -disable-free -clear-ast-before-backend -disable-llvm-verifier -discard-value-names -main-file-name CMakeCCompilerABI.c -mrelocation-model pic -pic-level 2 -mframe-pointer=non-leaf -fno-strict-return -ffp-contract=on -fno-rounding-math -funwind-tables=1 -fobjc-msgsend-selector-stubs -target-sdk-version=15.5 -fvisibility-inlines-hidden-static-local-var -fdefine-target-os-macros -fno-assume-unique-vtables -fno-modulemap-allow-subdirectory-search -target-cpu apple-m1 -target-feature +zcm -target-feature +zcz -target-feature +v8.5a -target-feature +aes -target-feature +altnzcv -target-feature +ccdp -target-feature +complxnum -target-feature +crc -target-feature +dotprod -target-feature +fp-armv8 -target-feature +fp16fml -target-feature +fptoint -target-feature +fullfp16 -target-feature +jsconv -target-feature +lse -target-feature +neon -target-feature +pauth -target-feature +perfmon -target-feature +predres -target-feature +ras -target-feature +rcpc -target-feature +rdm -target-feature +sb -target-feature +sha2 -target-feature +sha3 -target-feature +specrestrict -target-feature +ssbs -target-abi darwinpcs -debugger-tuning=lldb -fdebug-compilation-dir=/Users/bytedance/PCA/build/CMakeFiles/CMakeScratch/TryCompile-Klt9LE -target-linker-version 1167.5 -v -fcoverage-compilation-dir=/Users/bytedance/PCA/build/CMakeFiles/CMakeScratch/TryCompile-Klt9LE -resource-dir /Library/Developer/CommandLineTools/usr/lib/clang/17 -dependency-file CMakeFiles/cmTC_88dde.dir/CMakeCCompilerABI.c.o.d -skip-unused-modulemap-deps -MT CMakeFiles/cmTC_88dde.dir/CMakeCCompilerABI.c.o -sys-header-deps -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk -I/usr/local/include -internal-isystem /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/local/include -internal-isystem /Library/Developer/CommandLineTools/usr/lib/clang/17/include -internal-externc-isystem /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include -internal-externc-isystem /Library/Developer/CommandLineTools/usr/include -Wno-reorder-init-list -Wno-implicit-int-float-conversion -Wno-c99-designator -Wno-final-dtor-non-final-class -Wno-extra-semi-stmt -Wno-misleading-indentation -Wno-quoted-include-in-framework-header -Wno-implicit-fallthrough -Wno-enum-enum-conversion -Wno-enum-float-conversion -Wno-elaborated-enum-base -Wno-reserved-identifier -Wno-gnu-folding-constant -ferror-limit 19 -stack-protector 1 -fstack-check -mdarwin-stkchk-strong-link -fblocks -fencode-extended-block-signature -fregister-global-dtors-with-atexit -fgnuc-version=4.2.1 -fskip-odr-check-in-gmf -fmax-type-align=16 -fcommon -clang-vendor-feature=+disableNonDependentMemberExprInCurrentInstantiation -fno-odr-hash-protocols -clang-vendor-feature=+enableAggressiveVLAFolding -clang-vendor-feature=+revert09abecef7bbf -clang-vendor-feature=+thisNoAlignAttr -clang-vendor-feature=+thisNoNullAttr -clang-vendor-feature=+disableAtImportPrivateFrameworkInImplementationError -D__GCC_HAVE_DWARF2_CFI_ASM=1 -o CMakeFiles/cmTC_88dde.dir/CMakeCCompilerABI.c.o -x c /opt/homebrew/share/cmake/Modules/CMakeCCompilerABI.c
         clang -cc1 version 17.0.0 (clang-1700.0.13.5) default target arm64-apple-darwin24.6.0
         ignoring nonexistent directory "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/local/include"
         ignoring nonexistent directory "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/System/Library/SubFrameworks"
@@ -1640,13 +2054,13 @@ events:
          /Library/Developer/CommandLineTools/usr/include
          /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/System/Library/Frameworks (framework directory)
         End of search list.
-        Linking C executable cmTC_6ea4d
-        /opt/homebrew/bin/cmake -E cmake_link_script CMakeFiles/cmTC_6ea4d.dir/link.txt --verbose=1
+        Linking C executable cmTC_88dde
+        /opt/homebrew/bin/cmake -E cmake_link_script CMakeFiles/cmTC_88dde.dir/link.txt --verbose=1
         Apple clang version 17.0.0 (clang-1700.0.13.5)
         Target: arm64-apple-darwin24.6.0
         Thread model: posix
         InstalledDir: /Library/Developer/CommandLineTools/usr/bin
-         "/Library/Developer/CommandLineTools/usr/bin/ld" -demangle -lto_library /Library/Developer/CommandLineTools/usr/lib/libLTO.dylib -dynamic -arch arm64 -platform_version macos 15.0.0 15.5 -syslibroot /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk -mllvm -enable-linkonceodr-outlining -o cmTC_6ea4d -L/usr/local/lib -search_paths_first -headerpad_max_install_names -v CMakeFiles/cmTC_6ea4d.dir/CMakeCCompilerABI.c.o -lSystem /Library/Developer/CommandLineTools/usr/lib/clang/17/lib/darwin/libclang_rt.osx.a
+         "/Library/Developer/CommandLineTools/usr/bin/ld" -demangle -lto_library /Library/Developer/CommandLineTools/usr/lib/libLTO.dylib -dynamic -arch arm64 -platform_version macos 15.0.0 15.5 -syslibroot /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk -mllvm -enable-linkonceodr-outlining -o cmTC_88dde -L/usr/local/lib -search_paths_first -headerpad_max_install_names -v CMakeFiles/cmTC_88dde.dir/CMakeCCompilerABI.c.o -lSystem /Library/Developer/CommandLineTools/usr/lib/clang/17/lib/darwin/libclang_rt.osx.a
         @(#)PROGRAM:ld PROJECT:ld-1167.5
         BUILD 01:45:05 Apr 30 2025
         configured to support archs: armv6 armv7 armv7s arm64 arm64e arm64_32 i386 x86_64 x86_64h armv6m armv7k armv7m armv7em
@@ -1659,7 +2073,7 @@ events:
         	/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/lib/swift
         Framework search paths:
         	/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/System/Library/Frameworks
-        /usr/bin/cc  -arch arm64 -Wl,-search_paths_first -Wl,-headerpad_max_install_names  -v -Wl,-v CMakeFiles/cmTC_6ea4d.dir/CMakeCCompilerABI.c.o -o cmTC_6ea4d
+        /usr/bin/cc  -arch arm64 -Wl,-search_paths_first -Wl,-headerpad_max_install_names  -v -Wl,-v CMakeFiles/cmTC_88dde.dir/CMakeCCompilerABI.c.o -o cmTC_88dde
         
       exitCode: 0
   -
@@ -1667,7 +2081,7 @@ events:
     backtrace:
       - "/opt/homebrew/share/cmake/Modules/CMakeDetermineCompilerABI.cmake:122 (message)"
       - "/opt/homebrew/share/cmake/Modules/CMakeTestCCompiler.cmake:26 (CMAKE_DETERMINE_COMPILER_ABI)"
-      - "build/_deps/seal-src/CMakeLists.txt:26 (project)"
+      - "build/_deps/openfhe-src/CMakeLists.txt:28 (project)"
     message: |
       Effective list of requested architectures (possibly empty)  : ""
       Effective list of architectures found in the ABI info binary: "arm64"
@@ -1676,7 +2090,7 @@ events:
     backtrace:
       - "/opt/homebrew/share/cmake/Modules/CMakeDetermineCompilerABI.cmake:217 (message)"
       - "/opt/homebrew/share/cmake/Modules/CMakeTestCCompiler.cmake:26 (CMAKE_DETERMINE_COMPILER_ABI)"
-      - "build/_deps/seal-src/CMakeLists.txt:26 (project)"
+      - "build/_deps/openfhe-src/CMakeLists.txt:28 (project)"
     message: |
       Parsed C implicit include dir info: rv=done
         found start of include info
@@ -1698,23 +2112,23 @@ events:
     backtrace:
       - "/opt/homebrew/share/cmake/Modules/CMakeDetermineCompilerABI.cmake:253 (message)"
       - "/opt/homebrew/share/cmake/Modules/CMakeTestCCompiler.cmake:26 (CMAKE_DETERMINE_COMPILER_ABI)"
-      - "build/_deps/seal-src/CMakeLists.txt:26 (project)"
+      - "build/_deps/openfhe-src/CMakeLists.txt:28 (project)"
     message: |
       Parsed C implicit link information:
         link line regex: [^( *|.*[/\\])(ld[0-9]*(|\\.[a-rt-z][a-z]*|\\.s[a-np-z][a-z]*|\\.so[a-z]+)|CMAKE_LINK_STARTFILE-NOTFOUND|([^/\\]+-)?ld|collect2)[^/\\]*( |$)]
         linker tool regex: [^[ 	]*(->|"|[0-9]+>[ 	-]*Build:[ 	0-9]+ ms[ 	]*)?[ 	]*(([^"]*[/\\])?(ld[0-9]*(|\\.[a-rt-z][a-z]*|\\.s[a-np-z][a-z]*|\\.so[a-z]+)))("|,| |$)]
-        ignore line: [Change Dir: '/Users/bytedance/PCA/build/CMakeFiles/CMakeScratch/TryCompile-blIs4b']
+        ignore line: [Change Dir: '/Users/bytedance/PCA/build/CMakeFiles/CMakeScratch/TryCompile-Klt9LE']
         ignore line: []
-        ignore line: [Run Build Command(s): /opt/homebrew/bin/cmake -E env VERBOSE=1 /usr/bin/make -f Makefile cmTC_6ea4d/fast]
-        ignore line: [/Library/Developer/CommandLineTools/usr/bin/make  -f CMakeFiles/cmTC_6ea4d.dir/build.make CMakeFiles/cmTC_6ea4d.dir/build]
-        ignore line: [Building C object CMakeFiles/cmTC_6ea4d.dir/CMakeCCompilerABI.c.o]
-        ignore line: [/usr/bin/cc   -arch arm64   -v -Wl -v -MD -MT CMakeFiles/cmTC_6ea4d.dir/CMakeCCompilerABI.c.o -MF CMakeFiles/cmTC_6ea4d.dir/CMakeCCompilerABI.c.o.d -o CMakeFiles/cmTC_6ea4d.dir/CMakeCCompilerABI.c.o -c /opt/homebrew/share/cmake/Modules/CMakeCCompilerABI.c]
+        ignore line: [Run Build Command(s): /opt/homebrew/bin/cmake -E env VERBOSE=1 /usr/bin/make -f Makefile cmTC_88dde/fast]
+        ignore line: [/Library/Developer/CommandLineTools/usr/bin/make  -f CMakeFiles/cmTC_88dde.dir/build.make CMakeFiles/cmTC_88dde.dir/build]
+        ignore line: [Building C object CMakeFiles/cmTC_88dde.dir/CMakeCCompilerABI.c.o]
+        ignore line: [/usr/bin/cc   -arch arm64   -v -Wl -v -MD -MT CMakeFiles/cmTC_88dde.dir/CMakeCCompilerABI.c.o -MF CMakeFiles/cmTC_88dde.dir/CMakeCCompilerABI.c.o.d -o CMakeFiles/cmTC_88dde.dir/CMakeCCompilerABI.c.o -c /opt/homebrew/share/cmake/Modules/CMakeCCompilerABI.c]
         ignore line: [Apple clang version 17.0.0 (clang-1700.0.13.5)]
         ignore line: [Target: arm64-apple-darwin24.6.0]
         ignore line: [Thread model: posix]
         ignore line: [InstalledDir: /Library/Developer/CommandLineTools/usr/bin]
         ignore line: [clang: warning: -Wl -v: 'linker' input unused [-Wunused-command-line-argument]]
-        ignore line: [ "/Library/Developer/CommandLineTools/usr/bin/clang" -cc1 -triple arm64-apple-macosx15.0.0 -Wundef-prefix=TARGET_OS_ -Wdeprecated-objc-isa-usage -Werror=deprecated-objc-isa-usage -Werror=implicit-function-declaration -emit-obj -disable-free -clear-ast-before-backend -disable-llvm-verifier -discard-value-names -main-file-name CMakeCCompilerABI.c -mrelocation-model pic -pic-level 2 -mframe-pointer=non-leaf -fno-strict-return -ffp-contract=on -fno-rounding-math -funwind-tables=1 -fobjc-msgsend-selector-stubs -target-sdk-version=15.5 -fvisibility-inlines-hidden-static-local-var -fdefine-target-os-macros -fno-assume-unique-vtables -fno-modulemap-allow-subdirectory-search -target-cpu apple-m1 -target-feature +zcm -target-feature +zcz -target-feature +v8.5a -target-feature +aes -target-feature +altnzcv -target-feature +ccdp -target-feature +complxnum -target-feature +crc -target-feature +dotprod -target-feature +fp-armv8 -target-feature +fp16fml -target-feature +fptoint -target-feature +fullfp16 -target-feature +jsconv -target-feature +lse -target-feature +neon -target-feature +pauth -target-feature +perfmon -target-feature +predres -target-feature +ras -target-feature +rcpc -target-feature +rdm -target-feature +sb -target-feature +sha2 -target-feature +sha3 -target-feature +specrestrict -target-feature +ssbs -target-abi darwinpcs -debugger-tuning=lldb -fdebug-compilation-dir=/Users/bytedance/PCA/build/CMakeFiles/CMakeScratch/TryCompile-blIs4b -target-linker-version 1167.5 -v -fcoverage-compilation-dir=/Users/bytedance/PCA/build/CMakeFiles/CMakeScratch/TryCompile-blIs4b -resource-dir /Library/Developer/CommandLineTools/usr/lib/clang/17 -dependency-file CMakeFiles/cmTC_6ea4d.dir/CMakeCCompilerABI.c.o.d -skip-unused-modulemap-deps -MT CMakeFiles/cmTC_6ea4d.dir/CMakeCCompilerABI.c.o -sys-header-deps -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk -I/usr/local/include -internal-isystem /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/local/include -internal-isystem /Library/Developer/CommandLineTools/usr/lib/clang/17/include -internal-externc-isystem /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include -internal-externc-isystem /Library/Developer/CommandLineTools/usr/include -Wno-reorder-init-list -Wno-implicit-int-float-conversion -Wno-c99-designator -Wno-final-dtor-non-final-class -Wno-extra-semi-stmt -Wno-misleading-indentation -Wno-quoted-include-in-framework-header -Wno-implicit-fallthrough -Wno-enum-enum-conversion -Wno-enum-float-conversion -Wno-elaborated-enum-base -Wno-reserved-identifier -Wno-gnu-folding-constant -ferror-limit 19 -stack-protector 1 -fstack-check -mdarwin-stkchk-strong-link -fblocks -fencode-extended-block-signature -fregister-global-dtors-with-atexit -fgnuc-version=4.2.1 -fskip-odr-check-in-gmf -fmax-type-align=16 -fcommon -clang-vendor-feature=+disableNonDependentMemberExprInCurrentInstantiation -fno-odr-hash-protocols -clang-vendor-feature=+enableAggressiveVLAFolding -clang-vendor-feature=+revert09abecef7bbf -clang-vendor-feature=+thisNoAlignAttr -clang-vendor-feature=+thisNoNullAttr -clang-vendor-feature=+disableAtImportPrivateFrameworkInImplementationError -D__GCC_HAVE_DWARF2_CFI_ASM=1 -o CMakeFiles/cmTC_6ea4d.dir/CMakeCCompilerABI.c.o -x c /opt/homebrew/share/cmake/Modules/CMakeCCompilerABI.c]
+        ignore line: [ "/Library/Developer/CommandLineTools/usr/bin/clang" -cc1 -triple arm64-apple-macosx15.0.0 -Wundef-prefix=TARGET_OS_ -Wdeprecated-objc-isa-usage -Werror=deprecated-objc-isa-usage -Werror=implicit-function-declaration -emit-obj -disable-free -clear-ast-before-backend -disable-llvm-verifier -discard-value-names -main-file-name CMakeCCompilerABI.c -mrelocation-model pic -pic-level 2 -mframe-pointer=non-leaf -fno-strict-return -ffp-contract=on -fno-rounding-math -funwind-tables=1 -fobjc-msgsend-selector-stubs -target-sdk-version=15.5 -fvisibility-inlines-hidden-static-local-var -fdefine-target-os-macros -fno-assume-unique-vtables -fno-modulemap-allow-subdirectory-search -target-cpu apple-m1 -target-feature +zcm -target-feature +zcz -target-feature +v8.5a -target-feature +aes -target-feature +altnzcv -target-feature +ccdp -target-feature +complxnum -target-feature +crc -target-feature +dotprod -target-feature +fp-armv8 -target-feature +fp16fml -target-feature +fptoint -target-feature +fullfp16 -target-feature +jsconv -target-feature +lse -target-feature +neon -target-feature +pauth -target-feature +perfmon -target-feature +predres -target-feature +ras -target-feature +rcpc -target-feature +rdm -target-feature +sb -target-feature +sha2 -target-feature +sha3 -target-feature +specrestrict -target-feature +ssbs -target-abi darwinpcs -debugger-tuning=lldb -fdebug-compilation-dir=/Users/bytedance/PCA/build/CMakeFiles/CMakeScratch/TryCompile-Klt9LE -target-linker-version 1167.5 -v -fcoverage-compilation-dir=/Users/bytedance/PCA/build/CMakeFiles/CMakeScratch/TryCompile-Klt9LE -resource-dir /Library/Developer/CommandLineTools/usr/lib/clang/17 -dependency-file CMakeFiles/cmTC_88dde.dir/CMakeCCompilerABI.c.o.d -skip-unused-modulemap-deps -MT CMakeFiles/cmTC_88dde.dir/CMakeCCompilerABI.c.o -sys-header-deps -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk -I/usr/local/include -internal-isystem /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/local/include -internal-isystem /Library/Developer/CommandLineTools/usr/lib/clang/17/include -internal-externc-isystem /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include -internal-externc-isystem /Library/Developer/CommandLineTools/usr/include -Wno-reorder-init-list -Wno-implicit-int-float-conversion -Wno-c99-designator -Wno-final-dtor-non-final-class -Wno-extra-semi-stmt -Wno-misleading-indentation -Wno-quoted-include-in-framework-header -Wno-implicit-fallthrough -Wno-enum-enum-conversion -Wno-enum-float-conversion -Wno-elaborated-enum-base -Wno-reserved-identifier -Wno-gnu-folding-constant -ferror-limit 19 -stack-protector 1 -fstack-check -mdarwin-stkchk-strong-link -fblocks -fencode-extended-block-signature -fregister-global-dtors-with-atexit -fgnuc-version=4.2.1 -fskip-odr-check-in-gmf -fmax-type-align=16 -fcommon -clang-vendor-feature=+disableNonDependentMemberExprInCurrentInstantiation -fno-odr-hash-protocols -clang-vendor-feature=+enableAggressiveVLAFolding -clang-vendor-feature=+revert09abecef7bbf -clang-vendor-feature=+thisNoAlignAttr -clang-vendor-feature=+thisNoNullAttr -clang-vendor-feature=+disableAtImportPrivateFrameworkInImplementationError -D__GCC_HAVE_DWARF2_CFI_ASM=1 -o CMakeFiles/cmTC_88dde.dir/CMakeCCompilerABI.c.o -x c /opt/homebrew/share/cmake/Modules/CMakeCCompilerABI.c]
         ignore line: [clang -cc1 version 17.0.0 (clang-1700.0.13.5) default target arm64-apple-darwin24.6.0]
         ignore line: [ignoring nonexistent directory "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/local/include"]
         ignore line: [ignoring nonexistent directory "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/System/Library/SubFrameworks"]
@@ -1727,13 +2141,13 @@ events:
         ignore line: [ /Library/Developer/CommandLineTools/usr/include]
         ignore line: [ /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/System/Library/Frameworks (framework directory)]
         ignore line: [End of search list.]
-        ignore line: [Linking C executable cmTC_6ea4d]
-        ignore line: [/opt/homebrew/bin/cmake -E cmake_link_script CMakeFiles/cmTC_6ea4d.dir/link.txt --verbose=1]
+        ignore line: [Linking C executable cmTC_88dde]
+        ignore line: [/opt/homebrew/bin/cmake -E cmake_link_script CMakeFiles/cmTC_88dde.dir/link.txt --verbose=1]
         ignore line: [Apple clang version 17.0.0 (clang-1700.0.13.5)]
         ignore line: [Target: arm64-apple-darwin24.6.0]
         ignore line: [Thread model: posix]
         ignore line: [InstalledDir: /Library/Developer/CommandLineTools/usr/bin]
-        link line: [ "/Library/Developer/CommandLineTools/usr/bin/ld" -demangle -lto_library /Library/Developer/CommandLineTools/usr/lib/libLTO.dylib -dynamic -arch arm64 -platform_version macos 15.0.0 15.5 -syslibroot /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk -mllvm -enable-linkonceodr-outlining -o cmTC_6ea4d -L/usr/local/lib -search_paths_first -headerpad_max_install_names -v CMakeFiles/cmTC_6ea4d.dir/CMakeCCompilerABI.c.o -lSystem /Library/Developer/CommandLineTools/usr/lib/clang/17/lib/darwin/libclang_rt.osx.a]
+        link line: [ "/Library/Developer/CommandLineTools/usr/bin/ld" -demangle -lto_library /Library/Developer/CommandLineTools/usr/lib/libLTO.dylib -dynamic -arch arm64 -platform_version macos 15.0.0 15.5 -syslibroot /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk -mllvm -enable-linkonceodr-outlining -o cmTC_88dde -L/usr/local/lib -search_paths_first -headerpad_max_install_names -v CMakeFiles/cmTC_88dde.dir/CMakeCCompilerABI.c.o -lSystem /Library/Developer/CommandLineTools/usr/lib/clang/17/lib/darwin/libclang_rt.osx.a]
           arg [/Library/Developer/CommandLineTools/usr/bin/ld] ==> ignore
           arg [-demangle] ==> ignore
           arg [-lto_library] ==> ignore, skip following value
@@ -1750,12 +2164,12 @@ events:
           arg [-mllvm] ==> ignore
           arg [-enable-linkonceodr-outlining] ==> ignore
           arg [-o] ==> ignore
-          arg [cmTC_6ea4d] ==> ignore
+          arg [cmTC_88dde] ==> ignore
           arg [-L/usr/local/lib] ==> dir [/usr/local/lib]
           arg [-search_paths_first] ==> ignore
           arg [-headerpad_max_install_names] ==> ignore
           arg [-v] ==> ignore
-          arg [CMakeFiles/cmTC_6ea4d.dir/CMakeCCompilerABI.c.o] ==> ignore
+          arg [CMakeFiles/cmTC_88dde.dir/CMakeCCompilerABI.c.o] ==> ignore
           arg [-lSystem] ==> lib [System]
           arg [/Library/Developer/CommandLineTools/usr/lib/clang/17/lib/darwin/libclang_rt.osx.a] ==> lib [/Library/Developer/CommandLineTools/usr/lib/clang/17/lib/darwin/libclang_rt.osx.a]
         linker tool for 'C': /Library/Developer/CommandLineTools/usr/bin/ld
@@ -1780,7 +2194,7 @@ events:
       - "/opt/homebrew/share/cmake/Modules/Internal/CMakeDetermineLinkerId.cmake:38 (message)"
       - "/opt/homebrew/share/cmake/Modules/CMakeDetermineCompilerABI.cmake:299 (cmake_determine_linker_id)"
       - "/opt/homebrew/share/cmake/Modules/CMakeTestCCompiler.cmake:26 (CMAKE_DETERMINE_COMPILER_ABI)"
-      - "build/_deps/seal-src/CMakeLists.txt:26 (project)"
+      - "build/_deps/openfhe-src/CMakeLists.txt:28 (project)"
     message: |
       Running the C compiler's linker: "/Library/Developer/CommandLineTools/usr/bin/ld" "-v"
       @(#)PROGRAM:ld PROJECT:ld-1167.5
@@ -1792,175 +2206,103 @@ events:
   -
     kind: "try_compile-v1"
     backtrace:
-      - "/opt/homebrew/share/cmake/Modules/Internal/CheckSourceCompiles.cmake:104 (try_compile)"
-      - "/opt/homebrew/share/cmake/Modules/CheckCXXSourceCompiles.cmake:103 (cmake_check_source_compiles)"
-      - "build/_deps/seal-src/cmake/EnableCXX17.cmake:28 (check_cxx_source_compiles)"
-      - "build/_deps/seal-src/CMakeLists.txt:68 (include)"
+      - "/opt/homebrew/share/cmake/Modules/CheckIncludeFile.cmake:174 (try_compile)"
+      - "/opt/homebrew/share/cmake/Modules/CheckTypeSize.cmake:462 (check_include_file)"
+      - "build/_deps/openfhe-src/CMakeLists.txt:301 (check_type_size)"
+    checks:
+      - "Looking for sys/types.h"
     directories:
-      source: "/Users/bytedance/PCA/build/CMakeFiles/CMakeScratch/TryCompile-DiIUfJ"
-      binary: "/Users/bytedance/PCA/build/CMakeFiles/CMakeScratch/TryCompile-DiIUfJ"
+      source: "/Users/bytedance/PCA/build/CMakeFiles/CMakeScratch/TryCompile-bKps6X"
+      binary: "/Users/bytedance/PCA/build/CMakeFiles/CMakeScratch/TryCompile-bKps6X"
     cmakeVariables:
-      CMAKE_CXX_FLAGS: ""
-      CMAKE_CXX_FLAGS_DEBUG: "-g"
+      CMAKE_C_FLAGS: " -Wall -Werror -DOPENFHE_VERSION=1.5.1 -O3"
+      CMAKE_C_FLAGS_DEBUG: "-g"
       CMAKE_EXE_LINKER_FLAGS: ""
-      CMAKE_MODULE_PATH: "/Users/bytedance/PCA/build/_deps/seal-src/cmake"
       CMAKE_OSX_ARCHITECTURES: ""
       CMAKE_OSX_DEPLOYMENT_TARGET: ""
       CMAKE_OSX_SYSROOT: ""
-      CMAKE_POSITION_INDEPENDENT_CODE: "ON"
-      CMAKE_WARN_DEPRECATED: "FALSE"
-    buildResult:
-      variable: "USE_STD_FOR_EACH_N"
-      cached: true
-      stdout: |
-        Change Dir: '/Users/bytedance/PCA/build/CMakeFiles/CMakeScratch/TryCompile-DiIUfJ'
-        
-        Run Build Command(s): /opt/homebrew/bin/cmake -E env VERBOSE=1 /usr/bin/make -f Makefile cmTC_0b563/fast
-        /Library/Developer/CommandLineTools/usr/bin/make  -f CMakeFiles/cmTC_0b563.dir/build.make CMakeFiles/cmTC_0b563.dir/build
-        Building CXX object CMakeFiles/cmTC_0b563.dir/src.cxx.o
-        /usr/bin/c++ -DUSE_STD_FOR_EACH_N  -O0 -std=c++17 -std=gnu++17 -arch arm64 -fPIE -MD -MT CMakeFiles/cmTC_0b563.dir/src.cxx.o -MF CMakeFiles/cmTC_0b563.dir/src.cxx.o.d -o CMakeFiles/cmTC_0b563.dir/src.cxx.o -c /Users/bytedance/PCA/build/CMakeFiles/CMakeScratch/TryCompile-DiIUfJ/src.cxx
-        Linking CXX executable cmTC_0b563
-        /opt/homebrew/bin/cmake -E cmake_link_script CMakeFiles/cmTC_0b563.dir/link.txt --verbose=1
-        /usr/bin/c++   -O0 -std=c++17 -arch arm64 -Wl,-search_paths_first -Wl,-headerpad_max_install_names CMakeFiles/cmTC_0b563.dir/src.cxx.o -o cmTC_0b563
-        
-      exitCode: 0
-  -
-    kind: "try_compile-v1"
-    backtrace:
-      - "/opt/homebrew/share/cmake/Modules/CheckIncludeFileCXX.cmake:143 (try_compile)"
-      - "build/_deps/seal-src/cmake/CheckCXXIntrinsicsHeader.cmake:26 (check_include_file_cxx)"
-      - "build/_deps/seal-src/CMakeLists.txt:279 (include)"
-    directories:
-      source: "/Users/bytedance/PCA/build/CMakeFiles/CMakeScratch/TryCompile-JwG61L"
-      binary: "/Users/bytedance/PCA/build/CMakeFiles/CMakeScratch/TryCompile-JwG61L"
-    cmakeVariables:
-      CMAKE_CXX_FLAGS: ""
-      CMAKE_CXX_FLAGS_DEBUG: "-g"
-      CMAKE_EXE_LINKER_FLAGS: ""
-      CMAKE_MODULE_PATH: "/Users/bytedance/PCA/build/_deps/seal-src/cmake"
-      CMAKE_OSX_ARCHITECTURES: ""
-      CMAKE_OSX_DEPLOYMENT_TARGET: ""
-      CMAKE_OSX_SYSROOT: ""
-      CMAKE_POSITION_INDEPENDENT_CODE: "ON"
-      CMAKE_WARN_DEPRECATED: "FALSE"
-    buildResult:
-      variable: "SEAL_INTRIN_HEADER_FOUND"
-      cached: true
-      stdout: |
-        Change Dir: '/Users/bytedance/PCA/build/CMakeFiles/CMakeScratch/TryCompile-JwG61L'
-        
-        Run Build Command(s): /opt/homebrew/bin/cmake -E env VERBOSE=1 /usr/bin/make -f Makefile cmTC_9f07d/fast
-        /Library/Developer/CommandLineTools/usr/bin/make  -f CMakeFiles/cmTC_9f07d.dir/build.make CMakeFiles/cmTC_9f07d.dir/build
-        Building CXX object CMakeFiles/cmTC_9f07d.dir/CheckIncludeFile.cxx.o
-        /usr/bin/c++   -std=gnu++17 -arch arm64 -fPIE -MD -MT CMakeFiles/cmTC_9f07d.dir/CheckIncludeFile.cxx.o -MF CMakeFiles/cmTC_9f07d.dir/CheckIncludeFile.cxx.o.d -o CMakeFiles/cmTC_9f07d.dir/CheckIncludeFile.cxx.o -c /Users/bytedance/PCA/build/CMakeFiles/CMakeScratch/TryCompile-JwG61L/CheckIncludeFile.cxx
-        Linking CXX executable cmTC_9f07d
-        /opt/homebrew/bin/cmake -E cmake_link_script CMakeFiles/cmTC_9f07d.dir/link.txt --verbose=1
-        /usr/bin/c++  -arch arm64 -Wl,-search_paths_first -Wl,-headerpad_max_install_names CMakeFiles/cmTC_9f07d.dir/CheckIncludeFile.cxx.o -o cmTC_9f07d
-        
-      exitCode: 0
-  -
-    kind: "try_compile-v1"
-    backtrace:
-      - "/opt/homebrew/share/cmake/Modules/CheckIncludeFileCXX.cmake:143 (try_compile)"
-      - "/opt/homebrew/share/cmake/Modules/CheckTypeSize.cmake:466 (check_include_file_cxx)"
-      - "build/_deps/seal-src/cmake/CheckCXXIntrinsicsSpecific.cmake:38 (check_type_size)"
-      - "build/_deps/seal-src/CMakeLists.txt:288 (include)"
-    directories:
-      source: "/Users/bytedance/PCA/build/CMakeFiles/CMakeScratch/TryCompile-cHKBSk"
-      binary: "/Users/bytedance/PCA/build/CMakeFiles/CMakeScratch/TryCompile-cHKBSk"
-    cmakeVariables:
-      CMAKE_CXX_FLAGS: ""
-      CMAKE_CXX_FLAGS_DEBUG: "-g"
-      CMAKE_EXE_LINKER_FLAGS: ""
-      CMAKE_MODULE_PATH: "/Users/bytedance/PCA/build/_deps/seal-src/cmake"
-      CMAKE_OSX_ARCHITECTURES: ""
-      CMAKE_OSX_DEPLOYMENT_TARGET: ""
-      CMAKE_OSX_SYSROOT: ""
-      CMAKE_POSITION_INDEPENDENT_CODE: "ON"
       CMAKE_WARN_DEPRECATED: "FALSE"
     buildResult:
       variable: "HAVE_SYS_TYPES_H"
       cached: true
       stdout: |
-        Change Dir: '/Users/bytedance/PCA/build/CMakeFiles/CMakeScratch/TryCompile-cHKBSk'
+        Change Dir: '/Users/bytedance/PCA/build/CMakeFiles/CMakeScratch/TryCompile-bKps6X'
         
-        Run Build Command(s): /opt/homebrew/bin/cmake -E env VERBOSE=1 /usr/bin/make -f Makefile cmTC_89e18/fast
-        /Library/Developer/CommandLineTools/usr/bin/make  -f CMakeFiles/cmTC_89e18.dir/build.make CMakeFiles/cmTC_89e18.dir/build
-        Building CXX object CMakeFiles/cmTC_89e18.dir/CheckIncludeFile.cxx.o
-        /usr/bin/c++   -O0 -std=c++17 -std=gnu++17 -arch arm64 -fPIE -MD -MT CMakeFiles/cmTC_89e18.dir/CheckIncludeFile.cxx.o -MF CMakeFiles/cmTC_89e18.dir/CheckIncludeFile.cxx.o.d -o CMakeFiles/cmTC_89e18.dir/CheckIncludeFile.cxx.o -c /Users/bytedance/PCA/build/CMakeFiles/CMakeScratch/TryCompile-cHKBSk/CheckIncludeFile.cxx
-        Linking CXX executable cmTC_89e18
-        /opt/homebrew/bin/cmake -E cmake_link_script CMakeFiles/cmTC_89e18.dir/link.txt --verbose=1
-        /usr/bin/c++   -O0 -std=c++17 -arch arm64 -Wl,-search_paths_first -Wl,-headerpad_max_install_names CMakeFiles/cmTC_89e18.dir/CheckIncludeFile.cxx.o -o cmTC_89e18
+        Run Build Command(s): /opt/homebrew/bin/cmake -E env VERBOSE=1 /usr/bin/make -f Makefile cmTC_c77af/fast
+        /Library/Developer/CommandLineTools/usr/bin/make  -f CMakeFiles/cmTC_c77af.dir/build.make CMakeFiles/cmTC_c77af.dir/build
+        Building C object CMakeFiles/cmTC_c77af.dir/CheckIncludeFile.c.o
+        /usr/bin/cc   -Wall -Werror -DOPENFHE_VERSION=1.5.1 -O3  -arch arm64 -MD -MT CMakeFiles/cmTC_c77af.dir/CheckIncludeFile.c.o -MF CMakeFiles/cmTC_c77af.dir/CheckIncludeFile.c.o.d -o CMakeFiles/cmTC_c77af.dir/CheckIncludeFile.c.o -c /Users/bytedance/PCA/build/CMakeFiles/CMakeScratch/TryCompile-bKps6X/CheckIncludeFile.c
+        Linking C executable cmTC_c77af
+        /opt/homebrew/bin/cmake -E cmake_link_script CMakeFiles/cmTC_c77af.dir/link.txt --verbose=1
+        /usr/bin/cc  -Wall -Werror -DOPENFHE_VERSION=1.5.1 -O3  -arch arm64 -Wl,-search_paths_first -Wl,-headerpad_max_install_names CMakeFiles/cmTC_c77af.dir/CheckIncludeFile.c.o -o cmTC_c77af
         
       exitCode: 0
   -
     kind: "try_compile-v1"
     backtrace:
-      - "/opt/homebrew/share/cmake/Modules/CheckIncludeFileCXX.cmake:143 (try_compile)"
-      - "/opt/homebrew/share/cmake/Modules/CheckTypeSize.cmake:471 (check_include_file_cxx)"
-      - "build/_deps/seal-src/cmake/CheckCXXIntrinsicsSpecific.cmake:38 (check_type_size)"
-      - "build/_deps/seal-src/CMakeLists.txt:288 (include)"
+      - "/opt/homebrew/share/cmake/Modules/CheckIncludeFile.cmake:174 (try_compile)"
+      - "/opt/homebrew/share/cmake/Modules/CheckTypeSize.cmake:463 (check_include_file)"
+      - "build/_deps/openfhe-src/CMakeLists.txt:301 (check_type_size)"
+    checks:
+      - "Looking for stdint.h"
     directories:
-      source: "/Users/bytedance/PCA/build/CMakeFiles/CMakeScratch/TryCompile-WpWIym"
-      binary: "/Users/bytedance/PCA/build/CMakeFiles/CMakeScratch/TryCompile-WpWIym"
+      source: "/Users/bytedance/PCA/build/CMakeFiles/CMakeScratch/TryCompile-FPsUYb"
+      binary: "/Users/bytedance/PCA/build/CMakeFiles/CMakeScratch/TryCompile-FPsUYb"
     cmakeVariables:
-      CMAKE_CXX_FLAGS: ""
-      CMAKE_CXX_FLAGS_DEBUG: "-g"
+      CMAKE_C_FLAGS: " -Wall -Werror -DOPENFHE_VERSION=1.5.1 -O3"
+      CMAKE_C_FLAGS_DEBUG: "-g"
       CMAKE_EXE_LINKER_FLAGS: ""
-      CMAKE_MODULE_PATH: "/Users/bytedance/PCA/build/_deps/seal-src/cmake"
       CMAKE_OSX_ARCHITECTURES: ""
       CMAKE_OSX_DEPLOYMENT_TARGET: ""
       CMAKE_OSX_SYSROOT: ""
-      CMAKE_POSITION_INDEPENDENT_CODE: "ON"
       CMAKE_WARN_DEPRECATED: "FALSE"
     buildResult:
       variable: "HAVE_STDINT_H"
       cached: true
       stdout: |
-        Change Dir: '/Users/bytedance/PCA/build/CMakeFiles/CMakeScratch/TryCompile-WpWIym'
+        Change Dir: '/Users/bytedance/PCA/build/CMakeFiles/CMakeScratch/TryCompile-FPsUYb'
         
-        Run Build Command(s): /opt/homebrew/bin/cmake -E env VERBOSE=1 /usr/bin/make -f Makefile cmTC_01d23/fast
-        /Library/Developer/CommandLineTools/usr/bin/make  -f CMakeFiles/cmTC_01d23.dir/build.make CMakeFiles/cmTC_01d23.dir/build
-        Building CXX object CMakeFiles/cmTC_01d23.dir/CheckIncludeFile.cxx.o
-        /usr/bin/c++   -O0 -std=c++17 -std=gnu++17 -arch arm64 -fPIE -MD -MT CMakeFiles/cmTC_01d23.dir/CheckIncludeFile.cxx.o -MF CMakeFiles/cmTC_01d23.dir/CheckIncludeFile.cxx.o.d -o CMakeFiles/cmTC_01d23.dir/CheckIncludeFile.cxx.o -c /Users/bytedance/PCA/build/CMakeFiles/CMakeScratch/TryCompile-WpWIym/CheckIncludeFile.cxx
-        Linking CXX executable cmTC_01d23
-        /opt/homebrew/bin/cmake -E cmake_link_script CMakeFiles/cmTC_01d23.dir/link.txt --verbose=1
-        /usr/bin/c++   -O0 -std=c++17 -arch arm64 -Wl,-search_paths_first -Wl,-headerpad_max_install_names CMakeFiles/cmTC_01d23.dir/CheckIncludeFile.cxx.o -o cmTC_01d23
+        Run Build Command(s): /opt/homebrew/bin/cmake -E env VERBOSE=1 /usr/bin/make -f Makefile cmTC_b34dc/fast
+        /Library/Developer/CommandLineTools/usr/bin/make  -f CMakeFiles/cmTC_b34dc.dir/build.make CMakeFiles/cmTC_b34dc.dir/build
+        Building C object CMakeFiles/cmTC_b34dc.dir/CheckIncludeFile.c.o
+        /usr/bin/cc   -Wall -Werror -DOPENFHE_VERSION=1.5.1 -O3  -arch arm64 -MD -MT CMakeFiles/cmTC_b34dc.dir/CheckIncludeFile.c.o -MF CMakeFiles/cmTC_b34dc.dir/CheckIncludeFile.c.o.d -o CMakeFiles/cmTC_b34dc.dir/CheckIncludeFile.c.o -c /Users/bytedance/PCA/build/CMakeFiles/CMakeScratch/TryCompile-FPsUYb/CheckIncludeFile.c
+        Linking C executable cmTC_b34dc
+        /opt/homebrew/bin/cmake -E cmake_link_script CMakeFiles/cmTC_b34dc.dir/link.txt --verbose=1
+        /usr/bin/cc  -Wall -Werror -DOPENFHE_VERSION=1.5.1 -O3  -arch arm64 -Wl,-search_paths_first -Wl,-headerpad_max_install_names CMakeFiles/cmTC_b34dc.dir/CheckIncludeFile.c.o -o cmTC_b34dc
         
       exitCode: 0
   -
     kind: "try_compile-v1"
     backtrace:
-      - "/opt/homebrew/share/cmake/Modules/CheckIncludeFileCXX.cmake:143 (try_compile)"
-      - "/opt/homebrew/share/cmake/Modules/CheckTypeSize.cmake:472 (check_include_file_cxx)"
-      - "build/_deps/seal-src/cmake/CheckCXXIntrinsicsSpecific.cmake:38 (check_type_size)"
-      - "build/_deps/seal-src/CMakeLists.txt:288 (include)"
+      - "/opt/homebrew/share/cmake/Modules/CheckIncludeFile.cmake:174 (try_compile)"
+      - "/opt/homebrew/share/cmake/Modules/CheckTypeSize.cmake:464 (check_include_file)"
+      - "build/_deps/openfhe-src/CMakeLists.txt:301 (check_type_size)"
+    checks:
+      - "Looking for stddef.h"
     directories:
-      source: "/Users/bytedance/PCA/build/CMakeFiles/CMakeScratch/TryCompile-WulY2e"
-      binary: "/Users/bytedance/PCA/build/CMakeFiles/CMakeScratch/TryCompile-WulY2e"
+      source: "/Users/bytedance/PCA/build/CMakeFiles/CMakeScratch/TryCompile-enST9p"
+      binary: "/Users/bytedance/PCA/build/CMakeFiles/CMakeScratch/TryCompile-enST9p"
     cmakeVariables:
-      CMAKE_CXX_FLAGS: ""
-      CMAKE_CXX_FLAGS_DEBUG: "-g"
+      CMAKE_C_FLAGS: " -Wall -Werror -DOPENFHE_VERSION=1.5.1 -O3"
+      CMAKE_C_FLAGS_DEBUG: "-g"
       CMAKE_EXE_LINKER_FLAGS: ""
-      CMAKE_MODULE_PATH: "/Users/bytedance/PCA/build/_deps/seal-src/cmake"
       CMAKE_OSX_ARCHITECTURES: ""
       CMAKE_OSX_DEPLOYMENT_TARGET: ""
       CMAKE_OSX_SYSROOT: ""
-      CMAKE_POSITION_INDEPENDENT_CODE: "ON"
       CMAKE_WARN_DEPRECATED: "FALSE"
     buildResult:
       variable: "HAVE_STDDEF_H"
       cached: true
       stdout: |
-        Change Dir: '/Users/bytedance/PCA/build/CMakeFiles/CMakeScratch/TryCompile-WulY2e'
+        Change Dir: '/Users/bytedance/PCA/build/CMakeFiles/CMakeScratch/TryCompile-enST9p'
         
-        Run Build Command(s): /opt/homebrew/bin/cmake -E env VERBOSE=1 /usr/bin/make -f Makefile cmTC_33cc9/fast
-        /Library/Developer/CommandLineTools/usr/bin/make  -f CMakeFiles/cmTC_33cc9.dir/build.make CMakeFiles/cmTC_33cc9.dir/build
-        Building CXX object CMakeFiles/cmTC_33cc9.dir/CheckIncludeFile.cxx.o
-        /usr/bin/c++   -O0 -std=c++17 -std=gnu++17 -arch arm64 -fPIE -MD -MT CMakeFiles/cmTC_33cc9.dir/CheckIncludeFile.cxx.o -MF CMakeFiles/cmTC_33cc9.dir/CheckIncludeFile.cxx.o.d -o CMakeFiles/cmTC_33cc9.dir/CheckIncludeFile.cxx.o -c /Users/bytedance/PCA/build/CMakeFiles/CMakeScratch/TryCompile-WulY2e/CheckIncludeFile.cxx
-        Linking CXX executable cmTC_33cc9
-        /opt/homebrew/bin/cmake -E cmake_link_script CMakeFiles/cmTC_33cc9.dir/link.txt --verbose=1
-        /usr/bin/c++   -O0 -std=c++17 -arch arm64 -Wl,-search_paths_first -Wl,-headerpad_max_install_names CMakeFiles/cmTC_33cc9.dir/CheckIncludeFile.cxx.o -o cmTC_33cc9
+        Run Build Command(s): /opt/homebrew/bin/cmake -E env VERBOSE=1 /usr/bin/make -f Makefile cmTC_8c314/fast
+        /Library/Developer/CommandLineTools/usr/bin/make  -f CMakeFiles/cmTC_8c314.dir/build.make CMakeFiles/cmTC_8c314.dir/build
+        Building C object CMakeFiles/cmTC_8c314.dir/CheckIncludeFile.c.o
+        /usr/bin/cc   -Wall -Werror -DOPENFHE_VERSION=1.5.1 -O3  -arch arm64 -MD -MT CMakeFiles/cmTC_8c314.dir/CheckIncludeFile.c.o -MF CMakeFiles/cmTC_8c314.dir/CheckIncludeFile.c.o.d -o CMakeFiles/cmTC_8c314.dir/CheckIncludeFile.c.o -c /Users/bytedance/PCA/build/CMakeFiles/CMakeScratch/TryCompile-enST9p/CheckIncludeFile.c
+        Linking C executable cmTC_8c314
+        /opt/homebrew/bin/cmake -E cmake_link_script CMakeFiles/cmTC_8c314.dir/link.txt --verbose=1
+        /usr/bin/cc  -Wall -Werror -DOPENFHE_VERSION=1.5.1 -O3  -arch arm64 -Wl,-search_paths_first -Wl,-headerpad_max_install_names CMakeFiles/cmTC_8c314.dir/CheckIncludeFile.c.o -o cmTC_8c314
         
       exitCode: 0
   -
@@ -1968,631 +2310,588 @@ events:
     backtrace:
       - "/opt/homebrew/share/cmake/Modules/CheckTypeSize.cmake:348 (try_compile)"
       - "/opt/homebrew/share/cmake/Modules/CheckTypeSize.cmake:481 (__check_type_size_impl)"
-      - "build/_deps/seal-src/cmake/CheckCXXIntrinsicsSpecific.cmake:38 (check_type_size)"
-      - "build/_deps/seal-src/CMakeLists.txt:288 (include)"
+      - "build/_deps/openfhe-src/CMakeLists.txt:301 (check_type_size)"
+    checks:
+      - "Check size of __int128"
     directories:
-      source: "/Users/bytedance/PCA/build/CMakeFiles/CMakeScratch/TryCompile-ZWLf5q"
-      binary: "/Users/bytedance/PCA/build/CMakeFiles/CMakeScratch/TryCompile-ZWLf5q"
+      source: "/Users/bytedance/PCA/build/CMakeFiles/CMakeScratch/TryCompile-ddS5DT"
+      binary: "/Users/bytedance/PCA/build/CMakeFiles/CMakeScratch/TryCompile-ddS5DT"
     cmakeVariables:
-      CMAKE_CXX_FLAGS: ""
-      CMAKE_CXX_FLAGS_DEBUG: "-g"
+      CMAKE_C_FLAGS: " -Wall -Werror -DOPENFHE_VERSION=1.5.1 -O3"
+      CMAKE_C_FLAGS_DEBUG: "-g"
       CMAKE_EXE_LINKER_FLAGS: ""
-      CMAKE_MODULE_PATH: "/Users/bytedance/PCA/build/_deps/seal-src/cmake"
       CMAKE_OSX_ARCHITECTURES: ""
       CMAKE_OSX_DEPLOYMENT_TARGET: ""
       CMAKE_OSX_SYSROOT: ""
-      CMAKE_POSITION_INDEPENDENT_CODE: "ON"
       CMAKE_WARN_DEPRECATED: "FALSE"
     buildResult:
       variable: "HAVE_INT128"
       cached: true
       stdout: |
-        Change Dir: '/Users/bytedance/PCA/build/CMakeFiles/CMakeScratch/TryCompile-ZWLf5q'
+        Change Dir: '/Users/bytedance/PCA/build/CMakeFiles/CMakeScratch/TryCompile-ddS5DT'
         
-        Run Build Command(s): /opt/homebrew/bin/cmake -E env VERBOSE=1 /usr/bin/make -f Makefile cmTC_06124/fast
-        /Library/Developer/CommandLineTools/usr/bin/make  -f CMakeFiles/cmTC_06124.dir/build.make CMakeFiles/cmTC_06124.dir/build
-        Building CXX object CMakeFiles/cmTC_06124.dir/INT128.cpp.o
-        /usr/bin/c++   -O0 -std=c++17 -std=gnu++17 -arch arm64 -fPIE -MD -MT CMakeFiles/cmTC_06124.dir/INT128.cpp.o -MF CMakeFiles/cmTC_06124.dir/INT128.cpp.o.d -o CMakeFiles/cmTC_06124.dir/INT128.cpp.o -c /Users/bytedance/PCA/build/CMakeFiles/CMakeScratch/TryCompile-ZWLf5q/INT128.cpp
-        Linking CXX executable cmTC_06124
-        /opt/homebrew/bin/cmake -E cmake_link_script CMakeFiles/cmTC_06124.dir/link.txt --verbose=1
-        /usr/bin/c++   -O0 -std=c++17 -arch arm64 -Wl,-search_paths_first -Wl,-headerpad_max_install_names CMakeFiles/cmTC_06124.dir/INT128.cpp.o -o cmTC_06124
+        Run Build Command(s): /opt/homebrew/bin/cmake -E env VERBOSE=1 /usr/bin/make -f Makefile cmTC_6de18/fast
+        /Library/Developer/CommandLineTools/usr/bin/make  -f CMakeFiles/cmTC_6de18.dir/build.make CMakeFiles/cmTC_6de18.dir/build
+        Building C object CMakeFiles/cmTC_6de18.dir/INT128.c.o
+        /usr/bin/cc   -Wall -Werror -DOPENFHE_VERSION=1.5.1 -O3  -arch arm64 -MD -MT CMakeFiles/cmTC_6de18.dir/INT128.c.o -MF CMakeFiles/cmTC_6de18.dir/INT128.c.o.d -o CMakeFiles/cmTC_6de18.dir/INT128.c.o -c /Users/bytedance/PCA/build/CMakeFiles/CMakeScratch/TryCompile-ddS5DT/INT128.c
+        Linking C executable cmTC_6de18
+        /opt/homebrew/bin/cmake -E cmake_link_script CMakeFiles/cmTC_6de18.dir/link.txt --verbose=1
+        /usr/bin/cc  -Wall -Werror -DOPENFHE_VERSION=1.5.1 -O3  -arch arm64 -Wl,-search_paths_first -Wl,-headerpad_max_install_names CMakeFiles/cmTC_6de18.dir/INT128.c.o -o cmTC_6de18
         
-      exitCode: 0
-  -
-    kind: "try_run-v1"
-    backtrace:
-      - "/opt/homebrew/share/cmake/Modules/Internal/CheckSourceRuns.cmake:95 (try_run)"
-      - "/opt/homebrew/share/cmake/Modules/CheckCXXSourceRuns.cmake:97 (cmake_check_source_runs)"
-      - "build/_deps/seal-src/cmake/CheckCXXIntrinsicsSpecific.cmake:46 (check_cxx_source_runs)"
-      - "build/_deps/seal-src/CMakeLists.txt:288 (include)"
-    directories:
-      source: "/Users/bytedance/PCA/build/CMakeFiles/CMakeScratch/TryCompile-heRe3z"
-      binary: "/Users/bytedance/PCA/build/CMakeFiles/CMakeScratch/TryCompile-heRe3z"
-    cmakeVariables:
-      CMAKE_CXX_FLAGS: ""
-      CMAKE_CXX_FLAGS_DEBUG: "-g"
-      CMAKE_EXE_LINKER_FLAGS: ""
-      CMAKE_MODULE_PATH: "/Users/bytedance/PCA/build/_deps/seal-src/cmake"
-      CMAKE_OSX_ARCHITECTURES: ""
-      CMAKE_OSX_DEPLOYMENT_TARGET: ""
-      CMAKE_OSX_SYSROOT: ""
-      CMAKE_POSITION_INDEPENDENT_CODE: "ON"
-      CMAKE_WARN_DEPRECATED: "FALSE"
-    buildResult:
-      variable: "SEAL___BUILTIN_CLZLL_FOUND_COMPILED"
-      cached: true
-      stdout: |
-        Change Dir: '/Users/bytedance/PCA/build/CMakeFiles/CMakeScratch/TryCompile-heRe3z'
-        
-        Run Build Command(s): /opt/homebrew/bin/cmake -E env VERBOSE=1 /usr/bin/make -f Makefile cmTC_fa135/fast
-        /Library/Developer/CommandLineTools/usr/bin/make  -f CMakeFiles/cmTC_fa135.dir/build.make CMakeFiles/cmTC_fa135.dir/build
-        Building CXX object CMakeFiles/cmTC_fa135.dir/src.cxx.o
-        /usr/bin/c++ -DSEAL___BUILTIN_CLZLL_FOUND  -O0 -std=c++17 -std=gnu++17 -arch arm64 -fPIE -MD -MT CMakeFiles/cmTC_fa135.dir/src.cxx.o -MF CMakeFiles/cmTC_fa135.dir/src.cxx.o.d -o CMakeFiles/cmTC_fa135.dir/src.cxx.o -c /Users/bytedance/PCA/build/CMakeFiles/CMakeScratch/TryCompile-heRe3z/src.cxx
-        Linking CXX executable cmTC_fa135
-        /opt/homebrew/bin/cmake -E cmake_link_script CMakeFiles/cmTC_fa135.dir/link.txt --verbose=1
-        /usr/bin/c++   -O0 -std=c++17 -arch arm64 -Wl,-search_paths_first -Wl,-headerpad_max_install_names CMakeFiles/cmTC_fa135.dir/src.cxx.o -o cmTC_fa135
-        
-      exitCode: 0
-    runResult:
-      variable: "SEAL___BUILTIN_CLZLL_FOUND_EXITCODE"
-      cached: true
-      stdout: |
-      stderr: |
-      exitCode: 0
-  -
-    kind: "try_run-v1"
-    backtrace:
-      - "/opt/homebrew/share/cmake/Modules/Internal/CheckSourceRuns.cmake:95 (try_run)"
-      - "/opt/homebrew/share/cmake/Modules/CheckCXXSourceRuns.cmake:97 (cmake_check_source_runs)"
-      - "build/_deps/seal-src/cmake/CheckCXXIntrinsicsSpecific.cmake:56 (check_cxx_source_runs)"
-      - "build/_deps/seal-src/CMakeLists.txt:288 (include)"
-    directories:
-      source: "/Users/bytedance/PCA/build/CMakeFiles/CMakeScratch/TryCompile-4zpRp8"
-      binary: "/Users/bytedance/PCA/build/CMakeFiles/CMakeScratch/TryCompile-4zpRp8"
-    cmakeVariables:
-      CMAKE_CXX_FLAGS: ""
-      CMAKE_CXX_FLAGS_DEBUG: "-g"
-      CMAKE_EXE_LINKER_FLAGS: ""
-      CMAKE_MODULE_PATH: "/Users/bytedance/PCA/build/_deps/seal-src/cmake"
-      CMAKE_OSX_ARCHITECTURES: ""
-      CMAKE_OSX_DEPLOYMENT_TARGET: ""
-      CMAKE_OSX_SYSROOT: ""
-      CMAKE_POSITION_INDEPENDENT_CODE: "ON"
-      CMAKE_WARN_DEPRECATED: "FALSE"
-    buildResult:
-      variable: "SEAL__ADDCARRY_U64_FOUND_COMPILED"
-      cached: true
-      stdout: |
-        Change Dir: '/Users/bytedance/PCA/build/CMakeFiles/CMakeScratch/TryCompile-4zpRp8'
-        
-        Run Build Command(s): /opt/homebrew/bin/cmake -E env VERBOSE=1 /usr/bin/make -f Makefile cmTC_12dbc/fast
-        /Library/Developer/CommandLineTools/usr/bin/make  -f CMakeFiles/cmTC_12dbc.dir/build.make CMakeFiles/cmTC_12dbc.dir/build
-        Building CXX object CMakeFiles/cmTC_12dbc.dir/src.cxx.o
-        /usr/bin/c++ -DSEAL__ADDCARRY_U64_FOUND  -O0 -std=c++17 -std=gnu++17 -arch arm64 -fPIE -MD -MT CMakeFiles/cmTC_12dbc.dir/src.cxx.o -MF CMakeFiles/cmTC_12dbc.dir/src.cxx.o.d -o CMakeFiles/cmTC_12dbc.dir/src.cxx.o -c /Users/bytedance/PCA/build/CMakeFiles/CMakeScratch/TryCompile-4zpRp8/src.cxx
-        /Users/bytedance/PCA/build/CMakeFiles/CMakeScratch/TryCompile-4zpRp8/src.cxx:5:33: error: use of undeclared identifier '_addcarry_u64'
-            5 |             volatile auto res = _addcarry_u64(0,0,0,&a);
-              |                                 ^
-        1 error generated.
-        make[1]: *** [CMakeFiles/cmTC_12dbc.dir/src.cxx.o] Error 1
-        make: *** [cmTC_12dbc/fast] Error 2
-        
-      exitCode: 2
-    runResult:
-      variable: "SEAL__ADDCARRY_U64_FOUND_EXITCODE"
-      cached: true
-  -
-    kind: "try_run-v1"
-    backtrace:
-      - "/opt/homebrew/share/cmake/Modules/Internal/CheckSourceRuns.cmake:95 (try_run)"
-      - "/opt/homebrew/share/cmake/Modules/CheckCXXSourceRuns.cmake:97 (cmake_check_source_runs)"
-      - "build/_deps/seal-src/cmake/CheckCXXIntrinsicsSpecific.cmake:67 (check_cxx_source_runs)"
-      - "build/_deps/seal-src/CMakeLists.txt:288 (include)"
-    directories:
-      source: "/Users/bytedance/PCA/build/CMakeFiles/CMakeScratch/TryCompile-d3YTX8"
-      binary: "/Users/bytedance/PCA/build/CMakeFiles/CMakeScratch/TryCompile-d3YTX8"
-    cmakeVariables:
-      CMAKE_CXX_FLAGS: ""
-      CMAKE_CXX_FLAGS_DEBUG: "-g"
-      CMAKE_EXE_LINKER_FLAGS: ""
-      CMAKE_MODULE_PATH: "/Users/bytedance/PCA/build/_deps/seal-src/cmake"
-      CMAKE_OSX_ARCHITECTURES: ""
-      CMAKE_OSX_DEPLOYMENT_TARGET: ""
-      CMAKE_OSX_SYSROOT: ""
-      CMAKE_POSITION_INDEPENDENT_CODE: "ON"
-      CMAKE_WARN_DEPRECATED: "FALSE"
-    buildResult:
-      variable: "SEAL__SUBBORROW_U64_FOUND_COMPILED"
-      cached: true
-      stdout: |
-        Change Dir: '/Users/bytedance/PCA/build/CMakeFiles/CMakeScratch/TryCompile-d3YTX8'
-        
-        Run Build Command(s): /opt/homebrew/bin/cmake -E env VERBOSE=1 /usr/bin/make -f Makefile cmTC_40a03/fast
-        /Library/Developer/CommandLineTools/usr/bin/make  -f CMakeFiles/cmTC_40a03.dir/build.make CMakeFiles/cmTC_40a03.dir/build
-        Building CXX object CMakeFiles/cmTC_40a03.dir/src.cxx.o
-        /usr/bin/c++ -DSEAL__SUBBORROW_U64_FOUND  -O0 -std=c++17 -std=gnu++17 -arch arm64 -fPIE -MD -MT CMakeFiles/cmTC_40a03.dir/src.cxx.o -MF CMakeFiles/cmTC_40a03.dir/src.cxx.o.d -o CMakeFiles/cmTC_40a03.dir/src.cxx.o -c /Users/bytedance/PCA/build/CMakeFiles/CMakeScratch/TryCompile-d3YTX8/src.cxx
-        /Users/bytedance/PCA/build/CMakeFiles/CMakeScratch/TryCompile-d3YTX8/src.cxx:5:33: error: use of undeclared identifier '_subborrow_u64'
-            5 |             volatile auto res = _subborrow_u64(0,0,0,&a);
-              |                                 ^
-        1 error generated.
-        make[1]: *** [CMakeFiles/cmTC_40a03.dir/src.cxx.o] Error 1
-        make: *** [cmTC_40a03/fast] Error 2
-        
-      exitCode: 2
-    runResult:
-      variable: "SEAL__SUBBORROW_U64_FOUND_EXITCODE"
-      cached: true
-  -
-    kind: "try_run-v1"
-    backtrace:
-      - "/opt/homebrew/share/cmake/Modules/Internal/CheckSourceRuns.cmake:95 (try_run)"
-      - "/opt/homebrew/share/cmake/Modules/CheckCXXSourceRuns.cmake:97 (cmake_check_source_runs)"
-      - "build/_deps/seal-src/cmake/CheckMemset.cmake:5 (check_cxx_source_runs)"
-      - "build/_deps/seal-src/CMakeLists.txt:336 (include)"
-    checks:
-      - "Performing Test SEAL_MEMSET_S_FOUND"
-    directories:
-      source: "/Users/bytedance/PCA/build/CMakeFiles/CMakeScratch/TryCompile-s6pjnI"
-      binary: "/Users/bytedance/PCA/build/CMakeFiles/CMakeScratch/TryCompile-s6pjnI"
-    cmakeVariables:
-      CMAKE_CXX_FLAGS: ""
-      CMAKE_CXX_FLAGS_DEBUG: "-g"
-      CMAKE_EXE_LINKER_FLAGS: ""
-      CMAKE_MODULE_PATH: "/Users/bytedance/PCA/build/_deps/seal-src/cmake"
-      CMAKE_OSX_ARCHITECTURES: ""
-      CMAKE_OSX_DEPLOYMENT_TARGET: ""
-      CMAKE_OSX_SYSROOT: ""
-      CMAKE_POSITION_INDEPENDENT_CODE: "ON"
-      CMAKE_WARN_DEPRECATED: "FALSE"
-    buildResult:
-      variable: "SEAL_MEMSET_S_FOUND_COMPILED"
-      cached: true
-      stdout: |
-        Change Dir: '/Users/bytedance/PCA/build/CMakeFiles/CMakeScratch/TryCompile-s6pjnI'
-        
-        Run Build Command(s): /opt/homebrew/bin/cmake -E env VERBOSE=1 /usr/bin/make -f Makefile cmTC_d8f4c/fast
-        /Library/Developer/CommandLineTools/usr/bin/make  -f CMakeFiles/cmTC_d8f4c.dir/build.make CMakeFiles/cmTC_d8f4c.dir/build
-        Building CXX object CMakeFiles/cmTC_d8f4c.dir/src.cxx.o
-        /usr/bin/c++ -DSEAL_MEMSET_S_FOUND  -std=gnu++17 -arch arm64 -fPIE -MD -MT CMakeFiles/cmTC_d8f4c.dir/src.cxx.o -MF CMakeFiles/cmTC_d8f4c.dir/src.cxx.o.d -o CMakeFiles/cmTC_d8f4c.dir/src.cxx.o -c /Users/bytedance/PCA/build/CMakeFiles/CMakeScratch/TryCompile-s6pjnI/src.cxx
-        Linking CXX executable cmTC_d8f4c
-        /opt/homebrew/bin/cmake -E cmake_link_script CMakeFiles/cmTC_d8f4c.dir/link.txt --verbose=1
-        /usr/bin/c++  -arch arm64 -Wl,-search_paths_first -Wl,-headerpad_max_install_names CMakeFiles/cmTC_d8f4c.dir/src.cxx.o -o cmTC_d8f4c
-        
-      exitCode: 0
-    runResult:
-      variable: "SEAL_MEMSET_S_FOUND_EXITCODE"
-      cached: true
-      stdout: |
-      stderr: |
       exitCode: 0
   -
     kind: "try_compile-v1"
     backtrace:
-      - "/opt/homebrew/share/cmake/Modules/CheckSymbolExists.cmake:193 (try_compile)"
-      - "/opt/homebrew/share/cmake/Modules/CheckSymbolExists.cmake:98 (__CHECK_SYMBOL_EXISTS_IMPL)"
-      - "build/_deps/seal-src/cmake/CheckMemset.cmake:17 (check_symbol_exists)"
-      - "build/_deps/seal-src/CMakeLists.txt:336 (include)"
+      - "/opt/homebrew/share/cmake/Modules/CheckTypeSize.cmake:348 (try_compile)"
+      - "/opt/homebrew/share/cmake/Modules/CheckTypeSize.cmake:481 (__check_type_size_impl)"
+      - "build/_deps/openfhe-src/CMakeLists.txt:302 (check_type_size)"
     checks:
-      - "Looking for explicit_bzero"
+      - "Check size of uint64_t"
     directories:
-      source: "/Users/bytedance/PCA/build/CMakeFiles/CMakeScratch/TryCompile-udM3S2"
-      binary: "/Users/bytedance/PCA/build/CMakeFiles/CMakeScratch/TryCompile-udM3S2"
+      source: "/Users/bytedance/PCA/build/CMakeFiles/CMakeScratch/TryCompile-e5L6Yh"
+      binary: "/Users/bytedance/PCA/build/CMakeFiles/CMakeScratch/TryCompile-e5L6Yh"
     cmakeVariables:
-      CMAKE_C_FLAGS: ""
+      CMAKE_C_FLAGS: " -Wall -Werror -DOPENFHE_VERSION=1.5.1 -O3"
       CMAKE_C_FLAGS_DEBUG: "-g"
       CMAKE_EXE_LINKER_FLAGS: ""
-      CMAKE_MODULE_PATH: "/Users/bytedance/PCA/build/_deps/seal-src/cmake"
       CMAKE_OSX_ARCHITECTURES: ""
       CMAKE_OSX_DEPLOYMENT_TARGET: ""
       CMAKE_OSX_SYSROOT: ""
-      CMAKE_POSITION_INDEPENDENT_CODE: "ON"
       CMAKE_WARN_DEPRECATED: "FALSE"
     buildResult:
-      variable: "SEAL_EXPLICIT_BZERO_FOUND"
+      variable: "HAVE_INT64"
       cached: true
       stdout: |
-        Change Dir: '/Users/bytedance/PCA/build/CMakeFiles/CMakeScratch/TryCompile-udM3S2'
+        Change Dir: '/Users/bytedance/PCA/build/CMakeFiles/CMakeScratch/TryCompile-e5L6Yh'
         
-        Run Build Command(s): /opt/homebrew/bin/cmake -E env VERBOSE=1 /usr/bin/make -f Makefile cmTC_58ef2/fast
-        /Library/Developer/CommandLineTools/usr/bin/make  -f CMakeFiles/cmTC_58ef2.dir/build.make CMakeFiles/cmTC_58ef2.dir/build
-        Building C object CMakeFiles/cmTC_58ef2.dir/CheckSymbolExists.c.o
-        /usr/bin/cc   -arch arm64 -fPIE -MD -MT CMakeFiles/cmTC_58ef2.dir/CheckSymbolExists.c.o -MF CMakeFiles/cmTC_58ef2.dir/CheckSymbolExists.c.o.d -o CMakeFiles/cmTC_58ef2.dir/CheckSymbolExists.c.o -c /Users/bytedance/PCA/build/CMakeFiles/CMakeScratch/TryCompile-udM3S2/CheckSymbolExists.c
-        /Users/bytedance/PCA/build/CMakeFiles/CMakeScratch/TryCompile-udM3S2/CheckSymbolExists.c:8:19: error: use of undeclared identifier 'explicit_bzero'
-            8 |   return ((int*)(&explicit_bzero))[argc];
-              |                   ^
+        Run Build Command(s): /opt/homebrew/bin/cmake -E env VERBOSE=1 /usr/bin/make -f Makefile cmTC_41780/fast
+        /Library/Developer/CommandLineTools/usr/bin/make  -f CMakeFiles/cmTC_41780.dir/build.make CMakeFiles/cmTC_41780.dir/build
+        Building C object CMakeFiles/cmTC_41780.dir/INT64.c.o
+        /usr/bin/cc   -Wall -Werror -DOPENFHE_VERSION=1.5.1 -O3  -arch arm64 -MD -MT CMakeFiles/cmTC_41780.dir/INT64.c.o -MF CMakeFiles/cmTC_41780.dir/INT64.c.o.d -o CMakeFiles/cmTC_41780.dir/INT64.c.o -c /Users/bytedance/PCA/build/CMakeFiles/CMakeScratch/TryCompile-e5L6Yh/INT64.c
+        Linking C executable cmTC_41780
+        /opt/homebrew/bin/cmake -E cmake_link_script CMakeFiles/cmTC_41780.dir/link.txt --verbose=1
+        /usr/bin/cc  -Wall -Werror -DOPENFHE_VERSION=1.5.1 -O3  -arch arm64 -Wl,-search_paths_first -Wl,-headerpad_max_install_names CMakeFiles/cmTC_41780.dir/INT64.c.o -o cmTC_41780
+        
+      exitCode: 0
+  -
+    kind: "find-v1"
+    backtrace:
+      - "build/_deps/openfhe-src/CMakeLists.txt:406 (find_program)"
+    mode: "program"
+    variable: "TAR"
+    description: "Path to a program."
+    settings:
+      SearchFramework: "FIRST"
+      SearchAppBundle: "FIRST"
+      CMAKE_FIND_USE_CMAKE_PATH: true
+      CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
+      CMAKE_FIND_USE_INSTALL_PREFIX: true
+    names:
+      - "gtar"
+    candidate_directories:
+      - "/opt/homebrew/opt/libomp/bin/"
+      - "/opt/homebrew/opt/libomp/sbin/"
+      - "/opt/homebrew/opt/libomp/"
+      - "/Users/bytedance/Library/Python/3.9/bin/"
+      - "/Users/bytedance/.local/bin/"
+      - "/Users/bytedance/.gvm/bin/"
+      - "/Users/bytedance/go/bin/"
+      - "/usr/local/bytesuite-box/homebrew/bin/"
+      - "/opt/homebrew/bin/"
+      - "/usr/local/bytesuite-box/bin/"
+      - "/usr/local/bin/"
+      - "/System/Cryptexes/App/usr/bin/"
+      - "/usr/bin/"
+      - "/bin/"
+      - "/usr/sbin/"
+      - "/sbin/"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin/"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin/"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin/"
+      - "/usr/local/go/bin/"
+      - "/opt/puppetlabs/bin/"
+      - "/Applications/Cursor.app/Contents/Resources/app/resources/helpers/"
+      - "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/bin/"
+      - "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/sbin/"
+      - "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/"
+      - "/opt/homebrew/bin/"
+      - "/opt/homebrew/sbin/"
+      - "/opt/homebrew/"
+      - "/usr/local/bin/"
+      - "/usr/local/sbin/"
+      - "/usr/local/"
+      - "/usr/bin/"
+      - "/usr/sbin/"
+      - "/usr/"
+      - "/bin/"
+      - "/sbin/"
+      - "/usr/X11R6/bin/"
+      - "/usr/X11R6/sbin/"
+      - "/usr/X11R6/"
+      - "/usr/pkg/bin/"
+      - "/usr/pkg/sbin/"
+      - "/usr/pkg/"
+      - "/opt/bin/"
+      - "/opt/sbin/"
+      - "/opt/"
+      - "/sw/bin/"
+      - "/sw/sbin/"
+      - "/sw/"
+      - "/opt/local/bin/"
+      - "/opt/local/sbin/"
+      - "/opt/local/"
+      - "/Users/bytedance/Applications/"
+      - "/Applications/"
+    searched_directories:
+      - "/opt/homebrew/opt/libomp/bin/gtar"
+      - "/opt/homebrew/opt/libomp/sbin/gtar"
+      - "/opt/homebrew/opt/libomp/gtar"
+      - "/Users/bytedance/Library/Python/3.9/bin/gtar"
+      - "/Users/bytedance/.local/bin/gtar"
+      - "/Users/bytedance/.gvm/bin/gtar"
+      - "/Users/bytedance/go/bin/gtar"
+      - "/usr/local/bytesuite-box/homebrew/bin/gtar"
+      - "/opt/homebrew/bin/gtar"
+      - "/usr/local/bytesuite-box/bin/gtar"
+      - "/usr/local/bin/gtar"
+      - "/System/Cryptexes/App/usr/bin/gtar"
+      - "/usr/bin/gtar"
+      - "/bin/gtar"
+      - "/usr/sbin/gtar"
+      - "/sbin/gtar"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin/gtar"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin/gtar"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin/gtar"
+      - "/usr/local/go/bin/gtar"
+      - "/opt/puppetlabs/bin/gtar"
+      - "/Applications/Cursor.app/Contents/Resources/app/resources/helpers/gtar"
+      - "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/bin/gtar"
+      - "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/sbin/gtar"
+      - "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/gtar"
+      - "/opt/homebrew/bin/gtar"
+      - "/opt/homebrew/sbin/gtar"
+      - "/opt/homebrew/gtar"
+      - "/usr/local/bin/gtar"
+      - "/usr/local/sbin/gtar"
+      - "/usr/local/gtar"
+      - "/usr/bin/gtar"
+      - "/usr/sbin/gtar"
+      - "/usr/gtar"
+      - "/bin/gtar"
+      - "/sbin/gtar"
+      - "/usr/X11R6/bin/gtar"
+      - "/usr/X11R6/sbin/gtar"
+      - "/usr/X11R6/gtar"
+      - "/usr/pkg/bin/gtar"
+      - "/usr/pkg/sbin/gtar"
+      - "/usr/pkg/gtar"
+      - "/opt/bin/gtar"
+      - "/opt/sbin/gtar"
+      - "/opt/gtar"
+      - "/sw/bin/gtar"
+      - "/sw/sbin/gtar"
+      - "/sw/gtar"
+      - "/opt/local/bin/gtar"
+      - "/opt/local/sbin/gtar"
+      - "/opt/local/gtar"
+      - "/Users/bytedance/Applications/gtar"
+      - "/Applications/gtar"
+    found: false
+    search_context:
+      CMAKE_PREFIX_PATH:
+        - "/opt/homebrew/opt/libomp"
+        - "/opt/homebrew/opt/libomp"
+      ENV{PATH}:
+        - "/Users/bytedance/Library/Python/3.9/bin"
+        - "/Users/bytedance/.local/bin"
+        - "/Users/bytedance/.local/bin"
+        - "/Users/bytedance/.gvm/bin"
+        - "/Users/bytedance/go/bin"
+        - "/usr/local/bytesuite-box/homebrew/bin"
+        - "/opt/homebrew/bin"
+        - "/usr/local/bytesuite-box/bin"
+        - "/usr/local/bin"
+        - "/System/Cryptexes/App/usr/bin"
+        - "/usr/bin"
+        - "/bin"
+        - "/usr/sbin"
+        - "/sbin"
+        - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin"
+        - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin"
+        - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin"
+        - "/usr/local/go/bin"
+        - "/opt/puppetlabs/bin"
+        - "/Applications/Cursor.app/Contents/Resources/app/resources/helpers"
+        - "/Users/bytedance/.local/bin"
+      CMAKE_INSTALL_PREFIX: "/usr/local"
+      CMAKE_SYSTEM_PREFIX_PATH:
+        - "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr"
+        - "/opt/homebrew"
+        - "/usr/local"
+        - "/usr"
+        - "/"
+        - "/opt/homebrew"
+        - "/usr/local"
+        - "/usr/X11R6"
+        - "/usr/pkg"
+        - "/opt"
+        - "/sw"
+        - "/opt/local"
+      CMAKE_SYSTEM_APPBUNDLE_PATH:
+        - "/Users/bytedance/Applications"
+        - "/Applications"
+  -
+    kind: "find-v1"
+    backtrace:
+      - "build/_deps/openfhe-src/CMakeLists.txt:407 (find_program)"
+    mode: "program"
+    variable: "TAR"
+    description: "Path to a program."
+    settings:
+      SearchFramework: "FIRST"
+      SearchAppBundle: "FIRST"
+      CMAKE_FIND_USE_CMAKE_PATH: true
+      CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
+      CMAKE_FIND_USE_INSTALL_PREFIX: true
+    names:
+      - "tar"
+    candidate_directories:
+      - "/opt/homebrew/opt/libomp/bin/"
+      - "/opt/homebrew/opt/libomp/sbin/"
+      - "/opt/homebrew/opt/libomp/"
+      - "/Users/bytedance/Library/Python/3.9/bin/"
+      - "/Users/bytedance/.local/bin/"
+      - "/Users/bytedance/.gvm/bin/"
+      - "/Users/bytedance/go/bin/"
+      - "/usr/local/bytesuite-box/homebrew/bin/"
+      - "/opt/homebrew/bin/"
+      - "/usr/local/bytesuite-box/bin/"
+      - "/usr/local/bin/"
+      - "/System/Cryptexes/App/usr/bin/"
+      - "/usr/bin/"
+      - "/bin/"
+      - "/usr/sbin/"
+      - "/sbin/"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin/"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin/"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin/"
+      - "/usr/local/go/bin/"
+      - "/opt/puppetlabs/bin/"
+      - "/Applications/Cursor.app/Contents/Resources/app/resources/helpers/"
+      - "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/bin/"
+      - "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/sbin/"
+      - "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/"
+      - "/opt/homebrew/bin/"
+      - "/opt/homebrew/sbin/"
+      - "/opt/homebrew/"
+      - "/usr/local/bin/"
+      - "/usr/local/sbin/"
+      - "/usr/local/"
+      - "/usr/bin/"
+      - "/usr/sbin/"
+      - "/usr/"
+      - "/bin/"
+      - "/sbin/"
+      - "/usr/X11R6/bin/"
+      - "/usr/X11R6/sbin/"
+      - "/usr/X11R6/"
+      - "/usr/pkg/bin/"
+      - "/usr/pkg/sbin/"
+      - "/usr/pkg/"
+      - "/opt/bin/"
+      - "/opt/sbin/"
+      - "/opt/"
+      - "/sw/bin/"
+      - "/sw/sbin/"
+      - "/sw/"
+      - "/opt/local/bin/"
+      - "/opt/local/sbin/"
+      - "/opt/local/"
+      - "/Users/bytedance/Applications/"
+      - "/Applications/"
+    searched_directories:
+      - "/opt/homebrew/opt/libomp/bin/tar"
+      - "/opt/homebrew/opt/libomp/sbin/tar"
+      - "/opt/homebrew/opt/libomp/tar"
+      - "/Users/bytedance/Library/Python/3.9/bin/tar"
+      - "/Users/bytedance/.local/bin/tar"
+      - "/Users/bytedance/.gvm/bin/tar"
+      - "/Users/bytedance/go/bin/tar"
+      - "/usr/local/bytesuite-box/homebrew/bin/tar"
+      - "/opt/homebrew/bin/tar"
+      - "/usr/local/bytesuite-box/bin/tar"
+      - "/usr/local/bin/tar"
+      - "/System/Cryptexes/App/usr/bin/tar"
+    found: "/usr/bin/tar"
+    search_context:
+      CMAKE_PREFIX_PATH:
+        - "/opt/homebrew/opt/libomp"
+        - "/opt/homebrew/opt/libomp"
+      ENV{PATH}:
+        - "/Users/bytedance/Library/Python/3.9/bin"
+        - "/Users/bytedance/.local/bin"
+        - "/Users/bytedance/.local/bin"
+        - "/Users/bytedance/.gvm/bin"
+        - "/Users/bytedance/go/bin"
+        - "/usr/local/bytesuite-box/homebrew/bin"
+        - "/opt/homebrew/bin"
+        - "/usr/local/bytesuite-box/bin"
+        - "/usr/local/bin"
+        - "/System/Cryptexes/App/usr/bin"
+        - "/usr/bin"
+        - "/bin"
+        - "/usr/sbin"
+        - "/sbin"
+        - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin"
+        - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin"
+        - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin"
+        - "/usr/local/go/bin"
+        - "/opt/puppetlabs/bin"
+        - "/Applications/Cursor.app/Contents/Resources/app/resources/helpers"
+        - "/Users/bytedance/.local/bin"
+      CMAKE_INSTALL_PREFIX: "/usr/local"
+      CMAKE_SYSTEM_PREFIX_PATH:
+        - "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr"
+        - "/opt/homebrew"
+        - "/usr/local"
+        - "/usr"
+        - "/"
+        - "/opt/homebrew"
+        - "/usr/local"
+        - "/usr/X11R6"
+        - "/usr/pkg"
+        - "/opt"
+        - "/sw"
+        - "/opt/local"
+      CMAKE_SYSTEM_APPBUNDLE_PATH:
+        - "/Users/bytedance/Applications"
+        - "/Applications"
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "/opt/homebrew/share/cmake/Modules/FindOpenMP.cmake:574 (try_compile)"
+      - "/opt/homebrew/share/cmake/Modules/FindOpenMP.cmake:714 (_OPENMP_GET_SPEC_DATE)"
+      - "build/_deps/openfhe-src/CMakeLists.txt:486 (find_package)"
+    description: "Detecting C OpenMP version"
+    directories:
+      source: "/Users/bytedance/PCA/build/CMakeFiles/CMakeScratch/TryCompile-NP9rxQ"
+      binary: "/Users/bytedance/PCA/build/CMakeFiles/CMakeScratch/TryCompile-NP9rxQ"
+    cmakeVariables:
+      CMAKE_C_FLAGS: " -Wall -Werror -DOPENFHE_VERSION=1.5.1 -O3 -DMATHBACKEND=4 -Xpreprocessor -fopenmp -lomp -Wno-unused-command-line-argument"
+      CMAKE_C_FLAGS_DEBUG: "-g"
+      CMAKE_EXE_LINKER_FLAGS: ""
+      CMAKE_OSX_ARCHITECTURES: ""
+      CMAKE_OSX_DEPLOYMENT_TARGET: ""
+      CMAKE_OSX_SYSROOT: ""
+      CMAKE_WARN_DEPRECATED: "FALSE"
+    buildResult:
+      variable: "OpenMP_SPECTEST_C_"
+      cached: true
+      stdout: |
+        Change Dir: '/Users/bytedance/PCA/build/CMakeFiles/CMakeScratch/TryCompile-NP9rxQ'
+        
+        Run Build Command(s): /opt/homebrew/bin/cmake -E env VERBOSE=1 /usr/bin/make -f Makefile cmTC_84567/fast
+        /Library/Developer/CommandLineTools/usr/bin/make  -f CMakeFiles/cmTC_84567.dir/build.make CMakeFiles/cmTC_84567.dir/build
+        Building C object CMakeFiles/cmTC_84567.dir/OpenMPCheckVersion.c.o
+        /usr/bin/cc   -Wall -Werror -DOPENFHE_VERSION=1.5.1 -O3 -DMATHBACKEND=4 -Xpreprocessor -fopenmp -lomp -Wno-unused-command-line-argument -Xpreprocessor -fopenmp -lomp -Wno-unused-command-line-argument -arch arm64 -MD -MT CMakeFiles/cmTC_84567.dir/OpenMPCheckVersion.c.o -MF CMakeFiles/cmTC_84567.dir/OpenMPCheckVersion.c.o.d -o CMakeFiles/cmTC_84567.dir/OpenMPCheckVersion.c.o -c /Users/bytedance/PCA/build/CMakeFiles/CMakeScratch/TryCompile-NP9rxQ/OpenMPCheckVersion.c
+        /Users/bytedance/PCA/build/CMakeFiles/CMakeScratch/TryCompile-NP9rxQ/OpenMPCheckVersion.c:3:10: fatal error: 'omp.h' file not found
+            3 | #include <omp.h>
+              |          ^~~~~~~
         1 error generated.
-        make[1]: *** [CMakeFiles/cmTC_58ef2.dir/CheckSymbolExists.c.o] Error 1
-        make: *** [cmTC_58ef2/fast] Error 2
+        make[1]: *** [CMakeFiles/cmTC_84567.dir/OpenMPCheckVersion.c.o] Error 1
+        make: *** [cmTC_84567/fast] Error 2
         
       exitCode: 2
   -
     kind: "try_compile-v1"
     backtrace:
-      - "/opt/homebrew/share/cmake/Modules/CheckSymbolExists.cmake:193 (try_compile)"
-      - "/opt/homebrew/share/cmake/Modules/CheckSymbolExists.cmake:98 (__CHECK_SYMBOL_EXISTS_IMPL)"
-      - "build/_deps/seal-src/cmake/CheckMemset.cmake:20 (check_symbol_exists)"
-      - "build/_deps/seal-src/CMakeLists.txt:336 (include)"
-    checks:
-      - "Looking for explicit_memset"
+      - "/opt/homebrew/share/cmake/Modules/FindOpenMP.cmake:574 (try_compile)"
+      - "/opt/homebrew/share/cmake/Modules/FindOpenMP.cmake:714 (_OPENMP_GET_SPEC_DATE)"
+      - "build/_deps/openfhe-src/CMakeLists.txt:486 (find_package)"
+    description: "Detecting CXX OpenMP version"
     directories:
-      source: "/Users/bytedance/PCA/build/CMakeFiles/CMakeScratch/TryCompile-BaKk33"
-      binary: "/Users/bytedance/PCA/build/CMakeFiles/CMakeScratch/TryCompile-BaKk33"
+      source: "/Users/bytedance/PCA/build/CMakeFiles/CMakeScratch/TryCompile-m9v3Bu"
+      binary: "/Users/bytedance/PCA/build/CMakeFiles/CMakeScratch/TryCompile-m9v3Bu"
     cmakeVariables:
-      CMAKE_C_FLAGS: ""
-      CMAKE_C_FLAGS_DEBUG: "-g"
+      CMAKE_CXX_FLAGS: " -Wall -Werror -DOPENFHE_VERSION=1.5.1 -O3 -DMATHBACKEND=4 -Xpreprocessor -fopenmp -lomp -Wno-unused-command-line-argument"
+      CMAKE_CXX_FLAGS_DEBUG: "-g"
       CMAKE_EXE_LINKER_FLAGS: ""
-      CMAKE_MODULE_PATH: "/Users/bytedance/PCA/build/_deps/seal-src/cmake"
       CMAKE_OSX_ARCHITECTURES: ""
       CMAKE_OSX_DEPLOYMENT_TARGET: ""
       CMAKE_OSX_SYSROOT: ""
-      CMAKE_POSITION_INDEPENDENT_CODE: "ON"
       CMAKE_WARN_DEPRECATED: "FALSE"
     buildResult:
-      variable: "SEAL_EXPLICIT_MEMSET_FOUND"
+      variable: "OpenMP_SPECTEST_CXX_"
       cached: true
       stdout: |
-        Change Dir: '/Users/bytedance/PCA/build/CMakeFiles/CMakeScratch/TryCompile-BaKk33'
+        Change Dir: '/Users/bytedance/PCA/build/CMakeFiles/CMakeScratch/TryCompile-m9v3Bu'
         
-        Run Build Command(s): /opt/homebrew/bin/cmake -E env VERBOSE=1 /usr/bin/make -f Makefile cmTC_52d57/fast
-        /Library/Developer/CommandLineTools/usr/bin/make  -f CMakeFiles/cmTC_52d57.dir/build.make CMakeFiles/cmTC_52d57.dir/build
-        Building C object CMakeFiles/cmTC_52d57.dir/CheckSymbolExists.c.o
-        /usr/bin/cc   -arch arm64 -fPIE -MD -MT CMakeFiles/cmTC_52d57.dir/CheckSymbolExists.c.o -MF CMakeFiles/cmTC_52d57.dir/CheckSymbolExists.c.o.d -o CMakeFiles/cmTC_52d57.dir/CheckSymbolExists.c.o -c /Users/bytedance/PCA/build/CMakeFiles/CMakeScratch/TryCompile-BaKk33/CheckSymbolExists.c
-        /Users/bytedance/PCA/build/CMakeFiles/CMakeScratch/TryCompile-BaKk33/CheckSymbolExists.c:8:19: error: use of undeclared identifier 'explicit_memset'
-            8 |   return ((int*)(&explicit_memset))[argc];
-              |                   ^
+        Run Build Command(s): /opt/homebrew/bin/cmake -E env VERBOSE=1 /usr/bin/make -f Makefile cmTC_3ad9e/fast
+        /Library/Developer/CommandLineTools/usr/bin/make  -f CMakeFiles/cmTC_3ad9e.dir/build.make CMakeFiles/cmTC_3ad9e.dir/build
+        Building CXX object CMakeFiles/cmTC_3ad9e.dir/OpenMPCheckVersion.cpp.o
+        /usr/bin/c++   -Wall -Werror -DOPENFHE_VERSION=1.5.1 -O3 -DMATHBACKEND=4 -Xpreprocessor -fopenmp -lomp -Wno-unused-command-line-argument -Xpreprocessor -fopenmp -lomp -Wno-unused-command-line-argument -std=gnu++17 -arch arm64 -MD -MT CMakeFiles/cmTC_3ad9e.dir/OpenMPCheckVersion.cpp.o -MF CMakeFiles/cmTC_3ad9e.dir/OpenMPCheckVersion.cpp.o.d -o CMakeFiles/cmTC_3ad9e.dir/OpenMPCheckVersion.cpp.o -c /Users/bytedance/PCA/build/CMakeFiles/CMakeScratch/TryCompile-m9v3Bu/OpenMPCheckVersion.cpp
+        /Users/bytedance/PCA/build/CMakeFiles/CMakeScratch/TryCompile-m9v3Bu/OpenMPCheckVersion.cpp:3:10: fatal error: 'omp.h' file not found
+            3 | #include <omp.h>
+              |          ^~~~~~~
         1 error generated.
-        make[1]: *** [CMakeFiles/cmTC_52d57.dir/CheckSymbolExists.c.o] Error 1
-        make: *** [cmTC_52d57/fast] Error 2
+        make[1]: *** [CMakeFiles/cmTC_3ad9e.dir/OpenMPCheckVersion.cpp.o] Error 1
+        make: *** [cmTC_3ad9e/fast] Error 2
+        
+      exitCode: 2
+...
+
+---
+events:
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "/opt/homebrew/share/cmake/Modules/FindOpenMP.cmake:574 (try_compile)"
+      - "/opt/homebrew/share/cmake/Modules/FindOpenMP.cmake:714 (_OPENMP_GET_SPEC_DATE)"
+      - "build/_deps/openfhe-src/CMakeLists.txt:486 (find_package)"
+    description: "Detecting C OpenMP version"
+    directories:
+      source: "/Users/bytedance/PCA/build/CMakeFiles/CMakeScratch/TryCompile-IHkCWJ"
+      binary: "/Users/bytedance/PCA/build/CMakeFiles/CMakeScratch/TryCompile-IHkCWJ"
+    cmakeVariables:
+      CMAKE_C_FLAGS: " -Wall -Werror -DOPENFHE_VERSION=1.5.1 -O3 -DMATHBACKEND=4 -Xpreprocessor -fopenmp -lomp -Wno-unused-command-line-argument"
+      CMAKE_C_FLAGS_DEBUG: "-g"
+      CMAKE_EXE_LINKER_FLAGS: ""
+      CMAKE_OSX_ARCHITECTURES: ""
+      CMAKE_OSX_DEPLOYMENT_TARGET: ""
+      CMAKE_OSX_SYSROOT: ""
+      CMAKE_WARN_DEPRECATED: "FALSE"
+    buildResult:
+      variable: "OpenMP_SPECTEST_C_"
+      cached: true
+      stdout: |
+        Change Dir: '/Users/bytedance/PCA/build/CMakeFiles/CMakeScratch/TryCompile-IHkCWJ'
+        
+        Run Build Command(s): /opt/homebrew/bin/cmake -E env VERBOSE=1 /usr/bin/make -f Makefile cmTC_35dd2/fast
+        /Library/Developer/CommandLineTools/usr/bin/make  -f CMakeFiles/cmTC_35dd2.dir/build.make CMakeFiles/cmTC_35dd2.dir/build
+        Building C object CMakeFiles/cmTC_35dd2.dir/OpenMPCheckVersion.c.o
+        /usr/bin/cc   -Wall -Werror -DOPENFHE_VERSION=1.5.1 -O3 -DMATHBACKEND=4 -Xpreprocessor -fopenmp -lomp -Wno-unused-command-line-argument -Xpreprocessor -fopenmp -lomp -Wno-unused-command-line-argument -arch arm64 -MD -MT CMakeFiles/cmTC_35dd2.dir/OpenMPCheckVersion.c.o -MF CMakeFiles/cmTC_35dd2.dir/OpenMPCheckVersion.c.o.d -o CMakeFiles/cmTC_35dd2.dir/OpenMPCheckVersion.c.o -c /Users/bytedance/PCA/build/CMakeFiles/CMakeScratch/TryCompile-IHkCWJ/OpenMPCheckVersion.c
+        /Users/bytedance/PCA/build/CMakeFiles/CMakeScratch/TryCompile-IHkCWJ/OpenMPCheckVersion.c:3:10: fatal error: 'omp.h' file not found
+            3 | #include <omp.h>
+              |          ^~~~~~~
+        1 error generated.
+        make[2]: *** [CMakeFiles/cmTC_35dd2.dir/OpenMPCheckVersion.c.o] Error 1
+        make[1]: *** [cmTC_35dd2/fast] Error 2
         
       exitCode: 2
   -
     kind: "try_compile-v1"
     backtrace:
-      - "/opt/homebrew/share/cmake/Modules/Internal/CheckSourceCompiles.cmake:104 (try_compile)"
-      - "/opt/homebrew/share/cmake/Modules/CheckCSourceCompiles.cmake:103 (cmake_check_source_compiles)"
-      - "/opt/homebrew/share/cmake/Modules/FindThreads.cmake:160 (check_c_source_compiles)"
-      - "/opt/homebrew/share/cmake/Modules/FindThreads.cmake:226 (_threads_check_libc)"
-      - "build/_deps/seal-src/cmake/SEALMacros.cmake:55 (find_package)"
-      - "build/_deps/seal-src/CMakeLists.txt:390 (seal_link_threads)"
-    checks:
-      - "Performing Test CMAKE_HAVE_LIBC_PTHREAD"
+      - "/opt/homebrew/share/cmake/Modules/FindOpenMP.cmake:574 (try_compile)"
+      - "/opt/homebrew/share/cmake/Modules/FindOpenMP.cmake:714 (_OPENMP_GET_SPEC_DATE)"
+      - "build/_deps/openfhe-src/CMakeLists.txt:486 (find_package)"
+    description: "Detecting CXX OpenMP version"
     directories:
-      source: "/Users/bytedance/PCA/build/CMakeFiles/CMakeScratch/TryCompile-pdTeCd"
-      binary: "/Users/bytedance/PCA/build/CMakeFiles/CMakeScratch/TryCompile-pdTeCd"
+      source: "/Users/bytedance/PCA/build/CMakeFiles/CMakeScratch/TryCompile-mHcHRO"
+      binary: "/Users/bytedance/PCA/build/CMakeFiles/CMakeScratch/TryCompile-mHcHRO"
     cmakeVariables:
-      CMAKE_C_FLAGS: ""
+      CMAKE_CXX_FLAGS: " -Wall -Werror -DOPENFHE_VERSION=1.5.1 -O3 -DMATHBACKEND=4 -Xpreprocessor -fopenmp -lomp -Wno-unused-command-line-argument"
+      CMAKE_CXX_FLAGS_DEBUG: "-g"
+      CMAKE_EXE_LINKER_FLAGS: ""
+      CMAKE_OSX_ARCHITECTURES: ""
+      CMAKE_OSX_DEPLOYMENT_TARGET: ""
+      CMAKE_OSX_SYSROOT: ""
+      CMAKE_WARN_DEPRECATED: "FALSE"
+    buildResult:
+      variable: "OpenMP_SPECTEST_CXX_"
+      cached: true
+      stdout: |
+        Change Dir: '/Users/bytedance/PCA/build/CMakeFiles/CMakeScratch/TryCompile-mHcHRO'
+        
+        Run Build Command(s): /opt/homebrew/bin/cmake -E env VERBOSE=1 /usr/bin/make -f Makefile cmTC_97f57/fast
+        /Library/Developer/CommandLineTools/usr/bin/make  -f CMakeFiles/cmTC_97f57.dir/build.make CMakeFiles/cmTC_97f57.dir/build
+        Building CXX object CMakeFiles/cmTC_97f57.dir/OpenMPCheckVersion.cpp.o
+        /usr/bin/c++   -Wall -Werror -DOPENFHE_VERSION=1.5.1 -O3 -DMATHBACKEND=4 -Xpreprocessor -fopenmp -lomp -Wno-unused-command-line-argument -Xpreprocessor -fopenmp -lomp -Wno-unused-command-line-argument -std=gnu++17 -arch arm64 -MD -MT CMakeFiles/cmTC_97f57.dir/OpenMPCheckVersion.cpp.o -MF CMakeFiles/cmTC_97f57.dir/OpenMPCheckVersion.cpp.o.d -o CMakeFiles/cmTC_97f57.dir/OpenMPCheckVersion.cpp.o -c /Users/bytedance/PCA/build/CMakeFiles/CMakeScratch/TryCompile-mHcHRO/OpenMPCheckVersion.cpp
+        /Users/bytedance/PCA/build/CMakeFiles/CMakeScratch/TryCompile-mHcHRO/OpenMPCheckVersion.cpp:3:10: fatal error: 'omp.h' file not found
+            3 | #include <omp.h>
+              |          ^~~~~~~
+        1 error generated.
+        make[2]: *** [CMakeFiles/cmTC_97f57.dir/OpenMPCheckVersion.cpp.o] Error 1
+        make[1]: *** [cmTC_97f57/fast] Error 2
+        
+      exitCode: 2
+...
+
+---
+events:
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "/opt/homebrew/share/cmake/Modules/FindOpenMP.cmake:574 (try_compile)"
+      - "/opt/homebrew/share/cmake/Modules/FindOpenMP.cmake:714 (_OPENMP_GET_SPEC_DATE)"
+      - "build/_deps/openfhe-src/CMakeLists.txt:486 (find_package)"
+    description: "Detecting C OpenMP version"
+    directories:
+      source: "/Users/bytedance/PCA/build/CMakeFiles/CMakeScratch/TryCompile-5zZWT6"
+      binary: "/Users/bytedance/PCA/build/CMakeFiles/CMakeScratch/TryCompile-5zZWT6"
+    cmakeVariables:
+      CMAKE_C_FLAGS: " -Wall -Werror -DOPENFHE_VERSION=1.5.1 -O3 -DMATHBACKEND=4 -Xpreprocessor -fopenmp -lomp -Wno-unused-command-line-argument"
       CMAKE_C_FLAGS_DEBUG: "-g"
       CMAKE_EXE_LINKER_FLAGS: ""
-      CMAKE_MODULE_PATH: "/Users/bytedance/PCA/build/_deps/seal-src/cmake"
       CMAKE_OSX_ARCHITECTURES: ""
       CMAKE_OSX_DEPLOYMENT_TARGET: ""
       CMAKE_OSX_SYSROOT: ""
-      CMAKE_POSITION_INDEPENDENT_CODE: "ON"
       CMAKE_WARN_DEPRECATED: "FALSE"
     buildResult:
-      variable: "CMAKE_HAVE_LIBC_PTHREAD"
+      variable: "OpenMP_SPECTEST_C_"
       cached: true
       stdout: |
-        Change Dir: '/Users/bytedance/PCA/build/CMakeFiles/CMakeScratch/TryCompile-pdTeCd'
+        Change Dir: '/Users/bytedance/PCA/build/CMakeFiles/CMakeScratch/TryCompile-5zZWT6'
         
-        Run Build Command(s): /opt/homebrew/bin/cmake -E env VERBOSE=1 /usr/bin/make -f Makefile cmTC_5f349/fast
-        /Library/Developer/CommandLineTools/usr/bin/make  -f CMakeFiles/cmTC_5f349.dir/build.make CMakeFiles/cmTC_5f349.dir/build
-        Building C object CMakeFiles/cmTC_5f349.dir/src.c.o
-        /usr/bin/cc -DCMAKE_HAVE_LIBC_PTHREAD  -arch arm64 -fPIE -MD -MT CMakeFiles/cmTC_5f349.dir/src.c.o -MF CMakeFiles/cmTC_5f349.dir/src.c.o.d -o CMakeFiles/cmTC_5f349.dir/src.c.o -c /Users/bytedance/PCA/build/CMakeFiles/CMakeScratch/TryCompile-pdTeCd/src.c
-        Linking C executable cmTC_5f349
-        /opt/homebrew/bin/cmake -E cmake_link_script CMakeFiles/cmTC_5f349.dir/link.txt --verbose=1
-        /usr/bin/cc  -arch arm64 -Wl,-search_paths_first -Wl,-headerpad_max_install_names CMakeFiles/cmTC_5f349.dir/src.c.o -o cmTC_5f349
+        Run Build Command(s): /opt/homebrew/bin/cmake -E env VERBOSE=1 /usr/bin/make -f Makefile cmTC_ee6b9/fast
+        /Library/Developer/CommandLineTools/usr/bin/make  -f CMakeFiles/cmTC_ee6b9.dir/build.make CMakeFiles/cmTC_ee6b9.dir/build
+        Building C object CMakeFiles/cmTC_ee6b9.dir/OpenMPCheckVersion.c.o
+        /usr/bin/cc   -Wall -Werror -DOPENFHE_VERSION=1.5.1 -O3 -DMATHBACKEND=4 -Xpreprocessor -fopenmp -lomp -Wno-unused-command-line-argument -Xpreprocessor -fopenmp -lomp -Wno-unused-command-line-argument -arch arm64 -MD -MT CMakeFiles/cmTC_ee6b9.dir/OpenMPCheckVersion.c.o -MF CMakeFiles/cmTC_ee6b9.dir/OpenMPCheckVersion.c.o.d -o CMakeFiles/cmTC_ee6b9.dir/OpenMPCheckVersion.c.o -c /Users/bytedance/PCA/build/CMakeFiles/CMakeScratch/TryCompile-5zZWT6/OpenMPCheckVersion.c
+        /Users/bytedance/PCA/build/CMakeFiles/CMakeScratch/TryCompile-5zZWT6/OpenMPCheckVersion.c:3:10: fatal error: 'omp.h' file not found
+            3 | #include <omp.h>
+              |          ^~~~~~~
+        1 error generated.
+        make[2]: *** [CMakeFiles/cmTC_ee6b9.dir/OpenMPCheckVersion.c.o] Error 1
+        make[1]: *** [cmTC_ee6b9/fast] Error 2
         
-      exitCode: 0
-...
-
----
-events:
+      exitCode: 2
   -
     kind: "try_compile-v1"
     backtrace:
-      - "/opt/homebrew/share/cmake/Modules/Internal/CheckSourceCompiles.cmake:104 (try_compile)"
-      - "/opt/homebrew/share/cmake/Modules/CheckCXXSourceCompiles.cmake:103 (cmake_check_source_compiles)"
-      - "build/_deps/seal-src/cmake/EnableCXX17.cmake:28 (check_cxx_source_compiles)"
-      - "build/_deps/seal-src/CMakeLists.txt:68 (include)"
+      - "/opt/homebrew/share/cmake/Modules/FindOpenMP.cmake:574 (try_compile)"
+      - "/opt/homebrew/share/cmake/Modules/FindOpenMP.cmake:714 (_OPENMP_GET_SPEC_DATE)"
+      - "build/_deps/openfhe-src/CMakeLists.txt:486 (find_package)"
+    description: "Detecting CXX OpenMP version"
     directories:
-      source: "/Users/bytedance/PCA/build/CMakeFiles/CMakeScratch/TryCompile-WH2i1N"
-      binary: "/Users/bytedance/PCA/build/CMakeFiles/CMakeScratch/TryCompile-WH2i1N"
+      source: "/Users/bytedance/PCA/build/CMakeFiles/CMakeScratch/TryCompile-V0Ryz7"
+      binary: "/Users/bytedance/PCA/build/CMakeFiles/CMakeScratch/TryCompile-V0Ryz7"
     cmakeVariables:
-      CMAKE_CXX_FLAGS: ""
+      CMAKE_CXX_FLAGS: " -Wall -Werror -DOPENFHE_VERSION=1.5.1 -O3 -DMATHBACKEND=4 -Xpreprocessor -fopenmp -lomp -Wno-unused-command-line-argument"
       CMAKE_CXX_FLAGS_DEBUG: "-g"
       CMAKE_EXE_LINKER_FLAGS: ""
-      CMAKE_MODULE_PATH: "/Users/bytedance/PCA/build/_deps/seal-src/cmake"
       CMAKE_OSX_ARCHITECTURES: ""
       CMAKE_OSX_DEPLOYMENT_TARGET: ""
       CMAKE_OSX_SYSROOT: ""
-      CMAKE_POSITION_INDEPENDENT_CODE: "ON"
       CMAKE_WARN_DEPRECATED: "FALSE"
     buildResult:
-      variable: "USE_STD_FOR_EACH_N"
+      variable: "OpenMP_SPECTEST_CXX_"
       cached: true
       stdout: |
-        Change Dir: '/Users/bytedance/PCA/build/CMakeFiles/CMakeScratch/TryCompile-WH2i1N'
+        Change Dir: '/Users/bytedance/PCA/build/CMakeFiles/CMakeScratch/TryCompile-V0Ryz7'
         
-        Run Build Command(s): /opt/homebrew/bin/cmake -E env VERBOSE=1 /usr/bin/make -f Makefile cmTC_b23bd/fast
-        /Library/Developer/CommandLineTools/usr/bin/make  -f CMakeFiles/cmTC_b23bd.dir/build.make CMakeFiles/cmTC_b23bd.dir/build
-        Building CXX object CMakeFiles/cmTC_b23bd.dir/src.cxx.o
-        /usr/bin/c++ -DUSE_STD_FOR_EACH_N  -O0 -std=c++17 -std=gnu++17 -arch arm64 -fPIE -MD -MT CMakeFiles/cmTC_b23bd.dir/src.cxx.o -MF CMakeFiles/cmTC_b23bd.dir/src.cxx.o.d -o CMakeFiles/cmTC_b23bd.dir/src.cxx.o -c /Users/bytedance/PCA/build/CMakeFiles/CMakeScratch/TryCompile-WH2i1N/src.cxx
-        Linking CXX executable cmTC_b23bd
-        /opt/homebrew/bin/cmake -E cmake_link_script CMakeFiles/cmTC_b23bd.dir/link.txt --verbose=1
-        /usr/bin/c++   -O0 -std=c++17 -arch arm64 -Wl,-search_paths_first -Wl,-headerpad_max_install_names CMakeFiles/cmTC_b23bd.dir/src.cxx.o -o cmTC_b23bd
+        Run Build Command(s): /opt/homebrew/bin/cmake -E env VERBOSE=1 /usr/bin/make -f Makefile cmTC_b12ff/fast
+        /Library/Developer/CommandLineTools/usr/bin/make  -f CMakeFiles/cmTC_b12ff.dir/build.make CMakeFiles/cmTC_b12ff.dir/build
+        Building CXX object CMakeFiles/cmTC_b12ff.dir/OpenMPCheckVersion.cpp.o
+        /usr/bin/c++   -Wall -Werror -DOPENFHE_VERSION=1.5.1 -O3 -DMATHBACKEND=4 -Xpreprocessor -fopenmp -lomp -Wno-unused-command-line-argument -Xpreprocessor -fopenmp -lomp -Wno-unused-command-line-argument -std=gnu++17 -arch arm64 -MD -MT CMakeFiles/cmTC_b12ff.dir/OpenMPCheckVersion.cpp.o -MF CMakeFiles/cmTC_b12ff.dir/OpenMPCheckVersion.cpp.o.d -o CMakeFiles/cmTC_b12ff.dir/OpenMPCheckVersion.cpp.o -c /Users/bytedance/PCA/build/CMakeFiles/CMakeScratch/TryCompile-V0Ryz7/OpenMPCheckVersion.cpp
+        /Users/bytedance/PCA/build/CMakeFiles/CMakeScratch/TryCompile-V0Ryz7/OpenMPCheckVersion.cpp:3:10: fatal error: 'omp.h' file not found
+            3 | #include <omp.h>
+              |          ^~~~~~~
+        1 error generated.
+        make[2]: *** [CMakeFiles/cmTC_b12ff.dir/OpenMPCheckVersion.cpp.o] Error 1
+        make[1]: *** [cmTC_b12ff/fast] Error 2
         
-      exitCode: 0
-...
-
----
-events:
-  -
-    kind: "try_compile-v1"
-    backtrace:
-      - "/opt/homebrew/share/cmake/Modules/Internal/CheckSourceCompiles.cmake:104 (try_compile)"
-      - "/opt/homebrew/share/cmake/Modules/CheckCXXSourceCompiles.cmake:103 (cmake_check_source_compiles)"
-      - "build/_deps/seal-src/cmake/EnableCXX17.cmake:28 (check_cxx_source_compiles)"
-      - "build/_deps/seal-src/CMakeLists.txt:68 (include)"
-    directories:
-      source: "/Users/bytedance/PCA/build/CMakeFiles/CMakeScratch/TryCompile-lxcYaX"
-      binary: "/Users/bytedance/PCA/build/CMakeFiles/CMakeScratch/TryCompile-lxcYaX"
-    cmakeVariables:
-      CMAKE_CXX_FLAGS: ""
-      CMAKE_CXX_FLAGS_DEBUG: "-g"
-      CMAKE_EXE_LINKER_FLAGS: ""
-      CMAKE_MODULE_PATH: "/Users/bytedance/PCA/build/_deps/seal-src/cmake"
-      CMAKE_OSX_ARCHITECTURES: ""
-      CMAKE_OSX_DEPLOYMENT_TARGET: ""
-      CMAKE_OSX_SYSROOT: ""
-      CMAKE_POSITION_INDEPENDENT_CODE: "ON"
-      CMAKE_WARN_DEPRECATED: "FALSE"
-    buildResult:
-      variable: "USE_STD_FOR_EACH_N"
-      cached: true
-      stdout: |
-        Change Dir: '/Users/bytedance/PCA/build/CMakeFiles/CMakeScratch/TryCompile-lxcYaX'
-        
-        Run Build Command(s): /opt/homebrew/bin/cmake -E env VERBOSE=1 /usr/bin/make -f Makefile cmTC_a965a/fast
-        /Library/Developer/CommandLineTools/usr/bin/make  -f CMakeFiles/cmTC_a965a.dir/build.make CMakeFiles/cmTC_a965a.dir/build
-        Building CXX object CMakeFiles/cmTC_a965a.dir/src.cxx.o
-        /usr/bin/c++ -DUSE_STD_FOR_EACH_N  -O0 -std=c++17 -std=gnu++17 -arch arm64 -fPIE -MD -MT CMakeFiles/cmTC_a965a.dir/src.cxx.o -MF CMakeFiles/cmTC_a965a.dir/src.cxx.o.d -o CMakeFiles/cmTC_a965a.dir/src.cxx.o -c /Users/bytedance/PCA/build/CMakeFiles/CMakeScratch/TryCompile-lxcYaX/src.cxx
-        Linking CXX executable cmTC_a965a
-        /opt/homebrew/bin/cmake -E cmake_link_script CMakeFiles/cmTC_a965a.dir/link.txt --verbose=1
-        /usr/bin/c++   -O0 -std=c++17 -arch arm64 -Wl,-search_paths_first -Wl,-headerpad_max_install_names CMakeFiles/cmTC_a965a.dir/src.cxx.o -o cmTC_a965a
-        
-      exitCode: 0
-...
-
----
-events:
-  -
-    kind: "try_compile-v1"
-    backtrace:
-      - "/opt/homebrew/share/cmake/Modules/Internal/CheckSourceCompiles.cmake:104 (try_compile)"
-      - "/opt/homebrew/share/cmake/Modules/CheckCXXSourceCompiles.cmake:103 (cmake_check_source_compiles)"
-      - "build/_deps/seal-src/cmake/EnableCXX17.cmake:28 (check_cxx_source_compiles)"
-      - "build/_deps/seal-src/CMakeLists.txt:68 (include)"
-    directories:
-      source: "/Users/bytedance/PCA/build/CMakeFiles/CMakeScratch/TryCompile-ZMpqct"
-      binary: "/Users/bytedance/PCA/build/CMakeFiles/CMakeScratch/TryCompile-ZMpqct"
-    cmakeVariables:
-      CMAKE_CXX_FLAGS: ""
-      CMAKE_CXX_FLAGS_DEBUG: "-g"
-      CMAKE_EXE_LINKER_FLAGS: ""
-      CMAKE_MODULE_PATH: "/Users/bytedance/PCA/build/_deps/seal-src/cmake"
-      CMAKE_OSX_ARCHITECTURES: ""
-      CMAKE_OSX_DEPLOYMENT_TARGET: ""
-      CMAKE_OSX_SYSROOT: ""
-      CMAKE_POSITION_INDEPENDENT_CODE: "ON"
-      CMAKE_WARN_DEPRECATED: "FALSE"
-    buildResult:
-      variable: "USE_STD_FOR_EACH_N"
-      cached: true
-      stdout: |
-        Change Dir: '/Users/bytedance/PCA/build/CMakeFiles/CMakeScratch/TryCompile-ZMpqct'
-        
-        Run Build Command(s): /opt/homebrew/bin/cmake -E env VERBOSE=1 /usr/bin/make -f Makefile cmTC_fce59/fast
-        /Library/Developer/CommandLineTools/usr/bin/make  -f CMakeFiles/cmTC_fce59.dir/build.make CMakeFiles/cmTC_fce59.dir/build
-        Building CXX object CMakeFiles/cmTC_fce59.dir/src.cxx.o
-        /usr/bin/c++ -DUSE_STD_FOR_EACH_N  -O0 -std=c++17 -std=gnu++17 -arch arm64 -fPIE -MD -MT CMakeFiles/cmTC_fce59.dir/src.cxx.o -MF CMakeFiles/cmTC_fce59.dir/src.cxx.o.d -o CMakeFiles/cmTC_fce59.dir/src.cxx.o -c /Users/bytedance/PCA/build/CMakeFiles/CMakeScratch/TryCompile-ZMpqct/src.cxx
-        Linking CXX executable cmTC_fce59
-        /opt/homebrew/bin/cmake -E cmake_link_script CMakeFiles/cmTC_fce59.dir/link.txt --verbose=1
-        /usr/bin/c++   -O0 -std=c++17 -arch arm64 -Wl,-search_paths_first -Wl,-headerpad_max_install_names CMakeFiles/cmTC_fce59.dir/src.cxx.o -o cmTC_fce59
-        
-      exitCode: 0
-...
-
----
-events:
-  -
-    kind: "try_compile-v1"
-    backtrace:
-      - "/opt/homebrew/share/cmake/Modules/Internal/CheckSourceCompiles.cmake:104 (try_compile)"
-      - "/opt/homebrew/share/cmake/Modules/CheckCXXSourceCompiles.cmake:103 (cmake_check_source_compiles)"
-      - "build/_deps/seal-src/cmake/EnableCXX17.cmake:28 (check_cxx_source_compiles)"
-      - "build/_deps/seal-src/CMakeLists.txt:68 (include)"
-    directories:
-      source: "/Users/bytedance/PCA/build/CMakeFiles/CMakeScratch/TryCompile-VEuqgO"
-      binary: "/Users/bytedance/PCA/build/CMakeFiles/CMakeScratch/TryCompile-VEuqgO"
-    cmakeVariables:
-      CMAKE_CXX_FLAGS: ""
-      CMAKE_CXX_FLAGS_DEBUG: "-g"
-      CMAKE_EXE_LINKER_FLAGS: ""
-      CMAKE_MODULE_PATH: "/Users/bytedance/PCA/build/_deps/seal-src/cmake"
-      CMAKE_OSX_ARCHITECTURES: ""
-      CMAKE_OSX_DEPLOYMENT_TARGET: ""
-      CMAKE_OSX_SYSROOT: ""
-      CMAKE_POSITION_INDEPENDENT_CODE: "ON"
-      CMAKE_WARN_DEPRECATED: "FALSE"
-    buildResult:
-      variable: "USE_STD_FOR_EACH_N"
-      cached: true
-      stdout: |
-        Change Dir: '/Users/bytedance/PCA/build/CMakeFiles/CMakeScratch/TryCompile-VEuqgO'
-        
-        Run Build Command(s): /opt/homebrew/bin/cmake -E env VERBOSE=1 /usr/bin/make -f Makefile cmTC_87a03/fast
-        /Library/Developer/CommandLineTools/usr/bin/make  -f CMakeFiles/cmTC_87a03.dir/build.make CMakeFiles/cmTC_87a03.dir/build
-        Building CXX object CMakeFiles/cmTC_87a03.dir/src.cxx.o
-        /usr/bin/c++ -DUSE_STD_FOR_EACH_N  -O0 -std=c++17 -std=gnu++17 -arch arm64 -fPIE -MD -MT CMakeFiles/cmTC_87a03.dir/src.cxx.o -MF CMakeFiles/cmTC_87a03.dir/src.cxx.o.d -o CMakeFiles/cmTC_87a03.dir/src.cxx.o -c /Users/bytedance/PCA/build/CMakeFiles/CMakeScratch/TryCompile-VEuqgO/src.cxx
-        Linking CXX executable cmTC_87a03
-        /opt/homebrew/bin/cmake -E cmake_link_script CMakeFiles/cmTC_87a03.dir/link.txt --verbose=1
-        /usr/bin/c++   -O0 -std=c++17 -arch arm64 -Wl,-search_paths_first -Wl,-headerpad_max_install_names CMakeFiles/cmTC_87a03.dir/src.cxx.o -o cmTC_87a03
-        
-      exitCode: 0
-...
-
----
-events:
-  -
-    kind: "try_compile-v1"
-    backtrace:
-      - "/opt/homebrew/share/cmake/Modules/Internal/CheckSourceCompiles.cmake:104 (try_compile)"
-      - "/opt/homebrew/share/cmake/Modules/CheckCXXSourceCompiles.cmake:103 (cmake_check_source_compiles)"
-      - "build/_deps/seal-src/cmake/EnableCXX17.cmake:28 (check_cxx_source_compiles)"
-      - "build/_deps/seal-src/CMakeLists.txt:68 (include)"
-    directories:
-      source: "/Users/bytedance/PCA/build/CMakeFiles/CMakeScratch/TryCompile-UaoKJ7"
-      binary: "/Users/bytedance/PCA/build/CMakeFiles/CMakeScratch/TryCompile-UaoKJ7"
-    cmakeVariables:
-      CMAKE_CXX_FLAGS: ""
-      CMAKE_CXX_FLAGS_DEBUG: "-g"
-      CMAKE_EXE_LINKER_FLAGS: ""
-      CMAKE_MODULE_PATH: "/Users/bytedance/PCA/build/_deps/seal-src/cmake"
-      CMAKE_OSX_ARCHITECTURES: ""
-      CMAKE_OSX_DEPLOYMENT_TARGET: ""
-      CMAKE_OSX_SYSROOT: ""
-      CMAKE_POSITION_INDEPENDENT_CODE: "ON"
-      CMAKE_WARN_DEPRECATED: "FALSE"
-    buildResult:
-      variable: "USE_STD_FOR_EACH_N"
-      cached: true
-      stdout: |
-        Change Dir: '/Users/bytedance/PCA/build/CMakeFiles/CMakeScratch/TryCompile-UaoKJ7'
-        
-        Run Build Command(s): /opt/homebrew/bin/cmake -E env VERBOSE=1 /usr/bin/make -f Makefile cmTC_51d63/fast
-        /Library/Developer/CommandLineTools/usr/bin/make  -f CMakeFiles/cmTC_51d63.dir/build.make CMakeFiles/cmTC_51d63.dir/build
-        Building CXX object CMakeFiles/cmTC_51d63.dir/src.cxx.o
-        /usr/bin/c++ -DUSE_STD_FOR_EACH_N  -O0 -std=c++17 -std=gnu++17 -arch arm64 -fPIE -MD -MT CMakeFiles/cmTC_51d63.dir/src.cxx.o -MF CMakeFiles/cmTC_51d63.dir/src.cxx.o.d -o CMakeFiles/cmTC_51d63.dir/src.cxx.o -c /Users/bytedance/PCA/build/CMakeFiles/CMakeScratch/TryCompile-UaoKJ7/src.cxx
-        Linking CXX executable cmTC_51d63
-        /opt/homebrew/bin/cmake -E cmake_link_script CMakeFiles/cmTC_51d63.dir/link.txt --verbose=1
-        /usr/bin/c++   -O0 -std=c++17 -arch arm64 -Wl,-search_paths_first -Wl,-headerpad_max_install_names CMakeFiles/cmTC_51d63.dir/src.cxx.o -o cmTC_51d63
-        
-      exitCode: 0
-...
-
----
-events:
-  -
-    kind: "try_compile-v1"
-    backtrace:
-      - "/opt/homebrew/share/cmake/Modules/Internal/CheckSourceCompiles.cmake:104 (try_compile)"
-      - "/opt/homebrew/share/cmake/Modules/CheckCXXSourceCompiles.cmake:103 (cmake_check_source_compiles)"
-      - "build/_deps/seal-src/cmake/EnableCXX17.cmake:28 (check_cxx_source_compiles)"
-      - "build/_deps/seal-src/CMakeLists.txt:68 (include)"
-    directories:
-      source: "/Users/bytedance/PCA/build/CMakeFiles/CMakeScratch/TryCompile-NBXTnW"
-      binary: "/Users/bytedance/PCA/build/CMakeFiles/CMakeScratch/TryCompile-NBXTnW"
-    cmakeVariables:
-      CMAKE_CXX_FLAGS: ""
-      CMAKE_CXX_FLAGS_DEBUG: "-g"
-      CMAKE_EXE_LINKER_FLAGS: ""
-      CMAKE_MODULE_PATH: "/Users/bytedance/PCA/build/_deps/seal-src/cmake"
-      CMAKE_OSX_ARCHITECTURES: ""
-      CMAKE_OSX_DEPLOYMENT_TARGET: ""
-      CMAKE_OSX_SYSROOT: ""
-      CMAKE_POSITION_INDEPENDENT_CODE: "ON"
-      CMAKE_WARN_DEPRECATED: "FALSE"
-    buildResult:
-      variable: "USE_STD_FOR_EACH_N"
-      cached: true
-      stdout: |
-        Change Dir: '/Users/bytedance/PCA/build/CMakeFiles/CMakeScratch/TryCompile-NBXTnW'
-        
-        Run Build Command(s): /opt/homebrew/bin/cmake -E env VERBOSE=1 /usr/bin/make -f Makefile cmTC_b00fb/fast
-        /Library/Developer/CommandLineTools/usr/bin/make  -f CMakeFiles/cmTC_b00fb.dir/build.make CMakeFiles/cmTC_b00fb.dir/build
-        Building CXX object CMakeFiles/cmTC_b00fb.dir/src.cxx.o
-        /usr/bin/c++ -DUSE_STD_FOR_EACH_N  -O0 -std=c++17 -std=gnu++17 -arch arm64 -fPIE -MD -MT CMakeFiles/cmTC_b00fb.dir/src.cxx.o -MF CMakeFiles/cmTC_b00fb.dir/src.cxx.o.d -o CMakeFiles/cmTC_b00fb.dir/src.cxx.o -c /Users/bytedance/PCA/build/CMakeFiles/CMakeScratch/TryCompile-NBXTnW/src.cxx
-        Linking CXX executable cmTC_b00fb
-        /opt/homebrew/bin/cmake -E cmake_link_script CMakeFiles/cmTC_b00fb.dir/link.txt --verbose=1
-        /usr/bin/c++   -O0 -std=c++17 -arch arm64 -Wl,-search_paths_first -Wl,-headerpad_max_install_names CMakeFiles/cmTC_b00fb.dir/src.cxx.o -o cmTC_b00fb
-        
-      exitCode: 0
-...
-
----
-events:
-  -
-    kind: "try_compile-v1"
-    backtrace:
-      - "/opt/homebrew/share/cmake/Modules/Internal/CheckSourceCompiles.cmake:104 (try_compile)"
-      - "/opt/homebrew/share/cmake/Modules/CheckCXXSourceCompiles.cmake:103 (cmake_check_source_compiles)"
-      - "build/_deps/seal-src/cmake/EnableCXX17.cmake:28 (check_cxx_source_compiles)"
-      - "build/_deps/seal-src/CMakeLists.txt:68 (include)"
-    directories:
-      source: "/Users/bytedance/PCA/build/CMakeFiles/CMakeScratch/TryCompile-eLiDIP"
-      binary: "/Users/bytedance/PCA/build/CMakeFiles/CMakeScratch/TryCompile-eLiDIP"
-    cmakeVariables:
-      CMAKE_CXX_FLAGS: ""
-      CMAKE_CXX_FLAGS_DEBUG: "-g"
-      CMAKE_EXE_LINKER_FLAGS: ""
-      CMAKE_MODULE_PATH: "/Users/bytedance/PCA/build/_deps/seal-src/cmake"
-      CMAKE_OSX_ARCHITECTURES: ""
-      CMAKE_OSX_DEPLOYMENT_TARGET: ""
-      CMAKE_OSX_SYSROOT: ""
-      CMAKE_POSITION_INDEPENDENT_CODE: "ON"
-      CMAKE_WARN_DEPRECATED: "FALSE"
-    buildResult:
-      variable: "USE_STD_FOR_EACH_N"
-      cached: true
-      stdout: |
-        Change Dir: '/Users/bytedance/PCA/build/CMakeFiles/CMakeScratch/TryCompile-eLiDIP'
-        
-        Run Build Command(s): /opt/homebrew/bin/cmake -E env VERBOSE=1 /usr/bin/make -f Makefile cmTC_9a209/fast
-        /Library/Developer/CommandLineTools/usr/bin/make  -f CMakeFiles/cmTC_9a209.dir/build.make CMakeFiles/cmTC_9a209.dir/build
-        Building CXX object CMakeFiles/cmTC_9a209.dir/src.cxx.o
-        /usr/bin/c++ -DUSE_STD_FOR_EACH_N  -O0 -std=c++17 -std=gnu++17 -arch arm64 -fPIE -MD -MT CMakeFiles/cmTC_9a209.dir/src.cxx.o -MF CMakeFiles/cmTC_9a209.dir/src.cxx.o.d -o CMakeFiles/cmTC_9a209.dir/src.cxx.o -c /Users/bytedance/PCA/build/CMakeFiles/CMakeScratch/TryCompile-eLiDIP/src.cxx
-        Linking CXX executable cmTC_9a209
-        /opt/homebrew/bin/cmake -E cmake_link_script CMakeFiles/cmTC_9a209.dir/link.txt --verbose=1
-        /usr/bin/c++   -O0 -std=c++17 -arch arm64 -Wl,-search_paths_first -Wl,-headerpad_max_install_names CMakeFiles/cmTC_9a209.dir/src.cxx.o -o cmTC_9a209
-        
-      exitCode: 0
-...
-
----
-events:
-  -
-    kind: "try_compile-v1"
-    backtrace:
-      - "/opt/homebrew/share/cmake/Modules/Internal/CheckSourceCompiles.cmake:104 (try_compile)"
-      - "/opt/homebrew/share/cmake/Modules/CheckCXXSourceCompiles.cmake:103 (cmake_check_source_compiles)"
-      - "build/_deps/seal-src/cmake/EnableCXX17.cmake:28 (check_cxx_source_compiles)"
-      - "build/_deps/seal-src/CMakeLists.txt:68 (include)"
-    directories:
-      source: "/Users/bytedance/PCA/build/CMakeFiles/CMakeScratch/TryCompile-83hsLP"
-      binary: "/Users/bytedance/PCA/build/CMakeFiles/CMakeScratch/TryCompile-83hsLP"
-    cmakeVariables:
-      CMAKE_CXX_FLAGS: ""
-      CMAKE_CXX_FLAGS_DEBUG: "-g"
-      CMAKE_EXE_LINKER_FLAGS: ""
-      CMAKE_MODULE_PATH: "/Users/bytedance/PCA/build/_deps/seal-src/cmake"
-      CMAKE_OSX_ARCHITECTURES: ""
-      CMAKE_OSX_DEPLOYMENT_TARGET: ""
-      CMAKE_OSX_SYSROOT: ""
-      CMAKE_POSITION_INDEPENDENT_CODE: "ON"
-      CMAKE_WARN_DEPRECATED: "FALSE"
-    buildResult:
-      variable: "USE_STD_FOR_EACH_N"
-      cached: true
-      stdout: |
-        Change Dir: '/Users/bytedance/PCA/build/CMakeFiles/CMakeScratch/TryCompile-83hsLP'
-        
-        Run Build Command(s): /opt/homebrew/bin/cmake -E env VERBOSE=1 /usr/bin/make -f Makefile cmTC_41478/fast
-        /Library/Developer/CommandLineTools/usr/bin/make  -f CMakeFiles/cmTC_41478.dir/build.make CMakeFiles/cmTC_41478.dir/build
-        Building CXX object CMakeFiles/cmTC_41478.dir/src.cxx.o
-        /usr/bin/c++ -DUSE_STD_FOR_EACH_N  -O0 -std=c++17 -std=gnu++17 -arch arm64 -fPIE -MD -MT CMakeFiles/cmTC_41478.dir/src.cxx.o -MF CMakeFiles/cmTC_41478.dir/src.cxx.o.d -o CMakeFiles/cmTC_41478.dir/src.cxx.o -c /Users/bytedance/PCA/build/CMakeFiles/CMakeScratch/TryCompile-83hsLP/src.cxx
-        Linking CXX executable cmTC_41478
-        /opt/homebrew/bin/cmake -E cmake_link_script CMakeFiles/cmTC_41478.dir/link.txt --verbose=1
-        /usr/bin/c++   -O0 -std=c++17 -arch arm64 -Wl,-search_paths_first -Wl,-headerpad_max_install_names CMakeFiles/cmTC_41478.dir/src.cxx.o -o cmTC_41478
-        
-      exitCode: 0
+      exitCode: 2
 ...

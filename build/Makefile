@@ -87,7 +87,7 @@ rebuild_cache/fast: rebuild_cache
 
 # Special rule for the target list_install_components
 list_install_components:
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --cyan "Available install components are: \"Unspecified\""
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --cyan "Available install components are: \"Unspecified\" \"dev\""
 .PHONY : list_install_components
 
 # Special rule for the target list_install_components
@@ -158,6 +158,7 @@ preinstall/fast:
 
 # clear depends
 depend:
+	$(CMAKE_COMMAND) -P /Users/bytedance/PCA/build/CMakeFiles/VerifyGlobs.cmake
 	$(CMAKE_COMMAND) -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 1
 .PHONY : depend
 
@@ -188,17 +189,238 @@ plaintext_lanczos_tune/fast:
 .PHONY : plaintext_lanczos_tune/fast
 
 #=============================================================================
-# Target rules for targets named seal
+# Target rules for targets named clobber
 
 # Build rule for target.
-seal: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 seal
-.PHONY : seal
+clobber: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 clobber
+.PHONY : clobber
 
 # fast build rule for target.
-seal/fast:
-	$(MAKE) $(MAKESILENT) -f _deps/seal-build/CMakeFiles/seal.dir/build.make _deps/seal-build/CMakeFiles/seal.dir/build
-.PHONY : seal/fast
+clobber/fast:
+	$(MAKE) $(MAKESILENT) -f _deps/openfhe-build/CMakeFiles/clobber.dir/build.make _deps/openfhe-build/CMakeFiles/clobber.dir/build
+.PHONY : clobber/fast
+
+#=============================================================================
+# Target rules for targets named uninstall
+
+# Build rule for target.
+uninstall: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 uninstall
+.PHONY : uninstall
+
+# fast build rule for target.
+uninstall/fast:
+	$(MAKE) $(MAKESILENT) -f _deps/openfhe-build/CMakeFiles/uninstall.dir/build.make _deps/openfhe-build/CMakeFiles/uninstall.dir/build
+.PHONY : uninstall/fast
+
+#=============================================================================
+# Target rules for targets named tcm
+
+# Build rule for target.
+tcm: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 tcm
+.PHONY : tcm
+
+# fast build rule for target.
+tcm/fast:
+	$(MAKE) $(MAKESILENT) -f _deps/openfhe-build/CMakeFiles/tcm.dir/build.make _deps/openfhe-build/CMakeFiles/tcm.dir/build
+.PHONY : tcm/fast
+
+#=============================================================================
+# Target rules for targets named tcm_clean
+
+# Build rule for target.
+tcm_clean: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 tcm_clean
+.PHONY : tcm_clean
+
+# fast build rule for target.
+tcm_clean/fast:
+	$(MAKE) $(MAKESILENT) -f _deps/openfhe-build/CMakeFiles/tcm_clean.dir/build.make _deps/openfhe-build/CMakeFiles/tcm_clean.dir/build
+.PHONY : tcm_clean/fast
+
+#=============================================================================
+# Target rules for targets named third-party
+
+# Build rule for target.
+third-party: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 third-party
+.PHONY : third-party
+
+# fast build rule for target.
+third-party/fast:
+	$(MAKE) $(MAKESILENT) -f _deps/openfhe-build/CMakeFiles/third-party.dir/build.make _deps/openfhe-build/CMakeFiles/third-party.dir/build
+.PHONY : third-party/fast
+
+#=============================================================================
+# Target rules for targets named allmodules
+
+# Build rule for target.
+allmodules: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 allmodules
+.PHONY : allmodules
+
+# fast build rule for target.
+allmodules/fast:
+	$(MAKE) $(MAKESILENT) -f _deps/openfhe-build/CMakeFiles/allmodules.dir/build.make _deps/openfhe-build/CMakeFiles/allmodules.dir/build
+.PHONY : allmodules/fast
+
+#=============================================================================
+# Target rules for targets named coreobj
+
+# Build rule for target.
+coreobj: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 coreobj
+.PHONY : coreobj
+
+# fast build rule for target.
+coreobj/fast:
+	$(MAKE) $(MAKESILENT) -f _deps/openfhe-build/src/core/CMakeFiles/coreobj.dir/build.make _deps/openfhe-build/src/core/CMakeFiles/coreobj.dir/build
+.PHONY : coreobj/fast
+
+#=============================================================================
+# Target rules for targets named OPENFHEcore
+
+# Build rule for target.
+OPENFHEcore: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 OPENFHEcore
+.PHONY : OPENFHEcore
+
+# fast build rule for target.
+OPENFHEcore/fast:
+	$(MAKE) $(MAKESILENT) -f _deps/openfhe-build/src/core/CMakeFiles/OPENFHEcore.dir/build.make _deps/openfhe-build/src/core/CMakeFiles/OPENFHEcore.dir/build
+.PHONY : OPENFHEcore/fast
+
+#=============================================================================
+# Target rules for targets named allcore
+
+# Build rule for target.
+allcore: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 allcore
+.PHONY : allcore
+
+# fast build rule for target.
+allcore/fast:
+	$(MAKE) $(MAKESILENT) -f _deps/openfhe-build/src/core/CMakeFiles/allcore.dir/build.make _deps/openfhe-build/src/core/CMakeFiles/allcore.dir/build
+.PHONY : allcore/fast
+
+#=============================================================================
+# Target rules for targets named coreinfo
+
+# Build rule for target.
+coreinfo: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 coreinfo
+.PHONY : coreinfo
+
+# fast build rule for target.
+coreinfo/fast:
+	$(MAKE) $(MAKESILENT) -f _deps/openfhe-build/src/core/CMakeFiles/coreinfo.dir/build.make _deps/openfhe-build/src/core/CMakeFiles/coreinfo.dir/build
+.PHONY : coreinfo/fast
+
+#=============================================================================
+# Target rules for targets named pkeobj
+
+# Build rule for target.
+pkeobj: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 pkeobj
+.PHONY : pkeobj
+
+# fast build rule for target.
+pkeobj/fast:
+	$(MAKE) $(MAKESILENT) -f _deps/openfhe-build/src/pke/CMakeFiles/pkeobj.dir/build.make _deps/openfhe-build/src/pke/CMakeFiles/pkeobj.dir/build
+.PHONY : pkeobj/fast
+
+#=============================================================================
+# Target rules for targets named OPENFHEpke
+
+# Build rule for target.
+OPENFHEpke: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 OPENFHEpke
+.PHONY : OPENFHEpke
+
+# fast build rule for target.
+OPENFHEpke/fast:
+	$(MAKE) $(MAKESILENT) -f _deps/openfhe-build/src/pke/CMakeFiles/OPENFHEpke.dir/build.make _deps/openfhe-build/src/pke/CMakeFiles/OPENFHEpke.dir/build
+.PHONY : OPENFHEpke/fast
+
+#=============================================================================
+# Target rules for targets named allpke
+
+# Build rule for target.
+allpke: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 allpke
+.PHONY : allpke
+
+# fast build rule for target.
+allpke/fast:
+	$(MAKE) $(MAKESILENT) -f _deps/openfhe-build/src/pke/CMakeFiles/allpke.dir/build.make _deps/openfhe-build/src/pke/CMakeFiles/allpke.dir/build
+.PHONY : allpke/fast
+
+#=============================================================================
+# Target rules for targets named pkeinfo
+
+# Build rule for target.
+pkeinfo: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 pkeinfo
+.PHONY : pkeinfo
+
+# fast build rule for target.
+pkeinfo/fast:
+	$(MAKE) $(MAKESILENT) -f _deps/openfhe-build/src/pke/CMakeFiles/pkeinfo.dir/build.make _deps/openfhe-build/src/pke/CMakeFiles/pkeinfo.dir/build
+.PHONY : pkeinfo/fast
+
+#=============================================================================
+# Target rules for targets named binfheobj
+
+# Build rule for target.
+binfheobj: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 binfheobj
+.PHONY : binfheobj
+
+# fast build rule for target.
+binfheobj/fast:
+	$(MAKE) $(MAKESILENT) -f _deps/openfhe-build/src/binfhe/CMakeFiles/binfheobj.dir/build.make _deps/openfhe-build/src/binfhe/CMakeFiles/binfheobj.dir/build
+.PHONY : binfheobj/fast
+
+#=============================================================================
+# Target rules for targets named OPENFHEbinfhe
+
+# Build rule for target.
+OPENFHEbinfhe: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 OPENFHEbinfhe
+.PHONY : OPENFHEbinfhe
+
+# fast build rule for target.
+OPENFHEbinfhe/fast:
+	$(MAKE) $(MAKESILENT) -f _deps/openfhe-build/src/binfhe/CMakeFiles/OPENFHEbinfhe.dir/build.make _deps/openfhe-build/src/binfhe/CMakeFiles/OPENFHEbinfhe.dir/build
+.PHONY : OPENFHEbinfhe/fast
+
+#=============================================================================
+# Target rules for targets named allbinfhe
+
+# Build rule for target.
+allbinfhe: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 allbinfhe
+.PHONY : allbinfhe
+
+# fast build rule for target.
+allbinfhe/fast:
+	$(MAKE) $(MAKESILENT) -f _deps/openfhe-build/src/binfhe/CMakeFiles/allbinfhe.dir/build.make _deps/openfhe-build/src/binfhe/CMakeFiles/allbinfhe.dir/build
+.PHONY : allbinfhe/fast
+
+#=============================================================================
+# Target rules for targets named binfheinfo
+
+# Build rule for target.
+binfheinfo: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 binfheinfo
+.PHONY : binfheinfo
+
+# fast build rule for target.
+binfheinfo/fast:
+	$(MAKE) $(MAKESILENT) -f _deps/openfhe-build/src/binfhe/CMakeFiles/binfheinfo.dir/build.make _deps/openfhe-build/src/binfhe/CMakeFiles/binfheinfo.dir/build
+.PHONY : binfheinfo/fast
 
 src/client.o: src/client.cpp.o
 .PHONY : src/client.o
@@ -335,9 +557,26 @@ help:
 	@echo "... install/strip"
 	@echo "... list_install_components"
 	@echo "... rebuild_cache"
+	@echo "... allbinfhe"
+	@echo "... allcore"
+	@echo "... allmodules"
+	@echo "... allpke"
+	@echo "... binfheinfo"
+	@echo "... clobber"
+	@echo "... coreinfo"
+	@echo "... pkeinfo"
+	@echo "... tcm"
+	@echo "... tcm_clean"
+	@echo "... third-party"
+	@echo "... uninstall"
+	@echo "... OPENFHEbinfhe"
+	@echo "... OPENFHEcore"
+	@echo "... OPENFHEpke"
+	@echo "... binfheobj"
+	@echo "... coreobj"
 	@echo "... he_pca"
+	@echo "... pkeobj"
 	@echo "... plaintext_lanczos_tune"
-	@echo "... seal"
 	@echo "... src/client.o"
 	@echo "... src/client.i"
 	@echo "... src/client.s"
@@ -364,6 +603,7 @@ help:
 # No rule that depends on this can have commands that come from listfiles
 # because they might be regenerated.
 cmake_check_build_system:
+	$(CMAKE_COMMAND) -P /Users/bytedance/PCA/build/CMakeFiles/VerifyGlobs.cmake
 	$(CMAKE_COMMAND) -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 0
 .PHONY : cmake_check_build_system
 

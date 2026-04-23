@@ -111,7 +111,10 @@ plaintext_lanczos_tune_EXTERNAL_OBJECTS =
 plaintext_lanczos_tune: CMakeFiles/plaintext_lanczos_tune.dir/src/plaintext_lanczos_tune.cpp.o
 plaintext_lanczos_tune: CMakeFiles/plaintext_lanczos_tune.dir/src/client.cpp.o
 plaintext_lanczos_tune: CMakeFiles/plaintext_lanczos_tune.dir/build.make
-plaintext_lanczos_tune: _deps/seal-build/lib/libseal-4.1.a
+plaintext_lanczos_tune: lib/libOPENFHEpke.1.5.1.dylib
+plaintext_lanczos_tune: lib/libOPENFHEbinfhe.1.5.1.dylib
+plaintext_lanczos_tune: /opt/homebrew/opt/libomp/lib/libomp.dylib
+plaintext_lanczos_tune: lib/libOPENFHEcore.1.5.1.dylib
 plaintext_lanczos_tune: CMakeFiles/plaintext_lanczos_tune.dir/link.txt
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/Users/bytedance/PCA/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Linking CXX executable plaintext_lanczos_tune"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/plaintext_lanczos_tune.dir/link.txt --verbose=$(VERBOSE)

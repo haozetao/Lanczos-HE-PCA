@@ -143,7 +143,10 @@ he_pca: CMakeFiles/he_pca.dir/src/client.cpp.o
 he_pca: CMakeFiles/he_pca.dir/src/server.cpp.o
 he_pca: CMakeFiles/he_pca.dir/src/newton_inv_sqrt.cpp.o
 he_pca: CMakeFiles/he_pca.dir/build.make
-he_pca: _deps/seal-build/lib/libseal-4.1.a
+he_pca: lib/libOPENFHEpke.1.5.1.dylib
+he_pca: lib/libOPENFHEbinfhe.1.5.1.dylib
+he_pca: /opt/homebrew/opt/libomp/lib/libomp.dylib
+he_pca: lib/libOPENFHEcore.1.5.1.dylib
 he_pca: CMakeFiles/he_pca.dir/link.txt
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/Users/bytedance/PCA/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Linking CXX executable he_pca"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/he_pca.dir/link.txt --verbose=$(VERBOSE)

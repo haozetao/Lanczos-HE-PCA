@@ -14,8 +14,26 @@
 # EXTERNAL cache entries
 ########################
 
-//Build shared library
-BUILD_SHARED_LIBS:BOOL=OFF
+//Set to ON to build benchmarks for the library
+BUILD_BENCHMARKS:BOOL=OFF
+
+//Set to ON to build examples for the library
+BUILD_EXAMPLES:BOOL=OFF
+
+//Set to ON to build extras for the library
+BUILD_EXTRAS:BOOL=OFF
+
+//Set to ON to build shared versions of the library
+BUILD_SHARED:BOOL=ON
+
+//Set to ON to build static versions of the library
+BUILD_STATIC:BOOL=OFF
+
+//Set to ON to build unit tests for the library
+BUILD_UNITTESTS:BOOL=OFF
+
+//Path to a program.
+CCACHE_PROGRAM:FILEPATH=CCACHE_PROGRAM-NOTFOUND
 
 //Path to a program.
 CMAKE_ADDR2LINE:FILEPATH=CMAKE_ADDR2LINE-NOTFOUND
@@ -90,59 +108,11 @@ CMAKE_EXPORT_COMPILE_COMMANDS:BOOL=
 //Value Computed by CMake.
 CMAKE_FIND_PACKAGE_REDIRECTS_DIR:STATIC=/Users/bytedance/PCA/build/CMakeFiles/pkgRedirects
 
-//User executables (bin)
-CMAKE_INSTALL_BINDIR:PATH=bin
-
-//Read-only architecture-independent data (DATAROOTDIR)
-CMAKE_INSTALL_DATADIR:PATH=
-
-//Read-only architecture-independent data root (share)
-CMAKE_INSTALL_DATAROOTDIR:PATH=share
-
-//Documentation root (DATAROOTDIR/doc/PROJECT_NAME)
-CMAKE_INSTALL_DOCDIR:PATH=
-
-//C header files (include)
-CMAKE_INSTALL_INCLUDEDIR:PATH=include
-
-//Info documentation (DATAROOTDIR/info)
-CMAKE_INSTALL_INFODIR:PATH=
-
-//Object code libraries (lib)
-CMAKE_INSTALL_LIBDIR:PATH=lib
-
-//Program executables (libexec)
-CMAKE_INSTALL_LIBEXECDIR:PATH=libexec
-
-//Locale-dependent data (DATAROOTDIR/locale)
-CMAKE_INSTALL_LOCALEDIR:PATH=
-
-//Modifiable single-machine data (var)
-CMAKE_INSTALL_LOCALSTATEDIR:PATH=var
-
-//Man documentation (DATAROOTDIR/man)
-CMAKE_INSTALL_MANDIR:PATH=
-
 //Path to a program.
 CMAKE_INSTALL_NAME_TOOL:FILEPATH=/usr/bin/install_name_tool
 
-//C header files for non-gcc (/usr/include)
-CMAKE_INSTALL_OLDINCLUDEDIR:PATH=/usr/include
-
 //Install path prefix, prepended onto install directories.
 CMAKE_INSTALL_PREFIX:PATH=/usr/local
-
-//Run-time variable data (LOCALSTATEDIR/run)
-CMAKE_INSTALL_RUNSTATEDIR:PATH=
-
-//System admin executables (sbin)
-CMAKE_INSTALL_SBINDIR:PATH=sbin
-
-//Modifiable architecture-independent data (com)
-CMAKE_INSTALL_SHAREDSTATEDIR:PATH=com
-
-//Read-only single-machine data (etc)
-CMAKE_INSTALL_SYSCONFDIR:PATH=etc
 
 //Path to a program.
 CMAKE_LINKER:FILEPATH=/usr/bin/ld
@@ -193,6 +163,9 @@ CMAKE_OSX_SYSROOT:STRING=
 //No help, variable specified on the command line.
 CMAKE_POLICY_VERSION_MINIMUM:UNINITIALIZED=3.5
 
+//No help, variable specified on the command line.
+CMAKE_PREFIX_PATH:UNINITIALIZED=/opt/homebrew/opt/libomp
+
 //Value Computed by CMake
 CMAKE_PROJECT_COMPAT_VERSION:STATIC=
 
@@ -207,21 +180,6 @@ CMAKE_PROJECT_NAME:STATIC=HE_PCA_PoC
 
 //Value Computed by CMake
 CMAKE_PROJECT_SPDX_LICENSE:STATIC=
-
-//Value Computed by CMake
-CMAKE_PROJECT_VERSION:STATIC=4.1.2
-
-//Value Computed by CMake
-CMAKE_PROJECT_VERSION_MAJOR:STATIC=4
-
-//Value Computed by CMake
-CMAKE_PROJECT_VERSION_MINOR:STATIC=1
-
-//Value Computed by CMake
-CMAKE_PROJECT_VERSION_PATCH:STATIC=2
-
-//Value Computed by CMake
-CMAKE_PROJECT_VERSION_TWEAK:STATIC=
 
 //Path to a program.
 CMAKE_RANLIB:FILEPATH=/usr/bin/ranlib
@@ -288,7 +246,8 @@ CMAKE_TAPI:FILEPATH=/Library/Developer/CommandLineTools/usr/bin/tapi
 // Studio IDE projects all commands are done without /nologo.
 CMAKE_VERBOSE_MAKEFILE:BOOL=FALSE
 
-FETCHCONTENT_BASE_DIR:STRING=/Users/bytedance/PCA/build/_deps
+//Directory under which to collect all populated content
+FETCHCONTENT_BASE_DIR:PATH=/Users/bytedance/PCA/build/_deps
 
 //Disables all attempts to download or update content and assumes
 // source dirs already exist
@@ -302,12 +261,8 @@ FETCHCONTENT_QUIET:BOOL=ON
 FETCHCONTENT_SOURCE_DIR_EIGEN:PATH=
 
 //When not empty, overrides where to find pre-populated content
-// for msgsl
-FETCHCONTENT_SOURCE_DIR_MSGSL:PATH=
-
-//When not empty, overrides where to find pre-populated content
-// for seal
-FETCHCONTENT_SOURCE_DIR_SEAL:PATH=
+// for openfhe
+FETCHCONTENT_SOURCE_DIR_OPENFHE:PATH=
 
 //Enables UPDATE_DISCONNECTED behavior for all content population
 FETCHCONTENT_UPDATES_DISCONNECTED:BOOL=OFF
@@ -315,31 +270,16 @@ FETCHCONTENT_UPDATES_DISCONNECTED:BOOL=OFF
 //Enables UPDATE_DISCONNECTED behavior just for population of eigen
 FETCHCONTENT_UPDATES_DISCONNECTED_EIGEN:BOOL=OFF
 
-//Enables UPDATE_DISCONNECTED behavior just for population of msgsl
-FETCHCONTENT_UPDATES_DISCONNECTED_MSGSL:BOOL=OFF
-
-//Enables UPDATE_DISCONNECTED behavior just for population of seal
-FETCHCONTENT_UPDATES_DISCONNECTED_SEAL:BOOL=OFF
+//Enables UPDATE_DISCONNECTED behavior just for population of openfhe
+FETCHCONTENT_UPDATES_DISCONNECTED_OPENFHE:BOOL=OFF
 
 //Git command line client
 GIT_EXECUTABLE:FILEPATH=/usr/bin/git
 
-//Value Computed by CMake
-GSL_BINARY_DIR:STATIC=/Users/bytedance/PCA/build/_deps/seal-build/thirdparty/msgsl-build
+GIT_SUBMODULE_SYNCED:BOOL=ON
 
-GSL_CXX_STANDARD:STRING=14
-
-//Generate and install GSL target
-GSL_INSTALL:BOOL=OFF
-
-//Value Computed by CMake
-GSL_IS_TOP_LEVEL:STATIC=OFF
-
-//Value Computed by CMake
-GSL_SOURCE_DIR:STATIC=/Users/bytedance/PCA/build/_deps/seal-build/thirdparty/msgsl-src
-
-//Build and perform GSL tests
-GSL_TEST:BOOL=OFF
+//Submodules auto-update
+GIT_SUBMOD_AUTO:BOOL=ON
 
 //Value Computed by CMake
 HE_PCA_PoC_BINARY_DIR:STATIC=/Users/bytedance/PCA/build
@@ -350,87 +290,57 @@ HE_PCA_PoC_IS_TOP_LEVEL:STATIC=ON
 //Value Computed by CMake
 HE_PCA_PoC_SOURCE_DIR:STATIC=/Users/bytedance/PCA
 
-//Use an always branching-free conditional move
-SEAL_AVOID_BRANCHING:BOOL=OFF
+//Installation directory for CMake files
+INSTALL_CMAKE_DIR:PATH=lib/OpenFHE
+
+//Installation directory for headers
+INSTALL_INCLUDE_DIR:PATH=include/openfhe
+
+//Installation directory for libraries
+INSTALL_LIB_DIR:PATH=lib
 
 //Value Computed by CMake
-SEAL_BINARY_DIR:STATIC=/Users/bytedance/PCA/build/_deps/seal-build
-
-//Build C++ benchmarks for Microsoft SEAL
-SEAL_BUILD_BENCH:BOOL=OFF
-
-//Automatically download and build unmet dependencies
-SEAL_BUILD_DEPS:BOOL=ON
-
-//Build C++ examples for Microsoft SEAL
-SEAL_BUILD_EXAMPLES:BOOL=OFF
-
-//Build C export library for Microsoft SEAL
-SEAL_BUILD_SEAL_C:BOOL=OFF
-
-//Build C++ tests for Microsoft SEAL
-SEAL_BUILD_TESTS:BOOL=OFF
-
-//Choose the default PRNG
-SEAL_DEFAULT_PRNG:STRING=Blake2xb
+OpenFHE_BINARY_DIR:STATIC=/Users/bytedance/PCA/build/_deps/openfhe-build
 
 //Value Computed by CMake
-SEAL_IS_TOP_LEVEL:STATIC=OFF
-
-//Enable Control Flow Guard and Spectre mitigations (MSVC only)
-SEAL_SECURE_COMPILE_OPTIONS:BOOL=OFF
+OpenFHE_IS_TOP_LEVEL:STATIC=OFF
 
 //Value Computed by CMake
-SEAL_SOURCE_DIR:STATIC=/Users/bytedance/PCA/build/_deps/seal-src
+OpenFHE_SOURCE_DIR:STATIC=/Users/bytedance/PCA/build/_deps/openfhe-src
 
-//Throw an exception when Evaluator outputs a transparent ciphertext
-SEAL_THROW_ON_TRANSPARENT_CIPHERTEXT:BOOL=ON
+//Path to a program.
+TAR:FILEPATH=/usr/bin/tar
 
-//Use ::aligned_alloc
-SEAL_USE_ALIGNED_ALLOC:BOOL=ON
+//Use MacPorts installed packages
+USE_MACPORTS:BOOL=OFF
 
-//Use C++17
-SEAL_USE_CXX17:BOOL=ON
+//Include MATHBACKEND 2 in build by setting WITH_BE2 to ON
+WITH_BE2:BOOL=OFF
 
-//Use explicit_bzero
-SEAL_USE_EXPLICIT_BZERO:BOOL=OFF
+//Include MATHBACKEND 4 in build by setting WITH_BE4 to ON
+WITH_BE4:BOOL=OFF
 
-//Use explicit_memset
-SEAL_USE_EXPLICIT_MEMSET:BOOL=OFF
+//Turn on to enable coverage testing (can be used with g++ only)
+WITH_COVTEST:BOOL=OFF
 
-//Use a rounded Gaussian distribution for noise sampling instead
-// of a Centered Binomial Distribution
-SEAL_USE_GAUSSIAN_NOISE:BOOL=OFF
+//Use machine-specific optimizations
+WITH_NATIVEOPT:BOOL=OFF
 
-//Use Intel HEXL library
-SEAL_USE_INTEL_HEXL:BOOL=OFF
+//Use only when running lattice estimator; not for production
+WITH_NOISE_DEBUG:BOOL=OFF
 
-//Use intrinsics
-SEAL_USE_INTRIN:BOOL=ON
+//Include MATHBACKEND 6 and NTL in build by setting WITH_NTL to
+// ON
+WITH_NTL:BOOL=OFF
 
-//Use memset_s
-SEAL_USE_MEMSET_S:BOOL=ON
+//Use OpenMP to enable <omp.h>
+WITH_OPENMP:BOOL=ON
 
-//Use Microsoft GSL
-SEAL_USE_MSGSL:BOOL=ON
+//Enable reduced noise within HKS and BFV HPSPOVERQ modes
+WITH_REDUCED_NOISE:BOOL=OFF
 
-//Use ZLIB for compressed serialization
-SEAL_USE_ZLIB:BOOL=OFF
-
-//Use Zstandard for compressed serialization
-SEAL_USE_ZSTD:BOOL=OFF
-
-//Use _addcarry_u64
-SEAL_USE__ADDCARRY_U64:BOOL=OFF
-
-//Use _subborrow_u64
-SEAL_USE__SUBBORROW_U64:BOOL=OFF
-
-//Use __builtin_clzll
-SEAL_USE___BUILTIN_CLZLL:BOOL=ON
-
-//Use __int128
-SEAL_USE___INT128:BOOL=ON
+//Activate tcmalloc by setting WITH_TCM to ON
+WITH_TCM:BOOL=OFF
 
 
 ########################
@@ -511,45 +421,11 @@ CMAKE_GENERATOR_INSTANCE:INTERNAL=
 CMAKE_GENERATOR_PLATFORM:INTERNAL=
 //Name of generator toolset.
 CMAKE_GENERATOR_TOOLSET:INTERNAL=
-//Test CMAKE_HAVE_LIBC_PTHREAD
-CMAKE_HAVE_LIBC_PTHREAD:INTERNAL=1
 //Source directory with the top level CMakeLists.txt file for this
 // project
 CMAKE_HOME_DIRECTORY:INTERNAL=/Users/bytedance/PCA
-//ADVANCED property for variable: CMAKE_INSTALL_BINDIR
-CMAKE_INSTALL_BINDIR-ADVANCED:INTERNAL=1
-//ADVANCED property for variable: CMAKE_INSTALL_DATADIR
-CMAKE_INSTALL_DATADIR-ADVANCED:INTERNAL=1
-//ADVANCED property for variable: CMAKE_INSTALL_DATAROOTDIR
-CMAKE_INSTALL_DATAROOTDIR-ADVANCED:INTERNAL=1
-//ADVANCED property for variable: CMAKE_INSTALL_DOCDIR
-CMAKE_INSTALL_DOCDIR-ADVANCED:INTERNAL=1
-//ADVANCED property for variable: CMAKE_INSTALL_INCLUDEDIR
-CMAKE_INSTALL_INCLUDEDIR-ADVANCED:INTERNAL=1
-//ADVANCED property for variable: CMAKE_INSTALL_INFODIR
-CMAKE_INSTALL_INFODIR-ADVANCED:INTERNAL=1
-//ADVANCED property for variable: CMAKE_INSTALL_LIBDIR
-CMAKE_INSTALL_LIBDIR-ADVANCED:INTERNAL=1
-//ADVANCED property for variable: CMAKE_INSTALL_LIBEXECDIR
-CMAKE_INSTALL_LIBEXECDIR-ADVANCED:INTERNAL=1
-//ADVANCED property for variable: CMAKE_INSTALL_LOCALEDIR
-CMAKE_INSTALL_LOCALEDIR-ADVANCED:INTERNAL=1
-//ADVANCED property for variable: CMAKE_INSTALL_LOCALSTATEDIR
-CMAKE_INSTALL_LOCALSTATEDIR-ADVANCED:INTERNAL=1
-//ADVANCED property for variable: CMAKE_INSTALL_MANDIR
-CMAKE_INSTALL_MANDIR-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: CMAKE_INSTALL_NAME_TOOL
 CMAKE_INSTALL_NAME_TOOL-ADVANCED:INTERNAL=1
-//ADVANCED property for variable: CMAKE_INSTALL_OLDINCLUDEDIR
-CMAKE_INSTALL_OLDINCLUDEDIR-ADVANCED:INTERNAL=1
-//ADVANCED property for variable: CMAKE_INSTALL_RUNSTATEDIR
-CMAKE_INSTALL_RUNSTATEDIR-ADVANCED:INTERNAL=1
-//ADVANCED property for variable: CMAKE_INSTALL_SBINDIR
-CMAKE_INSTALL_SBINDIR-ADVANCED:INTERNAL=1
-//ADVANCED property for variable: CMAKE_INSTALL_SHAREDSTATEDIR
-CMAKE_INSTALL_SHAREDSTATEDIR-ADVANCED:INTERNAL=1
-//ADVANCED property for variable: CMAKE_INSTALL_SYSCONFDIR
-CMAKE_INSTALL_SYSCONFDIR-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: CMAKE_LINKER
 CMAKE_LINKER-ADVANCED:INTERNAL=1
 //Name of CMakeLists files to read
@@ -569,7 +445,7 @@ CMAKE_MODULE_LINKER_FLAGS_RELWITHDEBINFO-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: CMAKE_NM
 CMAKE_NM-ADVANCED:INTERNAL=1
 //number of local generators
-CMAKE_NUMBER_OF_MAKEFILES:INTERNAL=6
+CMAKE_NUMBER_OF_MAKEFILES:INTERNAL=5
 //ADVANCED property for variable: CMAKE_OBJCOPY
 CMAKE_OBJCOPY-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: CMAKE_OBJDUMP
@@ -622,30 +498,21 @@ CMAKE_UNAME:INTERNAL=/usr/bin/uname
 CMAKE_VERBOSE_MAKEFILE-ADVANCED:INTERNAL=1
 //Whether to issue warnings for deprecated functionality.
 CMAKE_WARN_DEPRECATED:INTERNAL=FALSE
-//ADVANCED property for variable: FETCHCONTENT_BASE_DIR
-FETCHCONTENT_BASE_DIR-ADVANCED:INTERNAL=1
-//ADVANCED property for variable: FETCHCONTENT_FULLY_DISCONNECTED
-FETCHCONTENT_FULLY_DISCONNECTED-ADVANCED:INTERNAL=1
-//ADVANCED property for variable: FETCHCONTENT_QUIET
-FETCHCONTENT_QUIET-ADVANCED:INTERNAL=1
-//ADVANCED property for variable: FETCHCONTENT_SOURCE_DIR_MSGSL
-FETCHCONTENT_SOURCE_DIR_MSGSL-ADVANCED:INTERNAL=1
-//ADVANCED property for variable: FETCHCONTENT_UPDATES_DISCONNECTED
-FETCHCONTENT_UPDATES_DISCONNECTED-ADVANCED:INTERNAL=1
-//ADVANCED property for variable: FETCHCONTENT_UPDATES_DISCONNECTED_MSGSL
-FETCHCONTENT_UPDATES_DISCONNECTED_MSGSL-ADVANCED:INTERNAL=1
-//Details about finding Threads
-FIND_PACKAGE_MESSAGE_DETAILS_Threads:INTERNAL=[TRUE][v()]
+CORE_INCLUDE_DIRS:INTERNAL=/Users/bytedance/PCA/build/_deps/openfhe-src/src/core/include;/Users/bytedance/PCA/build/_deps/openfhe-src/src/core/lib;/Users/bytedance/PCA/build/_deps/openfhe-src/src/core/include;/Users/bytedance/PCA/build/_deps/openfhe-src/src/core/lib;/Users/bytedance/PCA/build/_deps/openfhe-src/src/core/include;/Users/bytedance/PCA/build/_deps/openfhe-src/src/core/lib
+//Details about finding Git
+FIND_PACKAGE_MESSAGE_DETAILS_Git:INTERNAL=[/usr/bin/git][v2.39.5 (Apple Git-154)()]
+//Details about finding OpenMP
+FIND_PACKAGE_MESSAGE_DETAILS_OpenMP:INTERNAL=[TRUE][TRUE][ ][v()]
+//Details about finding OpenMP_C
+FIND_PACKAGE_MESSAGE_DETAILS_OpenMP_C:INTERNAL=[-Xpreprocessor -fopenmp -lomp -Wno-unused-command-line-argument][libomp][v()]
+//Details about finding OpenMP_CXX
+FIND_PACKAGE_MESSAGE_DETAILS_OpenMP_CXX:INTERNAL=[-Xpreprocessor -fopenmp -lomp -Wno-unused-command-line-argument][libomp][v()]
 //ADVANCED property for variable: GIT_EXECUTABLE
 GIT_EXECUTABLE-ADVANCED:INTERNAL=1
-//ADVANCED property for variable: GSL_CXX_STANDARD
-GSL_CXX_STANDARD-ADVANCED:INTERNAL=1
-//ADVANCED property for variable: GSL_TEST
-GSL_TEST-ADVANCED:INTERNAL=1
-//Native visualizers are Visual Studio extension
-GSL_VS_ADD_NATIVE_VISUALIZERS:INTERNAL=FALSE
 //Result of TRY_COMPILE
 HAVE_INT128:INTERNAL=TRUE
+//Result of TRY_COMPILE
+HAVE_INT64:INTERNAL=TRUE
 //Have include stddef.h
 HAVE_STDDEF_H:INTERNAL=1
 //Have include stdint.h
@@ -654,60 +521,14 @@ HAVE_STDINT_H:INTERNAL=1
 HAVE_SYS_TYPES_H:INTERNAL=1
 //CHECK_TYPE_SIZE: sizeof(__int128)
 INT128:INTERNAL=16
-//ADVANCED property for variable: SEAL_AVOID_BRANCHING
-SEAL_AVOID_BRANCHING-ADVANCED:INTERNAL=1
-//ADVANCED property for variable: SEAL_DEFAULT_PRNG
-SEAL_DEFAULT_PRNG-ADVANCED:INTERNAL=1
-//STRINGS property for variable: SEAL_DEFAULT_PRNG
-SEAL_DEFAULT_PRNG-STRINGS:INTERNAL=Blake2xb;Shake256
-//Have symbol explicit_bzero
-SEAL_EXPLICIT_BZERO_FOUND:INTERNAL=
-//Have symbol explicit_memset
-SEAL_EXPLICIT_MEMSET_FOUND:INTERNAL=
-//Have include arm_neon.h
-SEAL_INTRIN_HEADER_FOUND:INTERNAL=1
-//Test SEAL_MEMSET_S_FOUND
-SEAL_MEMSET_S_FOUND:INTERNAL=1
+//CHECK_TYPE_SIZE: sizeof(uint64_t)
+INT64:INTERNAL=8
+//CXX compiler's OpenMP specification date
+OpenMP_CXX_SPEC_DATE:INTERNAL=
+//C compiler's OpenMP specification date
+OpenMP_C_SPEC_DATE:INTERNAL=
 //Result of TRY_COMPILE
-SEAL_MEMSET_S_FOUND_COMPILED:INTERNAL=TRUE
-//Result of try_run()
-SEAL_MEMSET_S_FOUND_EXITCODE:INTERNAL=0
-//ADVANCED property for variable: SEAL_SECURE_COMPILE_OPTIONS
-SEAL_SECURE_COMPILE_OPTIONS-ADVANCED:INTERNAL=1
-//ADVANCED property for variable: SEAL_THROW_ON_TRANSPARENT_CIPHERTEXT
-SEAL_THROW_ON_TRANSPARENT_CIPHERTEXT-ADVANCED:INTERNAL=1
-//ADVANCED property for variable: SEAL_USE_ALIGNED_ALLOC
-SEAL_USE_ALIGNED_ALLOC-ADVANCED:INTERNAL=1
-//ADVANCED property for variable: SEAL_USE_EXPLICIT_BZERO
-SEAL_USE_EXPLICIT_BZERO-ADVANCED:INTERNAL=1
-//ADVANCED property for variable: SEAL_USE_EXPLICIT_MEMSET
-SEAL_USE_EXPLICIT_MEMSET-ADVANCED:INTERNAL=1
-//ADVANCED property for variable: SEAL_USE_GAUSSIAN_NOISE
-SEAL_USE_GAUSSIAN_NOISE-ADVANCED:INTERNAL=1
-//ADVANCED property for variable: SEAL_USE_MEMSET_S
-SEAL_USE_MEMSET_S-ADVANCED:INTERNAL=1
-//ADVANCED property for variable: SEAL_USE__ADDCARRY_U64
-SEAL_USE__ADDCARRY_U64-ADVANCED:INTERNAL=1
-//ADVANCED property for variable: SEAL_USE__SUBBORROW_U64
-SEAL_USE__SUBBORROW_U64-ADVANCED:INTERNAL=1
-//ADVANCED property for variable: SEAL_USE___BUILTIN_CLZLL
-SEAL_USE___BUILTIN_CLZLL-ADVANCED:INTERNAL=1
-//ADVANCED property for variable: SEAL_USE___INT128
-SEAL_USE___INT128-ADVANCED:INTERNAL=1
-//Test SEAL__ADDCARRY_U64_FOUND
-SEAL__ADDCARRY_U64_FOUND:INTERNAL=
+OpenMP_SPECTEST_CXX_:INTERNAL=FALSE
 //Result of TRY_COMPILE
-SEAL__ADDCARRY_U64_FOUND_COMPILED:INTERNAL=FALSE
-//Test SEAL__SUBBORROW_U64_FOUND
-SEAL__SUBBORROW_U64_FOUND:INTERNAL=
-//Result of TRY_COMPILE
-SEAL__SUBBORROW_U64_FOUND_COMPILED:INTERNAL=FALSE
-//Test SEAL___BUILTIN_CLZLL_FOUND
-SEAL___BUILTIN_CLZLL_FOUND:INTERNAL=1
-//Result of TRY_COMPILE
-SEAL___BUILTIN_CLZLL_FOUND_COMPILED:INTERNAL=TRUE
-//Result of try_run()
-SEAL___BUILTIN_CLZLL_FOUND_EXITCODE:INTERNAL=0
-//CMAKE_INSTALL_PREFIX during last run
-_GNUInstallDirs_LAST_CMAKE_INSTALL_PREFIX:INTERNAL=/usr/local
+OpenMP_SPECTEST_C_:INTERNAL=FALSE
 

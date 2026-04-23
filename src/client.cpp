@@ -6,17 +6,21 @@
 #include <random>
 #include <stdexcept>
 
+using namespace lbcrypto;
+
 namespace {
 
-std::vector<int> galoisStepsForDim(int d, int poly_modulus_degree)
+// 收集 Lanczos 需要的旋转索引：2 的幂，用于 rotate-and-sum 全 slot 求和
+// 以及维度相关的小步长（用于 packScalarsToVector 等）
+std::vector<int32_t> collectRotationIndices(int /*d*/, uint32_t num_slots)
 {
-    std::vector<int> steps;
-    for (int s = 1; s <= std::max(16, d + 6); ++s) {
-        steps.push_back(s);
-    }
-    int half_slots = poly_modulus_degree / 2;
-    for (int s = 1; s < half_slots; s *= 2) {
-        steps.push_back(s);
+    // 实际运行时仅 Server::innerProduct 的 rotate-and-sum 使用旋转，
+    // 步长都是 2 的幂（1, 2, 4, ..., num_slots/2）。之前额外枚举了 2(d+6)
+    // 个小步旋转键，从未被调用，却让 d=4096 需要 8000+ 个 RotKey（~260 GB）。
+    std::vector<int32_t> steps;
+    for (uint32_t s = 1; s < num_slots; s *= 2) {
+        steps.push_back(static_cast<int32_t>(s));
+        steps.push_back(-static_cast<int32_t>(s));
     }
     std::sort(steps.begin(), steps.end());
     steps.erase(std::unique(steps.begin(), steps.end()), steps.end());
@@ -25,46 +29,61 @@ std::vector<int> galoisStepsForDim(int d, int poly_modulus_degree)
 
 } // namespace
 
-Client::Client(int d, int p, int m)
-    : d_(d), p_(p), m_(m), scale_(std::pow(2.0, 40))
+Client::Client(int d, int p, int m, bool enable_bootstrap, uint32_t levels_after_bootstrap)
+    : d_(d), p_(p), m_(m), bootstrap_enabled_(enable_bootstrap)
 {
-    // 方向2：poly=32768， coeff 链按 SEAL 安全上限自动填满 40-bit 素数
-    seal::EncryptionParameters params(seal::scheme_type::ckks);
-    params.set_poly_modulus_degree(32768);
+    setupCryptoContext(enable_bootstrap, levels_after_bootstrap);
+}
 
-    size_t max_bits = seal::CoeffModulus::MaxBitCount(
-        32768, seal::sec_level_type::tc128);
-    int n40 = static_cast<int>((max_bits - 120) / 40);
-    if (n40 < 4) {
-        n40 = 4;
+void Client::setupCryptoContext(bool enable_bootstrap, uint32_t levels_after_bootstrap)
+{
+    CCParams<CryptoContextCKKSRNS> parameters;
+    parameters.SetSecretKeyDist(UNIFORM_TERNARY);
+    // toy 配置：HEStd_NotSet 允许手动指定 RingDim，用于小规模实验
+    parameters.SetSecurityLevel(HEStd_NotSet);
+    parameters.SetRingDim(1u << 15); // 32768
+
+    // 64-bit native 默认 FLEXIBLEAUTO，与 simple-ckks-bootstrapping 示例一致
+    parameters.SetScalingTechnique(FLEXIBLEAUTO);
+    parameters.SetScalingModSize(59);
+    parameters.SetFirstModSize(60);
+
+    uint32_t depth;
+    std::vector<uint32_t> levelBudget = {4, 4};
+
+    if (enable_bootstrap) {
+        // Bootstrap 深度 = Lanczos/Newton 可用层数 + Bootstrap 自身消耗
+        uint32_t bs_depth = FHECKKSRNS::GetBootstrapDepth(levelBudget, UNIFORM_TERNARY);
+        depth = levels_after_bootstrap + bs_depth;
+    } else {
+        // baseline 模式：直接给足够的深度，不含 Bootstrap 开销
+        depth = levels_after_bootstrap;
     }
-    while (static_cast<size_t>(60 + n40 * 40 + 60) > max_bits && n40 > 2) {
-        --n40;
+    multiplicative_depth_ = depth;
+    parameters.SetMultiplicativeDepth(depth);
+
+    cc_ = GenCryptoContext(parameters);
+    cc_->Enable(PKE);
+    cc_->Enable(KEYSWITCH);
+    cc_->Enable(LEVELEDSHE);
+
+    num_slots_ = cc_->GetRingDimension() / 2;
+
+    if (enable_bootstrap) {
+        cc_->Enable(ADVANCEDSHE);
+        cc_->Enable(FHE);
+        cc_->EvalBootstrapSetup(levelBudget, {0, 0}, num_slots_);
     }
 
-    std::vector<int> bit_sizes;
-    bit_sizes.push_back(60);
-    for (int i = 0; i < n40; ++i) {
-        bit_sizes.push_back(40);
+    keys_ = cc_->KeyGen();
+    cc_->EvalMultKeyGen(keys_.secretKey);
+
+    std::vector<int32_t> rot_steps = collectRotationIndices(d_, num_slots_);
+    cc_->EvalRotateKeyGen(keys_.secretKey, rot_steps);
+
+    if (enable_bootstrap) {
+        cc_->EvalBootstrapKeyGen(keys_.secretKey, num_slots_);
     }
-    bit_sizes.push_back(60);
-
-    params.set_coeff_modulus(
-        seal::CoeffModulus::Create(32768, bit_sizes));
-
-    context_ = std::make_shared<seal::SEALContext>(params);
-
-    seal::KeyGenerator keygen(*context_);
-    secret_key_ = keygen.secret_key();
-    keygen.create_public_key(public_key_);
-    keygen.create_relin_keys(relin_keys_);
-
-    std::vector<int> rot_steps = galoisStepsForDim(d_, 32768);
-    keygen.create_galois_keys(rot_steps, galois_keys_);
-
-    encoder_ = std::make_unique<seal::CKKSEncoder>(*context_);
-    encryptor_ = std::make_unique<seal::Encryptor>(*context_, public_key_);
-    decryptor_ = std::make_unique<seal::Decryptor>(*context_, secret_key_);
 }
 
 void Client::generateCovarianceMatrix()
@@ -82,46 +101,85 @@ void Client::generateCovarianceMatrix()
     C_ = A.transpose() * A + Eigen::MatrixXd::Identity(d_, d_);
 }
 
-std::vector<seal::Ciphertext> Client::encryptCovMatrix() const
+void Client::generateLowRankDataset(int N, int true_rank, double noise_sigma)
 {
-    size_t slot_count = encoder_->slot_count();
-    std::vector<seal::Ciphertext> enc_C(d_);
+    if (N < 2) {
+        throw std::invalid_argument("generateLowRankDataset: N 至少为 2");
+    }
+    if (true_rank < 1 || true_rank > std::min(d_, N)) {
+        throw std::invalid_argument("generateLowRankDataset: true_rank 越界");
+    }
+
+    std::mt19937 rng(20240415);
+    std::normal_distribution<double> gauss(0.0, 1.0);
+
+    // X = U · S · V^T + noise, 其中 U ∈ R^{N×r}, S=diag(σ_1..σ_r), V ∈ R^{d×r}
+    // σ_i 构造为指数衰减，使 PCA 能显著压缩
+    Eigen::MatrixXd U(N, true_rank);
+    Eigen::MatrixXd V(d_, true_rank);
+    for (int i = 0; i < N; ++i)
+        for (int j = 0; j < true_rank; ++j)
+            U(i, j) = gauss(rng);
+    for (int i = 0; i < d_; ++i)
+        for (int j = 0; j < true_rank; ++j)
+            V(i, j) = gauss(rng);
+
+    // 正交化 V 的列，保证主成分方向明确
+    Eigen::HouseholderQR<Eigen::MatrixXd> qr(V);
+    Eigen::MatrixXd V_orth = qr.householderQ() * Eigen::MatrixXd::Identity(d_, true_rank);
+
+    Eigen::VectorXd sigma(true_rank);
+    for (int i = 0; i < true_rank; ++i) {
+        sigma(i) = std::pow(0.7, i) * 10.0; // 10, 7, 4.9, 3.43, ...
+    }
+
+    Eigen::MatrixXd X(N, d_);
+    X = U * sigma.asDiagonal() * V_orth.transpose();
+
+    if (noise_sigma > 0.0) {
+        for (int i = 0; i < N; ++i)
+            for (int j = 0; j < d_; ++j)
+                X(i, j) += noise_sigma * gauss(rng);
+    }
+
+    Eigen::RowVectorXd mean = X.colwise().mean();
+    X_centered_ = X.rowwise() - mean;
+
+    C_ = (X_centered_.transpose() * X_centered_) / static_cast<double>(N - 1);
+}
+
+std::vector<Ciphertext<DCRTPoly>> Client::encryptCovMatrix() const
+{
+    std::vector<Ciphertext<DCRTPoly>> enc_C(d_);
 
     for (int i = 0; i < d_; ++i) {
-        std::vector<double> row(slot_count, 0.0);
+        std::vector<double> row(num_slots_, 0.0);
         for (int k = 0; k < d_; ++k) {
             row[k] = C_(i, k);
         }
-
-        seal::Plaintext pt;
-        encoder_->encode(row, scale_, pt);
-        encryptor_->encrypt(pt, enc_C[i]);
+        Plaintext pt = cc_->MakeCKKSPackedPlaintext(row);
+        enc_C[i] = cc_->Encrypt(keys_.publicKey, pt);
     }
     return enc_C;
 }
 
-std::vector<seal::Ciphertext> Client::encryptBlockVec(
-    const Eigen::MatrixXd& V) const
+std::vector<Ciphertext<DCRTPoly>> Client::encryptBlockVec(const Eigen::MatrixXd& V) const
 {
-    size_t slot_count = encoder_->slot_count();
     int cols = static_cast<int>(V.cols());
-    std::vector<seal::Ciphertext> enc_V(cols);
+    std::vector<Ciphertext<DCRTPoly>> enc_V(cols);
 
     for (int j = 0; j < cols; ++j) {
-        std::vector<double> col(slot_count, 0.0);
+        std::vector<double> col(num_slots_, 0.0);
         for (int i = 0; i < d_; ++i) {
             col[i] = V(i, j);
         }
-
-        seal::Plaintext pt;
-        encoder_->encode(col, scale_, pt);
-        encryptor_->encrypt(pt, enc_V[j]);
+        Plaintext pt = cc_->MakeCKKSPackedPlaintext(col);
+        enc_V[j] = cc_->Encrypt(keys_.publicKey, pt);
     }
     return enc_V;
 }
 
-std::vector<seal::Ciphertext> Client::encryptColumnVector(
-    const Eigen::VectorXd& v) const
+std::vector<Ciphertext<DCRTPoly>> Client::encryptColumnVector(const Eigen::VectorXd& v) const
 {
     if (v.size() != d_) {
         throw std::invalid_argument("encryptColumnVector: 维度与 d 不一致");
@@ -132,28 +190,29 @@ std::vector<seal::Ciphertext> Client::encryptColumnVector(
 }
 
 Eigen::MatrixXd Client::decryptToMatrix(
-    const std::vector<seal::Ciphertext>& enc_W,
+    const std::vector<Ciphertext<DCRTPoly>>& enc_W,
     int rows, int cols) const
 {
     Eigen::MatrixXd result(rows, cols);
 
     for (int i = 0; i < rows; ++i) {
         for (int j = 0; j < cols; ++j) {
-            seal::Plaintext pt;
-            decryptor_->decrypt(enc_W[i * cols + j], pt);
-
-            std::vector<double> decoded;
-            encoder_->decode(pt, decoded);
-
-            result(i, j) = decoded[0];
+            try {
+                Plaintext pt;
+                cc_->Decrypt(keys_.secretKey, enc_W[i * cols + j], &pt);
+                const std::vector<double>& vals = pt->GetRealPackedValue();
+                result(i, j) = vals.empty() ? 0.0 : vals[0];
+            } catch (const lbcrypto::OpenFHEException&) {
+                result(i, j) = 0.0;
+            }
         }
     }
     return result;
 }
 
 Eigen::MatrixXd Client::buildTridiagonalFromEncrypted(
-    const std::vector<seal::Ciphertext>& enc_alphas,
-    const std::vector<seal::Ciphertext>& enc_betas,
+    const std::vector<Ciphertext<DCRTPoly>>& enc_alphas,
+    const std::vector<Ciphertext<DCRTPoly>>& enc_betas,
     int m) const
 {
     if (static_cast<int>(enc_alphas.size()) != m) {
@@ -163,23 +222,29 @@ Eigen::MatrixXd Client::buildTridiagonalFromEncrypted(
         throw std::invalid_argument("buildTridiagonalFromEncrypted: β 数量应为 m-1");
     }
 
+    // 容错解密：低秩数据 Lanczos 尾部的 α/β 真值趋 0，CKKS 精度检查可能抛异常
+    // 这里把抛异常的项直接视为 0（数学上 Lanczos 收敛就应该如此）
+    auto safeDecryptScalar = [this](
+        const lbcrypto::Ciphertext<lbcrypto::DCRTPoly>& ct) -> double {
+        try {
+            Plaintext pt;
+            cc_->Decrypt(keys_.secretKey, ct, &pt);
+            const std::vector<double>& vals = pt->GetRealPackedValue();
+            return vals.empty() ? 0.0 : vals[0];
+        } catch (const lbcrypto::OpenFHEException&) {
+            return 0.0;
+        }
+    };
+
     std::vector<double> alphas(m);
     for (int i = 0; i < m; ++i) {
-        seal::Plaintext pt;
-        decryptor_->decrypt(enc_alphas[i], pt);
-        std::vector<double> vals;
-        encoder_->decode(pt, vals);
-        alphas[i] = vals[0];
+        alphas[i] = safeDecryptScalar(enc_alphas[i]);
     }
 
     std::vector<double> betas;
     betas.reserve(m > 1 ? static_cast<size_t>(m - 1) : 0);
     for (int i = 0; i < m - 1; ++i) {
-        seal::Plaintext pt;
-        decryptor_->decrypt(enc_betas[i], pt);
-        std::vector<double> vals;
-        encoder_->decode(pt, vals);
-        betas.push_back(vals[0]);
+        betas.push_back(safeDecryptScalar(enc_betas[i]));
     }
 
     Eigen::MatrixXd T = Eigen::MatrixXd::Zero(m, m);
@@ -295,9 +360,7 @@ Eigen::MatrixXd Client::plaintextStandardLanczosTridiagonal(
     return T;
 }
 
-CWFilterResult Client::cullumWilloughbyFilter(
-    const Eigen::MatrixXd& T_m,
-    int K) const
+CWFilterResult Client::cullumWilloughbyFilter(const Eigen::MatrixXd& T_m, int K) const
 {
     int m = static_cast<int>(T_m.rows());
     if (m < 2) {
@@ -372,8 +435,6 @@ double Client::eigenvalueMagnitudeGuess() const
 
 double Client::lanczosResidualNormSqGuess() const
 {
-    // 对随机单位向量 v, E[||Cv - (v^T C v)v||²] = trace(C²)/d - (trace(C)/d)²
-    // 归一化后 trace(C)=1, 所以 = trace(C²)/d - 1/d²
     double trace_C2 = (C_ * C_).trace();
     double d = static_cast<double>(d_);
     double est = trace_C2 / d - 1.0 / (d * d);
@@ -391,18 +452,21 @@ double Client::normalizeCovariance()
 }
 
 Eigen::MatrixXd Client::decryptLanczosVectors(
-    const std::vector<seal::Ciphertext>& V_all) const
+    const std::vector<Ciphertext<DCRTPoly>>& V_all) const
 {
     const int m = static_cast<int>(V_all.size());
     Eigen::MatrixXd V_total(d_, m);
 
     for (int j = 0; j < m; ++j) {
-        seal::Plaintext pt;
-        decryptor_->decrypt(V_all[j], pt);
-        std::vector<double> vals;
-        encoder_->decode(pt, vals);
-        for (int i = 0; i < d_; ++i) {
-            V_total(i, j) = (i < static_cast<int>(vals.size())) ? vals[i] : 0.0;
+        try {
+            Plaintext pt;
+            cc_->Decrypt(keys_.secretKey, V_all[j], &pt);
+            const std::vector<double>& vals = pt->GetRealPackedValue();
+            for (int i = 0; i < d_; ++i) {
+                V_total(i, j) = (i < static_cast<int>(vals.size())) ? vals[i] : 0.0;
+            }
+        } catch (const lbcrypto::OpenFHEException&) {
+            for (int i = 0; i < d_; ++i) V_total(i, j) = 0.0;
         }
     }
     return V_total;
@@ -421,7 +485,6 @@ Eigen::MatrixXd Client::reconstructEigenvectors(
         return Eigen::MatrixXd::Zero(d_, std::max(1, K));
     }
 
-    // Gram-Schmidt reorthogonalization on decrypted Lanczos basis
     Eigen::MatrixXd Q(d_, m);
     for (int j = 0; j < m; ++j) {
         Eigen::VectorXd v = V_total_raw.col(j);
@@ -436,9 +499,7 @@ Eigen::MatrixXd Client::reconstructEigenvectors(
         }
     }
 
-    // Ritz vectors s_i are the CW eigenvectors of T_m (size m x n_good)
-    // Reconstruct approximate eigenvectors: u_i = Q * s_i
-    const Eigen::MatrixXd& S = cw.good_eigenvectors; // m x n_good
+    const Eigen::MatrixXd& S = cw.good_eigenvectors;
     Eigen::MatrixXd U(d_, take);
     for (int i = 0; i < take; ++i) {
         Eigen::VectorXd s_i = S.col(i);

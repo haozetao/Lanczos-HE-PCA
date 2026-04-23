@@ -1,0 +1,3 @@
+/Users/bytedance/PCA/build/_deps/openfhe-subbuild/CMakeFiles/openfhe-populate.dir
+/Users/bytedance/PCA/build/_deps/openfhe-subbuild/CMakeFiles/edit_cache.dir
+/Users/bytedance/PCA/build/_deps/openfhe-subbuild/CMakeFiles/rebuild_cache.dir

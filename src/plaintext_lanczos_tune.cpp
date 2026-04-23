@@ -28,7 +28,7 @@ int main()
     constexpr int d = 10;
     constexpr int p = 1;
     constexpr int m_max = 20;
-    constexpr int K = 2;
+    constexpr int K = 3;
     constexpr double target_rel_pct = 1.0;
     constexpr unsigned v_seed = 7;
 
