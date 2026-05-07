@@ -10,6 +10,7 @@
 //   ./he_pca bootstrap
 
 #include <chrono>
+#include <algorithm>
 #include <cmath>
 #include <cstdlib>
 #include <cstring>
@@ -56,6 +57,38 @@ static double envDouble(const char* name, double dflt)
     return (v && *v) ? std::atof(v) : dflt;
 }
 
+static bool hasEnv(const char* name)
+{
+    const char* v = std::getenv(name);
+    return v && *v;
+}
+
+static uint32_t estimateLanczosDepth(int newton_steps, int m_iter,
+                                     bool enable_fro, int fro_skip_first)
+{
+    // depth_probe.cpp 实测（OpenFHE CKKS FLEXIBLEAUTO）：
+    // V -> V_next 的 critical path 为 4 + 4 * NewtonSteps（无 FRO）。
+    // 开启 FRO 后，最坏迭代（iter=m-1）会做 (m-1 - fro_skip_first) 次重正交化，
+    // 每次 reorth 在 W_new 关键路径上多消耗 2 层。
+    int reorth_steps = 0;
+    if (enable_fro) {
+        reorth_steps = std::max(0, m_iter - 1 - std::max(0, fro_skip_first));
+    }
+    return static_cast<uint32_t>(
+        4 + 4 * std::max(newton_steps, 1) + 2 * reorth_steps);
+}
+
+static double defaultGuessSafety(int d)
+{
+    // 小维度下安全因子过大会让 Newton 初值过低，反而降低精度；
+    // 大维度下需要保守初值避免 z0 = y0 * sqrt(x) 越过 sqrt(3) cliff。
+    if (d <= 32) return 1.0;
+    if (d <= 128) return 2.0;
+    if (d <= 256) return 4.0;
+    if (d <= 784) return 8.0;
+    return 16.0;
+}
+
 struct RunConfig {
     int d;
     int p;
@@ -69,6 +102,9 @@ struct RunConfig {
     int dataset_N = 0;
     int true_rank = 0;
     double noise_sigma = 0.0;
+    // HE 全重正交化开关
+    bool enable_fro = false;
+    int fro_skip_first = 2;
 };
 
 static int runOnce(const RunConfig& cfg)
@@ -77,7 +113,11 @@ static int runOnce(const RunConfig& cfg)
               << ", m_iter=" << cfg.m_iter
               << ", Newton=" << cfg.newton_iters
               << ", Bootstrap=" << (cfg.enable_bootstrap ? "ON" : "OFF")
-              << ") ===" << std::endl;
+              << ", FRO=" << (cfg.enable_fro ? "ON" : "OFF");
+    if (cfg.enable_fro) {
+        std::cout << "(skip_first=" << cfg.fro_skip_first << ")";
+    }
+    std::cout << ") ===" << std::endl;
 
     // ── Phase 1: Client 初始化 ──
     std::cout << "\n[Phase 1] Client setup" << std::endl;
@@ -119,15 +159,32 @@ static int runOnce(const RunConfig& cfg)
 
     // 安全因子：让 Newton 初始猜测 y_0 从"低于真值"一侧进入，
     // 保证 z_0 = y_0·√x 永远 < 1 < √3，Newton 单调收敛而非过冲
-    // 环境变量 GUESS_SAFETY 覆盖默认值 (默认 4.0 意味着 y_0 缩小 2 倍)
-    double guess_safety = envDouble("GUESS_SAFETY", 4.0);
+    // 环境变量 GUESS_SAFETY 覆盖默认值；未设置时按维度自动选择。
+    double guess_safety = envDouble("GUESS_SAFETY", defaultGuessSafety(cfg.d));
     double ev_guess = norm_sq_sim * guess_safety;
+    const bool use_per_iter_guess = envInt("PER_ITER_GUESS", 1) != 0;
+    std::vector<double> per_iter_guesses;
+    if (use_per_iter_guess) {
+        per_iter_guesses = client.plaintextMirrorResidualNormSqGuesses(v0, cfg.m_iter);
+        for (double& g : per_iter_guesses) {
+            g = std::max(g * guess_safety, 1e-18);
+        }
+    }
 
     std::cout << "  plaintext sim: α_0=" << std::setprecision(6) << alpha0_sim
               << "  ||W||²=" << std::scientific << std::setprecision(4) << norm_sq_sim
               << "  guess(safety=" << std::fixed << std::setprecision(1) << guess_safety
               << ")=1/√x=" << std::setprecision(2)
               << 1.0 / std::sqrt(ev_guess) << std::endl;
+    if (use_per_iter_guess && !per_iter_guesses.empty()) {
+        auto [min_it, max_it] = std::minmax_element(
+            per_iter_guesses.begin(), per_iter_guesses.end());
+        std::cout << "  per-iter Newton guess: ON  count=" << per_iter_guesses.size()
+                  << "  range=[" << std::scientific << std::setprecision(3)
+                  << *min_it << ", " << *max_it << "]" << std::fixed << std::endl;
+    } else {
+        std::cout << "  per-iter Newton guess: OFF（使用首轮固定 guess）" << std::endl;
+    }
 
     // ── Phase 2: Server 密态 Lanczos ──
     std::cout << "\n[Phase 2] Server HE-Lanczos" << std::endl;
@@ -163,8 +220,9 @@ static int runOnce(const RunConfig& cfg)
     Server::LanczosStats stats;
     auto t0 = Clock::now();
     Server::LanczosResult lr = server.lanczosIteration(
-        enc_C, enc_v, cfg.d, cfg.p, cfg.m_iter, ev_guess, cfg.newton_iters,
-        asor_k, &stats);
+        enc_C, enc_v, cfg.d, cfg.p, cfg.m_iter, ev_guess, per_iter_guesses,
+        cfg.newton_iters, asor_k, &stats,
+        cfg.enable_fro, cfg.fro_skip_first);
     auto t1 = Clock::now();
     double server_ms = std::chrono::duration<double, std::milli>(t1 - t0).count();
 
@@ -282,27 +340,58 @@ int main(int argc, char** argv)
     }
 
     if (mode == "bootstrap") {
-        int m_iter = (argc >= 3) ? std::atoi(argv[2]) : 5;
+        // 默认 m_iter 提升到 8 以让 HE-FRO 真正发挥提取多个特征的优势
+        int m_iter = (argc >= 3) ? std::atoi(argv[2]) : 8;
         int d      = (argc >= 4) ? std::atoi(argv[3]) : 10;
-        if (m_iter < 1) m_iter = 5;
+        if (m_iter < 1) m_iter = 8;
         if (d < 2) d = 10;
         // 环境变量启用低秩数据集（可计算 R²(X)）
         int dataset_N = envInt("DATASET_N", 0);
         int true_rank = envInt("TRUE_RANK", std::min(d, 5));
         double noise  = envDouble("NOISE_SIGMA", 0.1);
         int K         = envInt("K", 3);
+        int newton_iters = envInt("NEWTON_ITERS", 2);
+        if (newton_iters < 1) newton_iters = 2;
+
+        // FRO 默认开启（保留环境变量 ENABLE_FRO=0 可关闭）
+        bool enable_fro = envInt("ENABLE_FRO", 1) != 0;
+        int fro_skip_first = envInt("FRO_SKIP_FIRST", 2);
+        if (fro_skip_first < 0) fro_skip_first = 0;
+
+        // 单步 Lanczos 关键路径深度（含 FRO 时按最坏 iter 估算）
+        const uint32_t per_step_depth =
+            estimateLanczosDepth(newton_iters, m_iter, enable_fro, fro_skip_first);
+        // levels_after_bootstrap 至少要 per_step_depth + 余量，否则
+        // 进入末尾迭代时即便刚 BS 过也会触发 OpenFHE depth-exhausted。
+        const uint32_t default_levels_after_bootstrap =
+            std::max<uint32_t>(14, per_step_depth + 4);
+        uint32_t levels_after_bootstrap = static_cast<uint32_t>(
+            envInt("LEVELS_AFTER_BOOTSTRAP",
+                   static_cast<int>(default_levels_after_bootstrap)));
+
+        std::cout << "  Lanczos 单步最大深度估算 = " << per_step_depth
+                  << "  → levels_after_bootstrap = " << levels_after_bootstrap
+                  << std::endl;
+
+        if (!hasEnv("GUESS_SAFETY")) {
+            std::cout << "  GUESS_SAFETY 未设置，将按 d=" << d
+                      << " 自动使用 " << defaultGuessSafety(d) << std::endl;
+        }
+
         RunConfig cfg{
             /*d*/ d,
             /*p*/ 1,
             /*m_iter*/ m_iter,
             /*K*/ K,
-            /*newton_iters*/ 2,
+            /*newton_iters*/ newton_iters,
             /*enable_bootstrap*/ true,
-            /*levels_after_bootstrap*/ 14,
+            /*levels_after_bootstrap*/ levels_after_bootstrap,
             /*label*/ "bootstrap",
             /*dataset_N*/ dataset_N,
             /*true_rank*/ true_rank,
-            /*noise_sigma*/ noise};
+            /*noise_sigma*/ noise,
+            /*enable_fro*/ enable_fro,
+            /*fro_skip_first*/ fro_skip_first};
         return runOnce(cfg);
     }
 

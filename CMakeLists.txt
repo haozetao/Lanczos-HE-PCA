@@ -102,3 +102,15 @@ target_include_directories(plaintext_lanczos_tune PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/src
     ${OPENFHE_INCLUDE_DIRS}
 )
+
+# ── 层数验证小工具 ───────────────────────────────────────────────────────────
+add_executable(depth_probe src/depth_probe.cpp)
+target_link_libraries(depth_probe PRIVATE
+    OPENFHEcore
+    OPENFHEpke
+    OPENFHEbinfhe
+    ${OPENMP_LIB_PATH}
+)
+target_include_directories(depth_probe PRIVATE
+    ${OPENFHE_INCLUDE_DIRS}
+)

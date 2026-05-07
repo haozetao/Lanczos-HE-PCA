@@ -69,6 +69,36 @@ public:
         const Eigen::VectorXd& v0,
         int m_iter) const;
 
+    // 明文 Lanczos + 可选的部分重正交化 (PRO) + CKKS 噪声扰动
+    // 用于在不动 HE 代码的前提下，验证 PRO 是否能救回 K≥3 的精度。
+    //
+    // 噪声模型（每步注入相对幅度 sigma 的高斯扰动）：
+    //   W   <- C·V * (1 + sigma*sqrt(d) * randn)         （matvec 内积放大 √d 倍）
+    //   α   <- V^T·W * (1 + sigma*sqrt(d) * randn)        （内积放大 √d 倍）
+    //   ‖W_new‖² <- 真值 * (1 + sigma * randn)            （单次平方求和）
+    //   β   <- sqrt(‖W_new‖²) * (1 + 0.05*randn)         （Newton 2 轮 ~5% 误差）
+    //
+    // 重正交化：每步在 W_new = W − αV 之后，对最近 reorth_b 个基向量做 GS：
+    //   reorth_b = 0    -> 不做 PRO（与当前 HE 一致）
+    //   reorth_b = 2    -> Local PRO，对 V_{j-1}, V_{j-2} 做 GS
+    //   reorth_b >= m   -> 完整 FRO，对所有 V_0..V_{j-1} 做 GS
+    struct LanczosPROResult {
+        Eigen::MatrixXd T;         // m × m 三对角
+        Eigen::MatrixXd V_total;   // d × m 基向量
+        int actual_m;              // 实际完成的步数（早停时 < m_iter）
+    };
+
+    LanczosPROResult plaintextLanczosWithPROAndNoise(
+        const Eigen::VectorXd& v0,
+        int m_iter,
+        int reorth_b,
+        double sigma,
+        unsigned seed) const;
+
+    std::vector<double> plaintextMirrorResidualNormSqGuesses(
+        const Eigen::VectorXd& v0,
+        int m_iter) const;
+
     Eigen::MatrixXd plaintextStandardLanczosTridiagonal(
         const Eigen::VectorXd& v0,
         int m_iter) const;

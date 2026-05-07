@@ -309,6 +309,164 @@ Eigen::MatrixXd Client::plaintextMirrorHeLanczosTridiagonal(
     return T;
 }
 
+Client::LanczosPROResult Client::plaintextLanczosWithPROAndNoise(
+    const Eigen::VectorXd& v0,
+    int m_iter,
+    int reorth_b,
+    double sigma,
+    unsigned seed) const
+{
+    if (v0.size() != d_) {
+        throw std::invalid_argument(
+            "plaintextLanczosWithPROAndNoise: v0 维度与 d 不一致");
+    }
+    if (m_iter < 1) {
+        throw std::invalid_argument(
+            "plaintextLanczosWithPROAndNoise: m_iter 至少为 1");
+    }
+
+    std::mt19937 rng(seed);
+    std::normal_distribution<double> gauss(0.0, 1.0);
+
+    auto noisy_scale = [&](double base, double rel_std) {
+        if (rel_std <= 0.0) return 1.0;
+        return 1.0 + rel_std * gauss(rng);
+    };
+
+    const double sqrt_d = std::sqrt(static_cast<double>(d_));
+    const double sigma_matvec = sigma * sqrt_d;
+    const double newton_rel_err = (sigma > 0.0) ? 0.05 : 0.0;
+
+    Eigen::MatrixXd V_total(d_, m_iter);
+    std::vector<double> alphas;
+    std::vector<double> betas;
+    alphas.reserve(static_cast<size_t>(m_iter));
+    betas.reserve(static_cast<size_t>(std::max(0, m_iter - 1)));
+
+    Eigen::VectorXd V = v0.normalized();
+    Eigen::VectorXd V_prev = Eigen::VectorXd::Zero(d_);
+    double beta_prev = 0.0;
+    int actual_m = 0;
+
+    for (int iter = 0; iter < m_iter; ++iter) {
+        V_total.col(iter) = V;
+        actual_m = iter + 1;
+
+        // matvec: W = C·V，每分量注入相对噪声 sigma·√d
+        Eigen::VectorXd W = C_ * V;
+        if (sigma > 0.0) {
+            for (int i = 0; i < d_; ++i) {
+                W(i) *= noisy_scale(W(i), sigma_matvec);
+            }
+        }
+        if (iter > 0) {
+            W -= beta_prev * V_prev;
+        }
+
+        // α = V^T·W，再叠一次内积噪声（√d 项之和）
+        double alpha = V.dot(W);
+        if (sigma > 0.0) {
+            alpha *= noisy_scale(alpha, sigma_matvec);
+        }
+        alphas.push_back(alpha);
+
+        if (iter == m_iter - 1) {
+            break;
+        }
+
+        Eigen::VectorXd Wnew = W - alpha * V;
+
+        // === 重正交化：对最近 reorth_b 个基向量做 GS ===
+        if (reorth_b > 0) {
+            const int start = std::max(0, iter - reorth_b + 1);
+            for (int k = start; k <= iter; ++k) {
+                const Eigen::VectorXd& Vk = V_total.col(k);
+                double proj = Vk.dot(Wnew);
+                if (sigma > 0.0) {
+                    proj *= noisy_scale(proj, sigma_matvec);
+                }
+                Wnew -= proj * Vk;
+            }
+        }
+
+        // ‖W_new‖²：单次平方求和（不再 √d 放大，是单一操作）
+        double norm_sq = Wnew.squaredNorm();
+        if (sigma > 0.0) {
+            norm_sq *= noisy_scale(norm_sq, sigma);
+            if (norm_sq < 1e-18) norm_sq = 1e-18;
+        }
+
+        // Newton 2 轮 ~5% 相对误差
+        double norm = std::sqrt(norm_sq);
+        if (newton_rel_err > 0.0) {
+            norm *= 1.0 + newton_rel_err * gauss(rng);
+            if (norm < 1e-14) norm = 1e-14;
+        }
+        if (norm < 1e-14) {
+            // 早停：Krylov 子空间已完整捕获
+            break;
+        }
+        betas.push_back(norm);
+
+        V_prev = V;
+        V = Wnew / norm;
+        beta_prev = norm;
+    }
+
+    Eigen::MatrixXd T = Eigen::MatrixXd::Zero(actual_m, actual_m);
+    for (int i = 0; i < actual_m; ++i) {
+        T(i, i) = alphas[static_cast<size_t>(i)];
+        if (i < actual_m - 1 && static_cast<size_t>(i) < betas.size()) {
+            const double b = betas[static_cast<size_t>(i)];
+            T(i, i + 1) = b;
+            T(i + 1, i) = b;
+        }
+    }
+
+    LanczosPROResult result;
+    result.T = T;
+    result.V_total = V_total.leftCols(actual_m);
+    result.actual_m = actual_m;
+    return result;
+}
+
+std::vector<double> Client::plaintextMirrorResidualNormSqGuesses(
+    const Eigen::VectorXd& v0,
+    int m_iter) const
+{
+    if (v0.size() != d_) {
+        throw std::invalid_argument("plaintextMirrorResidualNormSqGuesses: v0 维度与 d 不一致");
+    }
+    if (m_iter < 1) {
+        throw std::invalid_argument("plaintextMirrorResidualNormSqGuesses: m_iter 至少为 1");
+    }
+
+    Eigen::VectorXd V = v0.normalized();
+    Eigen::VectorXd V_prev = Eigen::VectorXd::Zero(d_);
+    double beta_prev = 0.0;
+
+    std::vector<double> guesses;
+    guesses.reserve(static_cast<size_t>(std::max(0, m_iter - 1)));
+
+    for (int iter = 0; iter < m_iter - 1; ++iter) {
+        Eigen::VectorXd W = C_ * V - beta_prev * V_prev;
+        const double alpha = V.dot(W);
+        Eigen::VectorXd Wnew = W - alpha * V;
+        const double norm_sq = Wnew.squaredNorm();
+        guesses.push_back(std::max(norm_sq, 1e-18));
+
+        const double norm = std::sqrt(norm_sq);
+        if (norm < 1e-14) {
+            break;
+        }
+        V_prev = V;
+        V = Wnew / norm;
+        beta_prev = norm;
+    }
+
+    return guesses;
+}
+
 Eigen::MatrixXd Client::plaintextStandardLanczosTridiagonal(
     const Eigen::VectorXd& v0,
     int m_iter) const

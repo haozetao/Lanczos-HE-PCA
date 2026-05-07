@@ -65,12 +65,14 @@ CMAKE_BINARY_DIR = /Users/bytedance/PCA/build
 # The main recursive "all" target.
 all: CMakeFiles/he_pca.dir/all
 all: CMakeFiles/plaintext_lanczos_tune.dir/all
+all: CMakeFiles/depth_probe.dir/all
 all: _deps/openfhe-build/all
 .PHONY : all
 
 # The main recursive "codegen" target.
 codegen: CMakeFiles/he_pca.dir/codegen
 codegen: CMakeFiles/plaintext_lanczos_tune.dir/codegen
+codegen: CMakeFiles/depth_probe.dir/codegen
 codegen: _deps/openfhe-build/codegen
 .PHONY : codegen
 
@@ -81,6 +83,7 @@ preinstall: _deps/openfhe-build/preinstall
 # The main recursive "clean" target.
 clean: CMakeFiles/he_pca.dir/clean
 clean: CMakeFiles/plaintext_lanczos_tune.dir/clean
+clean: CMakeFiles/depth_probe.dir/clean
 clean: _deps/openfhe-build/clean
 .PHONY : clean
 
@@ -200,12 +203,12 @@ CMakeFiles/he_pca.dir/all: _deps/openfhe-build/src/pke/CMakeFiles/OPENFHEpke.dir
 CMakeFiles/he_pca.dir/all: _deps/openfhe-build/src/binfhe/CMakeFiles/OPENFHEbinfhe.dir/all
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/he_pca.dir/build.make CMakeFiles/he_pca.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/he_pca.dir/build.make CMakeFiles/he_pca.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/Users/bytedance/PCA/build/CMakeFiles --progress-num=43,44,45,46,47 "Built target he_pca"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/Users/bytedance/PCA/build/CMakeFiles --progress-num=44,45,46,47 "Built target he_pca"
 .PHONY : CMakeFiles/he_pca.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/he_pca.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /Users/bytedance/PCA/build/CMakeFiles 95
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/bytedance/PCA/build/CMakeFiles 93
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/he_pca.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /Users/bytedance/PCA/build/CMakeFiles 0
 .PHONY : CMakeFiles/he_pca.dir/rule
@@ -217,7 +220,7 @@ he_pca: CMakeFiles/he_pca.dir/rule
 # codegen rule for target.
 CMakeFiles/he_pca.dir/codegen:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/he_pca.dir/build.make CMakeFiles/he_pca.dir/codegen
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/Users/bytedance/PCA/build/CMakeFiles --progress-num=43,44,45,46,47 "Finished codegen for target he_pca"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/Users/bytedance/PCA/build/CMakeFiles --progress-num=44,45,46,47 "Finished codegen for target he_pca"
 .PHONY : CMakeFiles/he_pca.dir/codegen
 
 # clean rule for target.
@@ -239,7 +242,7 @@ CMakeFiles/plaintext_lanczos_tune.dir/all: _deps/openfhe-build/src/binfhe/CMakeF
 
 # Build rule for subdir invocation for target.
 CMakeFiles/plaintext_lanczos_tune.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /Users/bytedance/PCA/build/CMakeFiles 93
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/bytedance/PCA/build/CMakeFiles 92
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/plaintext_lanczos_tune.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /Users/bytedance/PCA/build/CMakeFiles 0
 .PHONY : CMakeFiles/plaintext_lanczos_tune.dir/rule
@@ -258,6 +261,40 @@ CMakeFiles/plaintext_lanczos_tune.dir/codegen:
 CMakeFiles/plaintext_lanczos_tune.dir/clean:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/plaintext_lanczos_tune.dir/build.make CMakeFiles/plaintext_lanczos_tune.dir/clean
 .PHONY : CMakeFiles/plaintext_lanczos_tune.dir/clean
+
+#=============================================================================
+# Target rules for target CMakeFiles/depth_probe.dir
+
+# All Build rule for target.
+CMakeFiles/depth_probe.dir/all: _deps/openfhe-build/src/core/CMakeFiles/OPENFHEcore.dir/all
+CMakeFiles/depth_probe.dir/all: _deps/openfhe-build/src/pke/CMakeFiles/OPENFHEpke.dir/all
+CMakeFiles/depth_probe.dir/all: _deps/openfhe-build/src/binfhe/CMakeFiles/OPENFHEbinfhe.dir/all
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/depth_probe.dir/build.make CMakeFiles/depth_probe.dir/depend
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/depth_probe.dir/build.make CMakeFiles/depth_probe.dir/build
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/Users/bytedance/PCA/build/CMakeFiles --progress-num=43 "Built target depth_probe"
+.PHONY : CMakeFiles/depth_probe.dir/all
+
+# Build rule for subdir invocation for target.
+CMakeFiles/depth_probe.dir/rule: cmake_check_build_system
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/bytedance/PCA/build/CMakeFiles 90
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/depth_probe.dir/all
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/bytedance/PCA/build/CMakeFiles 0
+.PHONY : CMakeFiles/depth_probe.dir/rule
+
+# Convenience name for target.
+depth_probe: CMakeFiles/depth_probe.dir/rule
+.PHONY : depth_probe
+
+# codegen rule for target.
+CMakeFiles/depth_probe.dir/codegen:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/depth_probe.dir/build.make CMakeFiles/depth_probe.dir/codegen
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/Users/bytedance/PCA/build/CMakeFiles --progress-num=43 "Finished codegen for target depth_probe"
+.PHONY : CMakeFiles/depth_probe.dir/codegen
+
+# clean rule for target.
+CMakeFiles/depth_probe.dir/clean:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/depth_probe.dir/build.make CMakeFiles/depth_probe.dir/clean
+.PHONY : CMakeFiles/depth_probe.dir/clean
 
 #=============================================================================
 # Target rules for target _deps/openfhe-build/CMakeFiles/clobber.dir
@@ -433,7 +470,7 @@ _deps/openfhe-build/CMakeFiles/allmodules.dir/all: _deps/openfhe-build/src/binfh
 
 # Build rule for subdir invocation for target.
 _deps/openfhe-build/CMakeFiles/allmodules.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /Users/bytedance/PCA/build/CMakeFiles 90
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/bytedance/PCA/build/CMakeFiles 89
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 _deps/openfhe-build/CMakeFiles/allmodules.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /Users/bytedance/PCA/build/CMakeFiles 0
 .PHONY : _deps/openfhe-build/CMakeFiles/allmodules.dir/rule
@@ -591,12 +628,12 @@ _deps/openfhe-build/src/pke/CMakeFiles/pkeobj.dir/all: _deps/openfhe-build/src/c
 _deps/openfhe-build/src/pke/CMakeFiles/pkeobj.dir/all: _deps/openfhe-build/src/binfhe/CMakeFiles/OPENFHEbinfhe.dir/all
 	$(MAKE) $(MAKESILENT) -f _deps/openfhe-build/src/pke/CMakeFiles/pkeobj.dir/build.make _deps/openfhe-build/src/pke/CMakeFiles/pkeobj.dir/depend
 	$(MAKE) $(MAKESILENT) -f _deps/openfhe-build/src/pke/CMakeFiles/pkeobj.dir/build.make _deps/openfhe-build/src/pke/CMakeFiles/pkeobj.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/Users/bytedance/PCA/build/CMakeFiles --progress-num=48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92,93,94,95,96,97 "Built target pkeobj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/Users/bytedance/PCA/build/CMakeFiles --progress-num=49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92,93,94,95,96,97 "Built target pkeobj"
 .PHONY : _deps/openfhe-build/src/pke/CMakeFiles/pkeobj.dir/all
 
 # Build rule for subdir invocation for target.
 _deps/openfhe-build/src/pke/CMakeFiles/pkeobj.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /Users/bytedance/PCA/build/CMakeFiles 89
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/bytedance/PCA/build/CMakeFiles 88
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 _deps/openfhe-build/src/pke/CMakeFiles/pkeobj.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /Users/bytedance/PCA/build/CMakeFiles 0
 .PHONY : _deps/openfhe-build/src/pke/CMakeFiles/pkeobj.dir/rule
@@ -609,7 +646,7 @@ pkeobj: _deps/openfhe-build/src/pke/CMakeFiles/pkeobj.dir/rule
 _deps/openfhe-build/src/pke/CMakeFiles/pkeobj.dir/codegen: _deps/openfhe-build/src/core/CMakeFiles/OPENFHEcore.dir/all
 _deps/openfhe-build/src/pke/CMakeFiles/pkeobj.dir/codegen: _deps/openfhe-build/src/binfhe/CMakeFiles/OPENFHEbinfhe.dir/all
 	$(MAKE) $(MAKESILENT) -f _deps/openfhe-build/src/pke/CMakeFiles/pkeobj.dir/build.make _deps/openfhe-build/src/pke/CMakeFiles/pkeobj.dir/codegen
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/Users/bytedance/PCA/build/CMakeFiles --progress-num=48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92,93,94,95,96,97 "Finished codegen for target pkeobj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/Users/bytedance/PCA/build/CMakeFiles --progress-num=49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92,93,94,95,96,97 "Finished codegen for target pkeobj"
 .PHONY : _deps/openfhe-build/src/pke/CMakeFiles/pkeobj.dir/codegen
 
 # clean rule for target.
@@ -631,7 +668,7 @@ _deps/openfhe-build/src/pke/CMakeFiles/OPENFHEpke.dir/all: _deps/openfhe-build/s
 
 # Build rule for subdir invocation for target.
 _deps/openfhe-build/src/pke/CMakeFiles/OPENFHEpke.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /Users/bytedance/PCA/build/CMakeFiles 90
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/bytedance/PCA/build/CMakeFiles 89
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 _deps/openfhe-build/src/pke/CMakeFiles/OPENFHEpke.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /Users/bytedance/PCA/build/CMakeFiles 0
 .PHONY : _deps/openfhe-build/src/pke/CMakeFiles/OPENFHEpke.dir/rule
@@ -663,7 +700,7 @@ _deps/openfhe-build/src/pke/CMakeFiles/allpke.dir/all: _deps/openfhe-build/src/p
 
 # Build rule for subdir invocation for target.
 _deps/openfhe-build/src/pke/CMakeFiles/allpke.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /Users/bytedance/PCA/build/CMakeFiles 90
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/bytedance/PCA/build/CMakeFiles 89
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 _deps/openfhe-build/src/pke/CMakeFiles/allpke.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /Users/bytedance/PCA/build/CMakeFiles 0
 .PHONY : _deps/openfhe-build/src/pke/CMakeFiles/allpke.dir/rule
@@ -690,12 +727,12 @@ _deps/openfhe-build/src/pke/CMakeFiles/allpke.dir/clean:
 _deps/openfhe-build/src/pke/CMakeFiles/pkeinfo.dir/all:
 	$(MAKE) $(MAKESILENT) -f _deps/openfhe-build/src/pke/CMakeFiles/pkeinfo.dir/build.make _deps/openfhe-build/src/pke/CMakeFiles/pkeinfo.dir/depend
 	$(MAKE) $(MAKESILENT) -f _deps/openfhe-build/src/pke/CMakeFiles/pkeinfo.dir/build.make _deps/openfhe-build/src/pke/CMakeFiles/pkeinfo.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/Users/bytedance/PCA/build/CMakeFiles --progress-num= "Built target pkeinfo"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/Users/bytedance/PCA/build/CMakeFiles --progress-num=48 "Built target pkeinfo"
 .PHONY : _deps/openfhe-build/src/pke/CMakeFiles/pkeinfo.dir/all
 
 # Build rule for subdir invocation for target.
 _deps/openfhe-build/src/pke/CMakeFiles/pkeinfo.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /Users/bytedance/PCA/build/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/bytedance/PCA/build/CMakeFiles 1
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 _deps/openfhe-build/src/pke/CMakeFiles/pkeinfo.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /Users/bytedance/PCA/build/CMakeFiles 0
 .PHONY : _deps/openfhe-build/src/pke/CMakeFiles/pkeinfo.dir/rule
@@ -707,7 +744,7 @@ pkeinfo: _deps/openfhe-build/src/pke/CMakeFiles/pkeinfo.dir/rule
 # codegen rule for target.
 _deps/openfhe-build/src/pke/CMakeFiles/pkeinfo.dir/codegen:
 	$(MAKE) $(MAKESILENT) -f _deps/openfhe-build/src/pke/CMakeFiles/pkeinfo.dir/build.make _deps/openfhe-build/src/pke/CMakeFiles/pkeinfo.dir/codegen
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/Users/bytedance/PCA/build/CMakeFiles --progress-num= "Finished codegen for target pkeinfo"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/Users/bytedance/PCA/build/CMakeFiles --progress-num=48 "Finished codegen for target pkeinfo"
 .PHONY : _deps/openfhe-build/src/pke/CMakeFiles/pkeinfo.dir/codegen
 
 # clean rule for target.

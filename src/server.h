@@ -44,9 +44,12 @@ public:
         int p,
         int m_iter,
         double eigenvalue_guess,
+        const std::vector<double>& per_iter_eigenvalue_guesses,
         int newton_iters,
         const std::vector<double>& asor_k_factors = {},
-        LanczosStats* stats_out = nullptr);
+        LanczosStats* stats_out = nullptr,
+        bool enable_fro = false,
+        int fro_skip_first = 2);
 
 private:
     lbcrypto::CryptoContext<lbcrypto::DCRTPoly> cc_;
@@ -54,6 +57,7 @@ private:
     uint32_t total_depth_;
     bool bootstrap_enabled_;
     uint32_t num_slots_;
+    mutable std::vector<lbcrypto::Plaintext> slot_masks_;
 
     std::unique_ptr<NewtonInvSqrt> newton_;
 
@@ -69,6 +73,8 @@ private:
     lbcrypto::Ciphertext<lbcrypto::DCRTPoly> packScalarsToVector(
         const std::vector<lbcrypto::Ciphertext<lbcrypto::DCRTPoly>>& scalar_cts,
         int d) const;
+
+    void ensureSlotMasks(int d) const;
 
     // 剩余乘法深度 ≤ min_required 时触发 Bootstrap，返回是否实际执行
     bool bootstrapIfNeeded(

@@ -89,6 +89,7 @@ set(CMAKE_MAKEFILE_PRODUCTS
 set(CMAKE_DEPEND_INFO_FILES
   "CMakeFiles/he_pca.dir/DependInfo.cmake"
   "CMakeFiles/plaintext_lanczos_tune.dir/DependInfo.cmake"
+  "CMakeFiles/depth_probe.dir/DependInfo.cmake"
   "_deps/openfhe-build/CMakeFiles/clobber.dir/DependInfo.cmake"
   "_deps/openfhe-build/CMakeFiles/uninstall.dir/DependInfo.cmake"
   "_deps/openfhe-build/CMakeFiles/tcm.dir/DependInfo.cmake"

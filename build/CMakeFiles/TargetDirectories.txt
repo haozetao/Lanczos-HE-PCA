@@ -1,5 +1,6 @@
 /Users/bytedance/PCA/build/CMakeFiles/he_pca.dir
 /Users/bytedance/PCA/build/CMakeFiles/plaintext_lanczos_tune.dir
+/Users/bytedance/PCA/build/CMakeFiles/depth_probe.dir
 /Users/bytedance/PCA/build/CMakeFiles/edit_cache.dir
 /Users/bytedance/PCA/build/CMakeFiles/rebuild_cache.dir
 /Users/bytedance/PCA/build/CMakeFiles/list_install_components.dir

@@ -6,7 +6,5 @@ CXX_DEFINES = -DPARALLEL
 
 CXX_INCLUDES = -I/opt/homebrew/opt/libomp/include -I/Users/bytedance/PCA/build/_deps/openfhe-src/third-party/include -I/Users/bytedance/PCA/build/_deps/openfhe-src/third-party/cereal/include -I/Users/bytedance/PCA/build/_deps/openfhe-src/third-party/google-test/googletest -I/Users/bytedance/PCA/build/_deps/openfhe-src/third-party/google-test/googletest/include -I/Users/bytedance/PCA/build/_deps/openfhe-src/src/core/include -I/Users/bytedance/PCA/build/_deps/openfhe-src/src/binfhe/include -I/Users/bytedance/PCA/build/_deps/openfhe-build/src/core -I/Users/bytedance/PCA/build/_deps/openfhe-src/src/core/lib -I/Users/bytedance/PCA/build/_deps/openfhe-src/src/binfhe/lib
 
-CXX_FLAGSarm64 =  -Wall -Werror -DOPENFHE_VERSION=1.5.1 -O3 -DMATHBACKEND=4 -Xpreprocessor -fopenmp -lomp -Wno-unused-command-line-argument -Xpreprocessor -fopenmp -lomp -Wno-unused-command-line-argument -O3 -DNDEBUG -std=gnu++17 -arch arm64 -fPIC
-
-CXX_FLAGS =  -Wall -Werror -DOPENFHE_VERSION=1.5.1 -O3 -DMATHBACKEND=4 -Xpreprocessor -fopenmp -lomp -Wno-unused-command-line-argument -Xpreprocessor -fopenmp -lomp -Wno-unused-command-line-argument -O3 -DNDEBUG -std=gnu++17 -arch arm64 -fPIC
+CXX_FLAGS =  -Wall -Werror -DOPENFHE_VERSION=1.5.1 -O3 -DMATHBACKEND=4 -Xpreprocessor -fopenmp -lomp -Wno-unused-command-line-argument -Xpreprocessor -fopenmp -lomp -Wno-unused-command-line-argument -O3 -DNDEBUG -std=gnu++17 -fPIC
 

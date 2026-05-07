@@ -189,6 +189,19 @@ plaintext_lanczos_tune/fast:
 .PHONY : plaintext_lanczos_tune/fast
 
 #=============================================================================
+# Target rules for targets named depth_probe
+
+# Build rule for target.
+depth_probe: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 depth_probe
+.PHONY : depth_probe
+
+# fast build rule for target.
+depth_probe/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/depth_probe.dir/build.make CMakeFiles/depth_probe.dir/build
+.PHONY : depth_probe/fast
+
+#=============================================================================
 # Target rules for targets named clobber
 
 # Build rule for target.
@@ -449,6 +462,30 @@ src/client.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/plaintext_lanczos_tune.dir/build.make CMakeFiles/plaintext_lanczos_tune.dir/src/client.cpp.s
 .PHONY : src/client.cpp.s
 
+src/depth_probe.o: src/depth_probe.cpp.o
+.PHONY : src/depth_probe.o
+
+# target to build an object file
+src/depth_probe.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/depth_probe.dir/build.make CMakeFiles/depth_probe.dir/src/depth_probe.cpp.o
+.PHONY : src/depth_probe.cpp.o
+
+src/depth_probe.i: src/depth_probe.cpp.i
+.PHONY : src/depth_probe.i
+
+# target to preprocess a source file
+src/depth_probe.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/depth_probe.dir/build.make CMakeFiles/depth_probe.dir/src/depth_probe.cpp.i
+.PHONY : src/depth_probe.cpp.i
+
+src/depth_probe.s: src/depth_probe.cpp.s
+.PHONY : src/depth_probe.s
+
+# target to generate assembly for a file
+src/depth_probe.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/depth_probe.dir/build.make CMakeFiles/depth_probe.dir/src/depth_probe.cpp.s
+.PHONY : src/depth_probe.cpp.s
+
 src/main.o: src/main.cpp.o
 .PHONY : src/main.o
 
@@ -574,12 +611,16 @@ help:
 	@echo "... OPENFHEpke"
 	@echo "... binfheobj"
 	@echo "... coreobj"
+	@echo "... depth_probe"
 	@echo "... he_pca"
 	@echo "... pkeobj"
 	@echo "... plaintext_lanczos_tune"
 	@echo "... src/client.o"
 	@echo "... src/client.i"
 	@echo "... src/client.s"
+	@echo "... src/depth_probe.o"
+	@echo "... src/depth_probe.i"
+	@echo "... src/depth_probe.s"
 	@echo "... src/main.o"
 	@echo "... src/main.i"
 	@echo "... src/main.s"

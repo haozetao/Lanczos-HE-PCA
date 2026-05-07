@@ -6,7 +6,5 @@ CXX_DEFINES =
 
 CXX_INCLUDES = -I/Users/bytedance/PCA/src -I/Users/bytedance/PCA/build/_deps/openfhe-src/src/core/include -I/Users/bytedance/PCA/build/_deps/openfhe-src/src/pke/include -I/Users/bytedance/PCA/build/_deps/openfhe-src/src/binfhe/include -I/Users/bytedance/PCA/build/_deps/openfhe-src/third-party/include -I/Users/bytedance/PCA/build/_deps/openfhe-src/third-party/cereal/include -I/Users/bytedance/PCA/build/_deps/openfhe-build/src/core -I/Users/bytedance/PCA/build/_deps/openfhe-build/src/pke -I/Users/bytedance/PCA/build/_deps/openfhe-build/src/binfhe -isystem /Users/bytedance/PCA/build/_deps/eigen-src
 
-CXX_FLAGSarm64 = -O3 -DNDEBUG -std=gnu++17 -arch arm64
-
-CXX_FLAGS = -O3 -DNDEBUG -std=gnu++17 -arch arm64
+CXX_FLAGS = -O3 -DNDEBUG -std=gnu++17
 

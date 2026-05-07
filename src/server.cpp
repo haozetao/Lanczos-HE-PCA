@@ -71,18 +71,34 @@ Ciphertext<DCRTPoly> Server::scalarVecMultiply(
     return cc_->EvalMult(scalar_ct, vec_ct);
 }
 
+void Server::ensureSlotMasks(int d) const
+{
+    if (d < 0) {
+        throw std::invalid_argument("ensureSlotMasks: d must be non-negative");
+    }
+    if (slot_masks_.size() >= static_cast<size_t>(d)) {
+        return;
+    }
+
+    const size_t old_size = slot_masks_.size();
+    slot_masks_.reserve(static_cast<size_t>(d));
+    for (size_t i = old_size; i < static_cast<size_t>(d); ++i) {
+        std::vector<double> mask(num_slots_, 0.0);
+        mask[i] = 1.0;
+        slot_masks_.push_back(cc_->MakeCKKSPackedPlaintext(mask));
+    }
+}
+
 Ciphertext<DCRTPoly> Server::packScalarsToVector(
     const std::vector<Ciphertext<DCRTPoly>>& scalar_cts, int d) const
 {
     // 每个 scalar_cts[i] 所有 slot 都含标量值
     // 用掩码 [0,...,1,...,0]（位置 i 为 1）提取到正确 slot，再累加
+    ensureSlotMasks(d);
     Ciphertext<DCRTPoly> result;
 
     for (int i = 0; i < d; ++i) {
-        std::vector<double> mask(num_slots_, 0.0);
-        mask[i] = 1.0;
-        Plaintext mask_pt = cc_->MakeCKKSPackedPlaintext(mask);
-        auto masked = cc_->EvalMult(scalar_cts[i], mask_pt);
+        auto masked = cc_->EvalMult(scalar_cts[i], slot_masks_[static_cast<size_t>(i)]);
 
         if (i == 0) {
             result = masked;
@@ -116,9 +132,12 @@ Server::LanczosResult Server::lanczosIteration(
     int p,
     int m_iter,
     double eigenvalue_guess,
+    const std::vector<double>& per_iter_eigenvalue_guesses,
     int newton_iters,
     const std::vector<double>& asor_k_factors,
-    LanczosStats* stats_out)
+    LanczosStats* stats_out,
+    bool enable_fro,
+    int fro_skip_first)
 {
     if (p != 1) {
         throw std::invalid_argument("lanczosIteration: 仅支持 p=1");
@@ -129,15 +148,20 @@ Server::LanczosResult Server::lanczosIteration(
 
     const bool use_asor = !asor_k_factors.empty();
 
-    // 单次 Lanczos 迭代（包含 Newton）大致消耗的乘法层数估算：
-    //   innerProduct (1) + packScalars mask mult (1) + scalarVecMultiply*2 (2)
-    //   + innerProduct(W,W) (1) + Newton(newton_iters * 3) + innerProduct(V,W) (1) ≈ 6 + 3*n
-    // 为保险，Bootstrap 阈值取：单轮所需最小深度 + 余量
+    // 单次 Lanczos 迭代（包含 Newton）消耗的乘法层数估算：
+    //   depth_probe.cpp 对 OpenFHE CKKS FLEXIBLEAUTO 的实测为
+    //   V -> V_next critical path = 4 + 4 * NewtonSteps（无 FRO）。
+    //   开启 FRO 后每次 reorth 步在 W_new 上额外消耗 2 层，
+    //   最坏迭代（iter = m-1）消耗 2 * (m-1) 层。
     const int newton_steps_used = use_asor
         ? static_cast<int>(asor_k_factors.size())
         : newton_iters;
-    const uint32_t per_iter_depth =
-        static_cast<uint32_t>(6 + 3 * std::max(newton_steps_used, 1));
+    const int fro_skip = std::max(0, fro_skip_first);
+    const int max_reorth_steps = enable_fro
+        ? std::max(0, m_iter - 1 - fro_skip)
+        : 0;
+    const uint32_t per_iter_depth = static_cast<uint32_t>(
+        4 + 4 * std::max(newton_steps_used, 1) + 2 * max_reorth_steps);
     const uint32_t bootstrap_threshold = per_iter_depth + 2;
 
     LanczosResult out;
@@ -148,8 +172,8 @@ Server::LanczosResult Server::lanczosIteration(
     Ciphertext<DCRTPoly> V = enc_V1[0];
     Ciphertext<DCRTPoly> V_prev;
     Ciphertext<DCRTPoly> beta_prev_ct;
-    const double guess_inv_sqrt =
-        1.0 / std::sqrt(std::max(eigenvalue_guess, 1e-9));
+    const double fallback_guess =
+        std::max(eigenvalue_guess, 1e-18);
 
     for (int iter = 0; iter < m_iter; ++iter) {
         if (bootstrap_enabled_ && iter > 0) {
@@ -187,8 +211,30 @@ Server::LanczosResult Server::lanczosIteration(
             auto alphaV = scalarVecMultiply(alpha, V);
             auto Wnew = cc_->EvalSub(Wvec, alphaV);
 
+            // Step 3b (Optional): Full Reorthogonalization (HE-FRO)
+            //   W_new ← W_new − Σ_{k=0..iter-1} (V_k · W_new) · V_k
+            //   防止 Lanczos 向量正交性丢失导致 Krylov 子空间坍缩。
+            //   - 跳过前 fro_skip 步（j=0..fro_skip-1）：那时正交性还没坏，
+            //     省下大约 (fro_skip * 2) 层关键深度。
+            //   - V_all[k] 是 BS 后入库的 fresh 密文，不需要在 reorth 期间
+            //     再次 BS，因为它只作为乘法的"另一边"，level 不会被消耗。
+            if (enable_fro && iter >= fro_skip) {
+                for (int k = 0; k < iter; ++k) {
+                    const auto& Vk = out.V_all[k];
+                    auto proj_k = innerProduct(Vk, Wnew, d);
+                    auto sub_k = scalarVecMultiply(proj_k, Vk);
+                    Wnew = cc_->EvalSub(Wnew, sub_k);
+                }
+            }
+
             // Step 4: β = ||W_new|| via Newton 1/√x
             auto norm_sq = innerProduct(Wnew, Wnew, d);
+            const double iter_guess =
+                (static_cast<size_t>(iter) < per_iter_eigenvalue_guesses.size())
+                    ? per_iter_eigenvalue_guesses[static_cast<size_t>(iter)]
+                    : fallback_guess;
+            const double guess_inv_sqrt =
+                1.0 / std::sqrt(std::max(iter_guess, 1e-18));
             InvSqrtResult inv = use_asor
                 ? newton_->computeWithASOR(norm_sq, guess_inv_sqrt, asor_k_factors)
                 : newton_->compute(norm_sq, guess_inv_sqrt, newton_iters);

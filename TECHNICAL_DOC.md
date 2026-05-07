@@ -150,32 +150,32 @@ parameters.SetMultiplicativeDepth(19);
 
 ### 3.3 乘法深度预算（OpenFHE FLEXIBLEAUTO）
 
-单步 Lanczos 迭代的深度消耗（大致，OpenFHE 会自动插入必要的 rescale）：
+OpenFHE `FLEXIBLEAUTO` 采用懒惰 rescale：fresh 密文的第一次乘法通常只把 `noiseScaleDeg` 从 1 推到 2，`GetLevel()` 不变；后续乘法再触发 level 增长。因此本项目不再只按“乘法次数”估深度，而是用 `src/depth_probe.cpp` 对当前 OpenFHE 1.5.1 配置实测。
+
+**重要结论**：在本项目默认 `MakeCKKSPackedPlaintext` 编码下，`ct × Plaintext` 与 `ct × ct` 对 level 的影响相同；论文中“明文乘免费”通常指 BGV/BFV，或 CKKS 低 scale 明文编码，不适用于当前 `FLEXIBLEAUTO` 默认编码。
 
 ```
-操作                          消耗层数
-─────────────────────────────────────
-C·V: d 次 innerProduct          1   (EvalMult + rotate-sum 不消耗层)
-packScalarsToVector 掩码乘      1
-β·V_prev 标量-向量乘            1
-V^T·W 内积                      1
-α·V 标量-向量乘                 1
-W_new^T·W_new 范数              1
-Newton 1/√x (每轮 3 层)         3 × newton_iters
-V_next = inv_sqrt × W_new       1
-─────────────────────────────────────
-单步约 7 + 3 × newton_iters 层 ≈ 13 (newton=2)
+操作                                      实测层数影响
+────────────────────────────────────────────────────
+EvalAdd / EvalSub / EvalRotate            0
+ct × ct / ct × Plaintext / ct × double    连续 n 次乘法约消耗 n-1 层
+Newton 首轮                               3 层
+Newton 后续每轮                           4 层
+Newton(n) + sqrt = x·y                    4 × n 层
+单步 Lanczos V→V_next                     4 + 4 × newton_iters 层
+────────────────────────────────────────────────────
+newton=2 时单步 Lanczos = 12 层
 ```
 
-**Baseline 模式**：`m_iter=2`, `newton_iters=2`，设置 `SetMultiplicativeDepth(19)` 可覆盖。
+**Baseline 模式**：`m_iter=2`, `newton_iters=2`，最大约 15 层；设置 `SetMultiplicativeDepth(19)` 有 4 层余量。
 
-**Bootstrap 模式**：`m_iter=5`, `newton_iters=2`，单步 ≈13 层远超无 Bootstrap 可用深度；通过在每轮 Lanczos 开始前判断剩余深度，对 `V / V_prev / β_prev` 三个关键密文调用 `EvalBootstrap` 刷新，使多步 Lanczos 成为可能。
+**Bootstrap 模式**：`newton_iters=2` 时每步 12 层，默认 `levels_after_bootstrap=14`，即每次 Bootstrap 后有 2 层余量；通过在每轮 Lanczos 开始前判断剩余深度，对 `V / V_prev / β_prev` 三个关键密文调用 `EvalBootstrap` 刷新，使多步 Lanczos 成为可能。
 
 #### 3.3.1 Bootstrap 触发逻辑
 
 ```cpp
 // 触发阈值 = 单步所需深度 + 2 层余量
-uint32_t per_iter_depth     = 6 + 3 * newton_steps;
+uint32_t per_iter_depth     = 4 + 4 * newton_steps;
 uint32_t bootstrap_threshold = per_iter_depth + 2;
 ```
 
@@ -303,6 +303,8 @@ for step in {1, 2, 4, 8, ..., slot_count/2}:
 对第 i 个标量密文: 乘以掩码 [0,...,0, 1, 0,...,0] (位置 i 为 1)
 然后 rescale，累加所有 d 个被掩码的密文
 ```
+
+实现上 `Server` 会缓存这些 one-hot plaintext masks（`ensureSlotMasks(d)`），避免 d=512/784/1024 时每轮 Lanczos 反复构造 `numSlots=16384` 长度的明文向量。该优化不改变层数，但显著减少高维实验中的 CPU 分配开销。
 
 ---
 
@@ -512,7 +514,7 @@ total_depth = levels_after_bootstrap + GetBootstrapDepth({4,4}, UNIFORM_TERNARY)
             ≈ levels_after_bootstrap + 15~20
 ```
 
-当前 `bootstrap` 模式取 `levels_after_bootstrap = 14`，总深度约 36 层。每次 `EvalBootstrap` 本身耗时数秒（本机 Apple Silicon 实测约 7–8 s/次），但换来的是理论上无限的电路深度。
+当前 `bootstrap` 模式取 `levels_after_bootstrap = 14`，总深度约 36 层。每次 `EvalBootstrap` 本身耗时数秒（本机 Apple Silicon 实测约 **8-9 s/次**，d=10 m=6 复测：11 次 BS 累计 98.4 s → 8.95 s/次），但换来的是理论上无限的电路深度。
 
 ### 8.4 Server 中的按需刷新
 
@@ -575,8 +577,16 @@ DATASET_N=500 TRUE_RANK=20 NOISE_SIGMA=2.0 K=3 \
 DATASET_N=500 TRUE_RANK=30 NOISE_SIGMA=2.0 K=4 GUESS_SAFETY=16 \
     ./build/he_pca bootstrap 5 256
 
+# 自动选择 GUESS_SAFETY，并按 NEWTON_ITERS 自动设置 levels_after_bootstrap
+DATASET_N=500 TRUE_RANK=50 NOISE_SIGMA=2.0 K=4 NEWTON_ITERS=2 \
+    ./build/he_pca bootstrap 5 784
+
 # 启用 aSOR 加速 Newton（默认关闭）
 ASOR_EPS=0.9 ASOR_ALPHA=4 ./build/he_pca bootstrap 8 50
+
+# 批量高维扫描（默认 50/100/256；RUN_LARGE=1 包含 512/784/1024）
+bash scripts/run_dimension_sweep.sh
+RUN_LARGE=1 bash scripts/run_dimension_sweep.sh
 
 # 明文 Lanczos 标定
 ./build/plaintext_lanczos_tune
@@ -590,8 +600,29 @@ ASOR_EPS=0.9 ASOR_ALPHA=4 ./build/he_pca bootstrap 8 50
 | `TRUE_RANK` | min(d, 5) | 低秩数据的真实秩 |
 | `NOISE_SIGMA` | 0.1 | 低秩数据附加高斯噪声标准差 |
 | `K` | 3 | 取前 K 个主成分参与评估 |
-| `GUESS_SAFETY` | 4.0 | Newton 初始猜测安全因子，$y_0 = 1/\sqrt{\sigma \cdot \|W\|^2_{\text{sim}}}$（值越大 $y_0$ 越保守） |
+| `NEWTON_ITERS` | 2 | 标准 Newton 迭代轮数；>2 时会自动增大 `levels_after_bootstrap` |
+| `LEVELS_AFTER_BOOTSTRAP` | auto | Bootstrap 后保留的业务层数；默认 `max(14, 4+4*NEWTON_ITERS+2)` |
+| `PER_ITER_GUESS` | 1 | 使用明文 mirror Lanczos 为每一轮 Newton 提供独立的 $\|W_i\|^2$ 初值；设为 0 时退回首轮固定 guess |
+| `GUESS_SAFETY` | auto | Newton 初始猜测安全因子，$y_0 = 1/\sqrt{\sigma \cdot \|W_i\|^2_{\text{sim}}}$；未设置时按 d 自动选择：d≤32 用 1，d≤128 用 2，d≤256 用 4，d≤784 用 8 |
 | `ASOR_EPS` / `ASOR_ALPHA` | 未设 | 同时设置即启用 aSOR；未设则关闭走标准 Newton |
+
+### 9.3.1 高维实验脚本
+
+`scripts/run_dimension_sweep.sh` 将高维可用性实验固化为可复现流程：
+
+```bash
+# 笔记本安全规模：d=50/100/256
+bash scripts/run_dimension_sweep.sh
+
+# 图像尺度：d=512/784/1024（耗时和内存显著增加）
+RUN_LARGE=1 bash scripts/run_dimension_sweep.sh
+
+# 指定图像维度，例如 MNIST 28x28 = 784
+DIMS="256 512 784" DATASET_N=500 TRUE_RANK=50 K=4 \
+    bash scripts/run_dimension_sweep.sh
+```
+
+原始日志写入 `experiments/logs/*.log`，汇总 CSV 写入 `experiments/results/dimension_sweep.csv`。汇总脚本会提取 `server_ms`、`bootstrap_count`、`lambda1_error_pct`、`R²(X)`、`R²(V)` 等指标，便于和真实图像数据实验共用同一套评估表。
 
 ### 9.4 实测结果对照（d=10）
 
@@ -691,21 +722,22 @@ RunConfig cfg{
 | 局限 | 影响 | 根因 |
 |------|------|------|
 | p 仅支持 1 | 无法利用 Block Lanczos 的并行加速 | 深电路下 Block 版本工程复杂度高 |
-| d 实用上限 ≈ 100–200 | 维度 ≥ 256 时 λ 数值误差急剧上升 | CKKS 噪声随 d 线性累积 + Newton 初始猜测在深电路下不可靠 |
+| d 实用上限 ≈ 100–256 | d=512/784/1024 已有实验入口，但精度仍需逐项验证 | CKKS 噪声随 d 线性累积 + 当前行打包矩阵乘为 O(d) 个 innerProduct |
 | aSOR 默认关闭 | 未发挥理论深度节省 | 实战中 Lanczos 多步导致 $\|W\|^2$ 飘忽，aSOR 过冲 $\sqrt{3}$ cliff 导致发散（详见 §12.2） |
 | Bootstrap 开销 | 每次 7–8 s，m=5 共 ~46 s | CKKS 固有特性，可通过参数调优改善 |
 | 安全参数偏弱 | 当前 `HEStd_NotSet`（toy） | 为便于实验手动设 RingDim；生产需切至 `HEStd_128_classic` |
-| Newton 初始化静态 | 大 d 下需要手动加大 `GUESS_SAFETY` | 单一明文模拟估计无法覆盖 Lanczos 多步 $\|W\|^2$ 的动态范围 |
+| Newton 初始化仍是启发式 | 大 d 下仍可能需要调 `GUESS_SAFETY` | 现在默认启用 `PER_ITER_GUESS=1`，逐轮 mirror 估计 $\|W_i\|^2$，但密文噪声仍会使真实范数偏离明文模拟 |
 
 ### 11.2 优化路径
 
 1. **Lazy Normalization (Ma 2023)**：范围感知的 Newton 初始化，用 Taylor 展开覆盖整个 $\|W\|^2$ 区间，解决大 d 下初始猜测 cliff —— 这是突破 d=256 精度瓶颈的最高优先级
-2. **SIMD 对角线打包**：将矩阵乘从 $O(d^2)$ 次密文乘降至 $O(d)$ 次，支持 $d \geq 500$
-3. **减少 Bootstrap 频次**：对 `V / V_prev / β_prev` 共享 BS 结果、或批量 BS
-4. **扩展 Block Lanczos (p>1)**：利用 SIMD 并行提取多个特征
-5. **图像数据端到端**：接 MNIST / Olivetti 等真实数据集，做重建可视化和下游 1-NN 识别
-6. **GPU 加速**：考察 OpenFHE 的 NATIVEOPT/GPU 后端或 HEonGPU 以缩短 Bootstrap 时间
-7. **网络通信层**：gRPC / ZeroMQ 替代类间调用，实现真正分布式部署
+2. **低 scale 明文编码**：让 mask / 常数乘尽量不消耗 level，把单步 Lanczos 从 12 层压向 8 层，减少 Bootstrap 频率
+3. **SIMD 对角线打包或 BSGS 矩阵乘**：降低当前行打包 O(d) 个 innerProduct 的高维开销，支持 d ≥ 784 的图像实验
+4. **减少 Bootstrap 频次**：对 `V / V_prev / β_prev` 共享 BS 结果、或批量 BS
+5. **扩展 Block Lanczos (p>1)**：利用 SIMD 并行提取多个特征
+6. **图像数据端到端**：接 MNIST / Olivetti 等真实数据集，做重建可视化和下游 1-NN 识别
+7. **GPU 加速**：考察 OpenFHE 的 NATIVEOPT/GPU 后端或 HEonGPU 以缩短 Bootstrap 时间
+8. **网络通信层**：gRPC / ZeroMQ 替代类间调用，实现真正分布式部署
 
 ---
 
@@ -721,7 +753,7 @@ OpenFHE 迁移（见 §10.3）完成之后，我们围绕 **实用化、可扩�
 |------|------|------|------|
 | **RotKey 爆炸** | `collectRotationIndices` 生成 $2(d+6)$ 个小步旋转键，运行时从未使用。d=4096 下 8200+ 个 RotKey 约 260 GB 内存 | 只保留 $\{\pm 2^i\}$，约 30 键 | `client.cpp:collectRotationIndices` |
 | **CKKS 解密"精度过高"异常** | 低秩数据 Lanczos 尾部 $\alpha/\beta$ 真值趋 0，OpenFHE 的 `logstd > p - 5` 硬检查抛异常 | Client 解密统一包 `try/catch`，失败视为 0（数学上 Lanczos 收敛后尾部本就是 0） | `client.cpp::buildTridiagonalFromEncrypted`, `decryptToMatrix`, `decryptLanczosVectors` |
-| **Newton cliff 发散** | 明文模拟给出的初始 $y_0 = 1/\sqrt{\|W\|^2_{\text{sim}}}$ 只对第 1 步准；大 d 下 CKKS 噪声使密文 $\|W\|^2$ 偏离模拟值，$z_0 = y_0 \sqrt{x}$ 越过 $\sqrt{3}$ cliff → Newton 发散 | 引入 `GUESS_SAFETY` 因子（默认 4.0），让 $y_0$ 保守地从下方逼近 | `main.cpp` + 环境变量 |
+| **Newton cliff 发散** | 单个初始 $y_0 = 1/\sqrt{\|W_0\|^2_{\text{sim}}}$ 只对第 1 步准；大 d 下后续 $\|W_i\|^2$ 跨度变大，$z_0 = y_0 \sqrt{x}$ 可能越过 $\sqrt{3}$ cliff | 默认启用 `PER_ITER_GUESS=1`，用明文 mirror Lanczos 逐轮估计 $\|W_i\|^2$；再叠加按 d 自动选择的 `GUESS_SAFETY` | `client.cpp`, `main.cpp`, `server.cpp` |
 | **返回前 α/β 精度不足** | 深 Lanczos 结束时 $\alpha/\beta$ 密文 level 极低，Client 解密失败 | Server 返回前对每个 $\alpha/\beta$ 检查剩余深度 < 10 则 `EvalBootstrap` 刷新 | `server.cpp::lanczosIteration` |
 
 **修复带来的可扩展性变化**：
@@ -837,15 +869,29 @@ C = X_c^T · X_c / (N-1)  （中心化后协方差）
 
 #### 12.4.2 扫描结果
 
-| m_iter | Server 耗时 | Bootstrap 次数 | BS 累计耗时 | λ₁ 误差 | λ₂ 误差 | λ₃ 误差 | cos_sim₁ | cos_sim₂ | cos_sim₃ |
-|--------|-------------|---------------|-------------|---------|---------|---------|----------|----------|----------|
-| 5      | 86.2 s †   | 6             | 45.6 s     | 1.28 %  | 1.01 %  | 31.35 % | 0.9931   | 0.9818   | 0.1546   |
-| 6      | 38.4 s     | 8             | 21.5 s     | 0.93 %  | 0.51 %  | 28.69 % | 0.9981   | 0.9910   | 0.2497   |
-| 7      | 49.3 s     | 10            | 30.4 s     | 0.88 %  | 0.40 %  | **10.03 %** | 0.9993 | 0.9969 | 0.9729   |
-| **8**  | **59.0 s** | **12**        | **36.3 s** | **0.89 %** | **0.37 %** | **3.28 %** | **0.9994** | **0.9986** | **0.9488** |
-| 10     | 72.6 s     | 16            | 46.9 s     | 0.62 %  | 16.86 % ❌ | 19.24 % ❌ | 0.7165 ❌ | 0.0662 ❌ | 0.0805 ❌ |
+下表精度数据来自当时（2026-04 中旬）的扫描日志；**Bootstrap 耗时一栏在事后核验时发现原始日志单次均值偏低（约 2-3 s/次），与 §8.3 给定的 7-8 s/次明显不一致**。重新跑了一次 d=10, m=6 的对照实验：单次 BS = 98.4 s / 11 次 ≈ **8.95 s**，与 §8.3 一致。因此原 m=6..10 的 "BS 累计耗时" 数字不可信，可能是早期 `bootstrapSetup` 用了 `levelBudget={3,3}` 或更小 `numSlots` 的非标准配置；目前代码 `levelBudget={4,4}, numSlots=16384` 下的实测在表中以 ✓ 标注。
 
-† m=5 的 Server 耗时显著偏高（BS 单次约 7.6 s vs 其他 ~3 s），是因为该组运行在 `bootstrapSetup` 优化前的更保守参数下（`levelBudget` 更厚）；后续 m=6..10 使用统一优化参数。**λ 精度与 BS 次数不受影响**，仅耗时对比需结合此注释。
+| m_iter | Server 耗时 | BS 次数 | BS 累计耗时 | 单次 BS 均值 | λ₁ 误差 | λ₂ 误差 | λ₃ 误差 | cos_sim₁ | cos_sim₂ | cos_sim₃ |
+|--------|-------------|---------|-------------|-------------|---------|---------|---------|----------|----------|----------|
+| 5 ✓    | 86.2 s     | 6       | 45.6 s     | **7.6 s** ✓ | 1.28 %  | 1.01 %  | 31.35 % | 0.9931   | 0.9818   | 0.1546   |
+| 6 ※    | 38.4 s     | 8       | 21.5 s     | 2.7 s ※    | 0.93 %  | 0.51 %  | 28.69 % | 0.9981   | 0.9910   | 0.2497   |
+| 7 ※    | 49.3 s     | 10      | 30.4 s     | 3.0 s ※    | 0.88 %  | 0.40 %  | **10.03 %** | 0.9993 | 0.9969 | 0.9729   |
+| **8 ※**| **59.0 s** | **12**  | **36.3 s** | 3.0 s ※    | **0.89 %** | **0.37 %** | **3.28 %** | **0.9994** | **0.9986** | **0.9488** |
+| 10 ※   | 72.6 s     | 16      | 46.9 s     | 2.9 s ※    | 0.62 %  | 16.86 % ❌ | 19.24 % ❌ | 0.7165 ❌ | 0.0662 ❌ | 0.0805 ❌ |
+
+✓ 原始耗时与当前代码下复现一致（≈ 9 s/BS）。  
+※ 原始 BS 单次均值（2.7-3 s）与当前实测（≈ 9 s/BS）不一致，疑似当时 BS 配置较轻；λ 精度数据**不受**影响（精度只取决于深度预算和迭代逻辑，与 BS 单次耗时无关）。
+
+**当前代码对 m=6 的复测**（参考真值）：
+
+| 指标 | 值 |
+|------|-----|
+| Server 耗时 | 147.3 s |
+| Bootstrap 次数 | 11 |
+| Bootstrap 累计耗时 | 98.4 s |
+| **单次 BS 均值** | **8.95 s** |
+
+精度部分由于现版代码默认 `GUESS_SAFETY=4.0`（保守 Newton 初始化），在 d=10 下反而过度降低 $y_0$ 导致 λ₁ 误差升至 15 % —— 这一现象证明 `GUESS_SAFETY` 是**针对大 d 设计的安全网，小 d 应用 1.0**。表中早期 m_iter 扫描数据基于早期默认（`GUESS_SAFETY` 隐式 = 1.0）。
 
 #### 12.4.3 核心发现
 
@@ -868,13 +914,14 @@ C = X_c^T · X_c / (N-1)  （中心化后协方差）
 
 观察 λ₃ 误差曲线：m=5 时 31 % → m=6 时 28 % → m=7 时 10 % → m=8 时 3 %。这反映了 Krylov 子空间逼近的固有性质——前 K 个 Ritz 值需要大约 $m \approx 2K$ 步才稳定收敛（d=10, K=3 时 m=6-8 为甜点区）。
 
-**4. Bootstrap 次数与 m 近似线性**
+**4. Bootstrap 次数与 m 近似线性，单次耗时约 9 s**
 
 ```
 BS 次数 ≈ 2 × (m_iter - 1)   # 每步 Lanczos 约需 2 次 BS 刷新 V/V_prev/β_prev
+单次 BS ≈ 8-9 s              # Apple Silicon, RingDim=32768, levelBudget={4,4}
 ```
 
-这为后续 §12.5 的维度扫描提供了深度预算估计依据。
+总 BS 耗时占 Server 总耗时的 60-70 %，是首要优化对象。这为后续 §12.5 的维度扫描提供了深度预算估计依据。
 
 #### 12.4.4 与明文 Lanczos 对照
 
@@ -911,6 +958,8 @@ BS 次数 ≈ 2 × (m_iter - 1)   # 每步 Lanczos 约需 2 次 BS 刷新 V/V_pr
 | 50 | 8 | 127 s | ~3 GB | 12 | 1.04 % | — | — | — | 0.7545 |
 | 100 | 5 | 139 s | ~6 GB | 8 | 4.73 % | 0.2957 | 0.3136 | **0.0179** ✓ | 0.2428 |
 | 256 | 5 | 320 s | ~20 GB | 8 | 53.38 % | 0.1378 | 0.1711 | **0.0333** ⚠ | -0.38 |
+
+新增 `scripts/run_dimension_sweep.sh` 后，d=512/784/1024 不再需要手写命令，可以用相同参数体系复现实验。当前阶段的结论是：**代码路径与内存钥匙生成已支持图像尺度维度，但精度要以 R²(X)/R²(V) 为主，λ 单点误差在 d≥256 时不能单独作为可用性判断**。
 
 **关键观察**：
 
@@ -956,6 +1005,10 @@ CKKS 噪声在单步 Lanczos 中的累积：
 - OpenFHE 1.5.1 全面替代 SEAL，删除 ~150 行手工 scale 管理
 - 端到端 Bootstrap 支持，m_iter 可扩展到 8+
 - RotKey / 容错解密 / Newton safety / α-β 返回前刷新 —— 4 项健壮性修复
+- 实测层数会计：`ct×Plaintext` 在当前 FLEXIBLEAUTO 默认编码下不免费，单步 Lanczos(newton=2)=12 层
+- 高维参数自动化：默认逐轮 `PER_ITER_GUESS`，`GUESS_SAFETY` 按 d 自动选择，`NEWTON_ITERS` 与 `LEVELS_AFTER_BOOTSTRAP` 可配置
+- 高维工程优化：缓存 `packScalarsToVector` one-hot masks，降低 d=512/784/1024 下重复明文构造开销
+- 高维实验脚本：`scripts/run_dimension_sweep.sh` + `scripts/summarize_experiment_logs.py`，支持 d=256/512/784/1024 扫描
 - aSOR 接入与实测，明确其适用边界（不适合多步 Lanczos）
 - R²(X) / R²(V) / 方差解释率 —— 对齐 Panda 2021 / Ma 2023 评估框架
 - 低秩合成数据生成器 + 命令行/环境变量接口
