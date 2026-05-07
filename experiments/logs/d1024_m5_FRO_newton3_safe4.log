@@ -1,0 +1,13 @@
+  Lanczos 单步最大深度估算 = 20  → levels_after_bootstrap = 24
+=== FHE-PCA [bootstrap] (d=1024, m_iter=5, Newton=3, Bootstrap=ON, FRO=ON(skip_first=2)) ===
+
+[Phase 1] Client setup
+  数据: 低秩合成集 N=2000 rank=50 noise=2
+  CryptoContext + KeyGen 耗时: 4403.1 ms
+  multiplicativeDepth = 46   numSlots = 16384
+  trace(C) = 4292.3212
+  plaintext sim: α_0=0.000960  ||W||²=1.2124e-06  guess(safety=4.0)=1/√x=454.10
+  per-iter Newton guess: ON  count=4  range=[4.850e-06, 3.699e-04]
+
+[Phase 2] Server HE-Lanczos
+  aSOR: 关闭（标准 Newton 3 轮）；如需开启: ASOR_EPS=0.9 ASOR_ALPHA=4 ...
