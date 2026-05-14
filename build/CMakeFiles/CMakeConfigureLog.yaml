@@ -3123,3 +3123,155 @@ events:
         
       exitCode: 2
 ...
+
+---
+events:
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "/opt/homebrew/share/cmake/Modules/FindOpenMP.cmake:574 (try_compile)"
+      - "/opt/homebrew/share/cmake/Modules/FindOpenMP.cmake:714 (_OPENMP_GET_SPEC_DATE)"
+      - "build/_deps/openfhe-src/CMakeLists.txt:486 (find_package)"
+    description: "Detecting C OpenMP version"
+    directories:
+      source: "/Users/bytedance/PCA/build/CMakeFiles/CMakeScratch/TryCompile-cr1BzD"
+      binary: "/Users/bytedance/PCA/build/CMakeFiles/CMakeScratch/TryCompile-cr1BzD"
+    cmakeVariables:
+      CMAKE_C_FLAGS: " -Wall -Werror -DOPENFHE_VERSION=1.5.1 -O3 -DMATHBACKEND=4 -Xpreprocessor -fopenmp -lomp -Wno-unused-command-line-argument"
+      CMAKE_C_FLAGS_DEBUG: "-g"
+      CMAKE_EXE_LINKER_FLAGS: ""
+      CMAKE_OSX_ARCHITECTURES: ""
+      CMAKE_OSX_DEPLOYMENT_TARGET: ""
+      CMAKE_OSX_SYSROOT: ""
+      CMAKE_WARN_DEPRECATED: "FALSE"
+    buildResult:
+      variable: "OpenMP_SPECTEST_C_"
+      cached: true
+      stdout: |
+        Change Dir: '/Users/bytedance/PCA/build/CMakeFiles/CMakeScratch/TryCompile-cr1BzD'
+        
+        Run Build Command(s): /opt/homebrew/bin/cmake -E env VERBOSE=1 /usr/bin/make -f Makefile cmTC_39a0e/fast
+        /Library/Developer/CommandLineTools/usr/bin/make  -f CMakeFiles/cmTC_39a0e.dir/build.make CMakeFiles/cmTC_39a0e.dir/build
+        Building C object CMakeFiles/cmTC_39a0e.dir/OpenMPCheckVersion.c.o
+        /usr/bin/cc   -Wall -Werror -DOPENFHE_VERSION=1.5.1 -O3 -DMATHBACKEND=4 -Xpreprocessor -fopenmp -lomp -Wno-unused-command-line-argument -Xpreprocessor -fopenmp -lomp -Wno-unused-command-line-argument -MD -MT CMakeFiles/cmTC_39a0e.dir/OpenMPCheckVersion.c.o -MF CMakeFiles/cmTC_39a0e.dir/OpenMPCheckVersion.c.o.d -o CMakeFiles/cmTC_39a0e.dir/OpenMPCheckVersion.c.o -c /Users/bytedance/PCA/build/CMakeFiles/CMakeScratch/TryCompile-cr1BzD/OpenMPCheckVersion.c
+        /Users/bytedance/PCA/build/CMakeFiles/CMakeScratch/TryCompile-cr1BzD/OpenMPCheckVersion.c:3:10: fatal error: 'omp.h' file not found
+            3 | #include <omp.h>
+              |          ^~~~~~~
+        1 error generated.
+        make[2]: *** [CMakeFiles/cmTC_39a0e.dir/OpenMPCheckVersion.c.o] Error 1
+        make[1]: *** [cmTC_39a0e/fast] Error 2
+        
+      exitCode: 2
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "/opt/homebrew/share/cmake/Modules/FindOpenMP.cmake:574 (try_compile)"
+      - "/opt/homebrew/share/cmake/Modules/FindOpenMP.cmake:714 (_OPENMP_GET_SPEC_DATE)"
+      - "build/_deps/openfhe-src/CMakeLists.txt:486 (find_package)"
+    description: "Detecting CXX OpenMP version"
+    directories:
+      source: "/Users/bytedance/PCA/build/CMakeFiles/CMakeScratch/TryCompile-DLN3ep"
+      binary: "/Users/bytedance/PCA/build/CMakeFiles/CMakeScratch/TryCompile-DLN3ep"
+    cmakeVariables:
+      CMAKE_CXX_FLAGS: " -Wall -Werror -DOPENFHE_VERSION=1.5.1 -O3 -DMATHBACKEND=4 -Xpreprocessor -fopenmp -lomp -Wno-unused-command-line-argument"
+      CMAKE_CXX_FLAGS_DEBUG: "-g"
+      CMAKE_EXE_LINKER_FLAGS: ""
+      CMAKE_OSX_ARCHITECTURES: ""
+      CMAKE_OSX_DEPLOYMENT_TARGET: ""
+      CMAKE_OSX_SYSROOT: ""
+      CMAKE_WARN_DEPRECATED: "FALSE"
+    buildResult:
+      variable: "OpenMP_SPECTEST_CXX_"
+      cached: true
+      stdout: |
+        Change Dir: '/Users/bytedance/PCA/build/CMakeFiles/CMakeScratch/TryCompile-DLN3ep'
+        
+        Run Build Command(s): /opt/homebrew/bin/cmake -E env VERBOSE=1 /usr/bin/make -f Makefile cmTC_0f922/fast
+        /Library/Developer/CommandLineTools/usr/bin/make  -f CMakeFiles/cmTC_0f922.dir/build.make CMakeFiles/cmTC_0f922.dir/build
+        Building CXX object CMakeFiles/cmTC_0f922.dir/OpenMPCheckVersion.cpp.o
+        /usr/bin/c++   -Wall -Werror -DOPENFHE_VERSION=1.5.1 -O3 -DMATHBACKEND=4 -Xpreprocessor -fopenmp -lomp -Wno-unused-command-line-argument -Xpreprocessor -fopenmp -lomp -Wno-unused-command-line-argument -std=gnu++17 -MD -MT CMakeFiles/cmTC_0f922.dir/OpenMPCheckVersion.cpp.o -MF CMakeFiles/cmTC_0f922.dir/OpenMPCheckVersion.cpp.o.d -o CMakeFiles/cmTC_0f922.dir/OpenMPCheckVersion.cpp.o -c /Users/bytedance/PCA/build/CMakeFiles/CMakeScratch/TryCompile-DLN3ep/OpenMPCheckVersion.cpp
+        /Users/bytedance/PCA/build/CMakeFiles/CMakeScratch/TryCompile-DLN3ep/OpenMPCheckVersion.cpp:3:10: fatal error: 'omp.h' file not found
+            3 | #include <omp.h>
+              |          ^~~~~~~
+        1 error generated.
+        make[2]: *** [CMakeFiles/cmTC_0f922.dir/OpenMPCheckVersion.cpp.o] Error 1
+        make[1]: *** [cmTC_0f922/fast] Error 2
+        
+      exitCode: 2
+...
+
+---
+events:
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "/opt/homebrew/share/cmake/Modules/FindOpenMP.cmake:574 (try_compile)"
+      - "/opt/homebrew/share/cmake/Modules/FindOpenMP.cmake:714 (_OPENMP_GET_SPEC_DATE)"
+      - "build/_deps/openfhe-src/CMakeLists.txt:486 (find_package)"
+    description: "Detecting C OpenMP version"
+    directories:
+      source: "/Users/bytedance/PCA/build/CMakeFiles/CMakeScratch/TryCompile-aEUw6b"
+      binary: "/Users/bytedance/PCA/build/CMakeFiles/CMakeScratch/TryCompile-aEUw6b"
+    cmakeVariables:
+      CMAKE_C_FLAGS: " -Wall -Werror -DOPENFHE_VERSION=1.5.1 -O3 -DMATHBACKEND=4 -Xpreprocessor -fopenmp -lomp -Wno-unused-command-line-argument"
+      CMAKE_C_FLAGS_DEBUG: "-g"
+      CMAKE_EXE_LINKER_FLAGS: ""
+      CMAKE_OSX_ARCHITECTURES: ""
+      CMAKE_OSX_DEPLOYMENT_TARGET: ""
+      CMAKE_OSX_SYSROOT: ""
+      CMAKE_WARN_DEPRECATED: "FALSE"
+    buildResult:
+      variable: "OpenMP_SPECTEST_C_"
+      cached: true
+      stdout: |
+        Change Dir: '/Users/bytedance/PCA/build/CMakeFiles/CMakeScratch/TryCompile-aEUw6b'
+        
+        Run Build Command(s): /opt/homebrew/bin/cmake -E env VERBOSE=1 /usr/bin/make -f Makefile cmTC_bf6a1/fast
+        /Library/Developer/CommandLineTools/usr/bin/make  -f CMakeFiles/cmTC_bf6a1.dir/build.make CMakeFiles/cmTC_bf6a1.dir/build
+        Building C object CMakeFiles/cmTC_bf6a1.dir/OpenMPCheckVersion.c.o
+        /usr/bin/cc   -Wall -Werror -DOPENFHE_VERSION=1.5.1 -O3 -DMATHBACKEND=4 -Xpreprocessor -fopenmp -lomp -Wno-unused-command-line-argument -Xpreprocessor -fopenmp -lomp -Wno-unused-command-line-argument -MD -MT CMakeFiles/cmTC_bf6a1.dir/OpenMPCheckVersion.c.o -MF CMakeFiles/cmTC_bf6a1.dir/OpenMPCheckVersion.c.o.d -o CMakeFiles/cmTC_bf6a1.dir/OpenMPCheckVersion.c.o -c /Users/bytedance/PCA/build/CMakeFiles/CMakeScratch/TryCompile-aEUw6b/OpenMPCheckVersion.c
+        /Users/bytedance/PCA/build/CMakeFiles/CMakeScratch/TryCompile-aEUw6b/OpenMPCheckVersion.c:3:10: fatal error: 'omp.h' file not found
+            3 | #include <omp.h>
+              |          ^~~~~~~
+        1 error generated.
+        make[2]: *** [CMakeFiles/cmTC_bf6a1.dir/OpenMPCheckVersion.c.o] Error 1
+        make[1]: *** [cmTC_bf6a1/fast] Error 2
+        
+      exitCode: 2
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "/opt/homebrew/share/cmake/Modules/FindOpenMP.cmake:574 (try_compile)"
+      - "/opt/homebrew/share/cmake/Modules/FindOpenMP.cmake:714 (_OPENMP_GET_SPEC_DATE)"
+      - "build/_deps/openfhe-src/CMakeLists.txt:486 (find_package)"
+    description: "Detecting CXX OpenMP version"
+    directories:
+      source: "/Users/bytedance/PCA/build/CMakeFiles/CMakeScratch/TryCompile-UU0Wvq"
+      binary: "/Users/bytedance/PCA/build/CMakeFiles/CMakeScratch/TryCompile-UU0Wvq"
+    cmakeVariables:
+      CMAKE_CXX_FLAGS: " -Wall -Werror -DOPENFHE_VERSION=1.5.1 -O3 -DMATHBACKEND=4 -Xpreprocessor -fopenmp -lomp -Wno-unused-command-line-argument"
+      CMAKE_CXX_FLAGS_DEBUG: "-g"
+      CMAKE_EXE_LINKER_FLAGS: ""
+      CMAKE_OSX_ARCHITECTURES: ""
+      CMAKE_OSX_DEPLOYMENT_TARGET: ""
+      CMAKE_OSX_SYSROOT: ""
+      CMAKE_WARN_DEPRECATED: "FALSE"
+    buildResult:
+      variable: "OpenMP_SPECTEST_CXX_"
+      cached: true
+      stdout: |
+        Change Dir: '/Users/bytedance/PCA/build/CMakeFiles/CMakeScratch/TryCompile-UU0Wvq'
+        
+        Run Build Command(s): /opt/homebrew/bin/cmake -E env VERBOSE=1 /usr/bin/make -f Makefile cmTC_7b2ee/fast
+        /Library/Developer/CommandLineTools/usr/bin/make  -f CMakeFiles/cmTC_7b2ee.dir/build.make CMakeFiles/cmTC_7b2ee.dir/build
+        Building CXX object CMakeFiles/cmTC_7b2ee.dir/OpenMPCheckVersion.cpp.o
+        /usr/bin/c++   -Wall -Werror -DOPENFHE_VERSION=1.5.1 -O3 -DMATHBACKEND=4 -Xpreprocessor -fopenmp -lomp -Wno-unused-command-line-argument -Xpreprocessor -fopenmp -lomp -Wno-unused-command-line-argument -std=gnu++17 -MD -MT CMakeFiles/cmTC_7b2ee.dir/OpenMPCheckVersion.cpp.o -MF CMakeFiles/cmTC_7b2ee.dir/OpenMPCheckVersion.cpp.o.d -o CMakeFiles/cmTC_7b2ee.dir/OpenMPCheckVersion.cpp.o -c /Users/bytedance/PCA/build/CMakeFiles/CMakeScratch/TryCompile-UU0Wvq/OpenMPCheckVersion.cpp
+        /Users/bytedance/PCA/build/CMakeFiles/CMakeScratch/TryCompile-UU0Wvq/OpenMPCheckVersion.cpp:3:10: fatal error: 'omp.h' file not found
+            3 | #include <omp.h>
+              |          ^~~~~~~
+        1 error generated.
+        make[2]: *** [CMakeFiles/cmTC_7b2ee.dir/OpenMPCheckVersion.cpp.o] Error 1
+        make[1]: *** [cmTC_7b2ee/fast] Error 2
+        
+      exitCode: 2
+...

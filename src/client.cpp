@@ -29,10 +29,13 @@ std::vector<int32_t> collectRotationIndices(int /*d*/, uint32_t num_slots)
 
 } // namespace
 
-Client::Client(int d, int p, int m, bool enable_bootstrap, uint32_t levels_after_bootstrap)
+Client::Client(int d, int p, int m, bool enable_bootstrap,
+               uint32_t levels_after_bootstrap, bool enable_he)
     : d_(d), p_(p), m_(m), bootstrap_enabled_(enable_bootstrap)
 {
-    setupCryptoContext(enable_bootstrap, levels_after_bootstrap);
+    if (enable_he) {
+        setupCryptoContext(enable_bootstrap, levels_after_bootstrap);
+    }
 }
 
 void Client::setupCryptoContext(bool enable_bootstrap, uint32_t levels_after_bootstrap)
@@ -404,6 +407,88 @@ Client::LanczosPROResult Client::plaintextLanczosWithPROAndNoise(
         }
         if (norm < 1e-14) {
             // 早停：Krylov 子空间已完整捕获
+            break;
+        }
+        betas.push_back(norm);
+
+        V_prev = V;
+        V = Wnew / norm;
+        beta_prev = norm;
+    }
+
+    Eigen::MatrixXd T = Eigen::MatrixXd::Zero(actual_m, actual_m);
+    for (int i = 0; i < actual_m; ++i) {
+        T(i, i) = alphas[static_cast<size_t>(i)];
+        if (i < actual_m - 1 && static_cast<size_t>(i) < betas.size()) {
+            const double b = betas[static_cast<size_t>(i)];
+            T(i, i + 1) = b;
+            T(i + 1, i) = b;
+        }
+    }
+
+    LanczosPROResult result;
+    result.T = T;
+    result.V_total = V_total.leftCols(actual_m);
+    result.actual_m = actual_m;
+    return result;
+}
+
+Client::LanczosPROResult Client::plaintextHeMirrorLanczos(
+    const Eigen::VectorXd& v0,
+    int m_iter,
+    bool enable_fro,
+    int fro_skip_first) const
+{
+    if (v0.size() != d_) {
+        throw std::invalid_argument(
+            "plaintextHeMirrorLanczos: v0 维度与 d 不一致");
+    }
+    if (m_iter < 1) {
+        throw std::invalid_argument(
+            "plaintextHeMirrorLanczos: m_iter 至少为 1");
+    }
+    const int fro_skip = std::max(0, fro_skip_first);
+
+    Eigen::MatrixXd V_total(d_, m_iter);
+    std::vector<double> alphas;
+    std::vector<double> betas;
+    alphas.reserve(static_cast<size_t>(m_iter));
+    betas.reserve(static_cast<size_t>(std::max(0, m_iter - 1)));
+
+    Eigen::VectorXd V = v0.normalized();
+    Eigen::VectorXd V_prev = Eigen::VectorXd::Zero(d_);
+    double beta_prev = 0.0;
+    int actual_m = 0;
+
+    for (int iter = 0; iter < m_iter; ++iter) {
+        V_total.col(iter) = V;
+        actual_m = iter + 1;
+
+        Eigen::VectorXd W = C_ * V;
+        if (iter > 0) {
+            W -= beta_prev * V_prev;
+        }
+
+        const double alpha = V.dot(W);
+        alphas.push_back(alpha);
+
+        if (iter == m_iter - 1) {
+            break;
+        }
+
+        Eigen::VectorXd Wnew = W - alpha * V;
+
+        // FRO：与 HE 端语义对齐——iter < fro_skip_first 时跳过
+        if (enable_fro && iter >= fro_skip) {
+            for (int k = 0; k < iter; ++k) {
+                const Eigen::VectorXd& Vk = V_total.col(k);
+                const double proj = Vk.dot(Wnew);
+                Wnew -= proj * Vk;
+            }
+        }
+
+        const double norm = Wnew.norm();
+        if (norm < 1e-14) {
             break;
         }
         betas.push_back(norm);

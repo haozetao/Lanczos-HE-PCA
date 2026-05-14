@@ -17,6 +17,7 @@
 #include <iomanip>
 #include <iostream>
 #include <random>
+#include <sstream>
 #include <string>
 
 #include <Eigen/Dense>
@@ -317,7 +318,217 @@ static int runOnce(const RunConfig& cfg)
     std::cout << "  累计方差解释率（明文，前 " << K_use << "）= "
               << std::setprecision(4) << evr_true << std::endl;
 
-    std::cout << "\n  Server 耗时: " << std::setprecision(1) << server_ms << " ms" << std::endl;
+    // ── Phase 6: 明文 mirror 对照（FHE 增量误差归因） ──
+    // 用同一个 v₀、同样 m_iter、同样 FRO 配置在明文里跑 Lanczos
+    //（用 std::sqrt 替代 Newton，且不注入噪声），把"迭代算法本身的极限误差"
+    // 单独剥离出来。HE 实测 vs 明文 mirror 之差 = FHE 增量误差。
+    std::cout << "\n" << std::string(60, '=') << std::endl;
+    std::cout << "  [对照表] HE 实测 vs 明文 mirror vs Eigen 真值" << std::endl;
+    std::cout << std::string(60, '=') << std::endl;
+    std::cout << "  说明：明文 mirror = 同 m/同 FRO 的 Lanczos，但用 std::sqrt 替代 Newton、无噪声" << std::endl;
+    std::cout << "        HE − 明文 mirror = FHE 增量误差（CKKS 噪声 + Newton 近似 + 实现细节）" << std::endl;
+    std::cout << "        明文 mirror − Eigen 真值 = 迭代算法误差（B1 Krylov 不完备 + B2 浮点正交性）\n" << std::endl;
+
+    auto pt = client.plaintextHeMirrorLanczos(v0, cfg.m_iter, cfg.enable_fro, cfg.fro_skip_first);
+    CWFilterResult pt_cw = client.cullumWilloughbyFilter(pt.T, cfg.K);
+    Eigen::MatrixXd pt_U = client.reconstructEigenvectors(pt.V_total, pt_cw, cfg.K);
+    Eigen::VectorXd pt_evals = pt_cw.good_eigenvalues * trace_C;
+
+    int K_cmp = std::min({cfg.K,
+                          static_cast<int>(he_evals.size()),
+                          static_cast<int>(pt_evals.size()),
+                          static_cast<int>(true_evals.size())});
+
+    // 表头
+    std::cout << "  指标            HE 实测            明文 mirror         Eigen 真值" << std::endl;
+    std::cout << "  ────────────────────────────────────────────────────────────────────────" << std::endl;
+
+    auto fmtRelErr = [](double v, double ref) {
+        if (std::abs(ref) < 1e-15) return std::string("--");
+        std::ostringstream oss;
+        oss << std::fixed << std::setprecision(2)
+            << std::abs(v - ref) / std::abs(ref) * 100.0 << "%";
+        return oss.str();
+    };
+
+    for (int i = 0; i < K_cmp; ++i) {
+        const double he_v = he_evals(i);
+        const double pt_v = pt_evals(i);
+        const double tv   = true_evals(i);
+        std::cout << "  λ_" << (i + 1) << "            "
+                  << std::setw(10) << std::setprecision(4) << he_v
+                  << " (" << std::setw(6) << fmtRelErr(he_v, tv) << ")  "
+                  << std::setw(10) << pt_v
+                  << " (" << std::setw(6) << fmtRelErr(pt_v, tv) << ")  "
+                  << std::setw(10) << tv << std::endl;
+    }
+    std::cout << std::endl;
+    for (int i = 0; i < K_cmp; ++i) {
+        if (i >= U.cols() || i >= pt_U.cols() || i >= true_evecs.cols()) break;
+        double cs_he = cosineSimilarity(U.col(i), true_evecs.col(i));
+        double cs_pt = cosineSimilarity(pt_U.col(i), true_evecs.col(i));
+        std::cout << "  cos_" << (i + 1) << "          "
+                  << std::setw(10) << std::setprecision(6) << cs_he << "          "
+                  << std::setw(10) << cs_pt << "          "
+                  << std::setw(10) << 1.0 << std::endl;
+    }
+
+    // R²(V) 三列
+    Eigen::MatrixXd pt_V_K = pt_U.leftCols(std::min<int>(K_use, pt_U.cols()));
+    double r2v_pt = pca_eval::principalComponentR2(pt_V_K, V_true_K);
+    std::cout << "\n  R²(V)          "
+              << std::setw(10) << std::setprecision(6) << r2v << "          "
+              << std::setw(10) << r2v_pt << "          "
+              << std::setw(10) << 1.0 << std::endl;
+
+    // R²(X) 三列（若有数据）
+    if (client.hasData()) {
+        const Eigen::MatrixXd& Xc = client.centeredData();
+        double r2x_he = pca_eval::reconstructionR2(Xc, V_enc_K);
+        double r2x_pt = pca_eval::reconstructionR2(Xc, pt_V_K);
+        double r2x_tr = pca_eval::reconstructionR2(Xc, V_true_K);
+        std::cout << "  R²(X)          "
+                  << std::setw(10) << std::setprecision(6) << r2x_he << "          "
+                  << std::setw(10) << r2x_pt << "          "
+                  << std::setw(10) << r2x_tr << std::endl;
+    }
+
+    // 误差归因小结：FHE 增量 vs 迭代算法极限
+    std::cout << "\n  ── 误差归因（K=" << K_cmp << "，HE − 明文 mirror = FHE 增量） ──" << std::endl;
+    for (int i = 0; i < K_cmp; ++i) {
+        if (i >= U.cols() || i >= pt_U.cols() || i >= true_evecs.cols()) break;
+        const double he_v = he_evals(i);
+        const double pt_v = pt_evals(i);
+        const double tv   = true_evals(i);
+        const double he_err = (std::abs(tv) > 1e-15) ? std::abs(he_v - tv) / std::abs(tv) : 0.0;
+        const double pt_err = (std::abs(tv) > 1e-15) ? std::abs(pt_v - tv) / std::abs(tv) : 0.0;
+        const double fhe_incr = std::max(0.0, he_err - pt_err);
+        const double share_pt = (he_err > 1e-15) ? pt_err / he_err * 100.0 : 0.0;
+        std::cout << "    λ_" << (i + 1) << "  总误差=" << std::scientific << std::setprecision(2) << he_err
+                  << "  其中 迭代极限=" << pt_err
+                  << " (" << std::fixed << std::setprecision(1) << share_pt << "%)"
+                  << "  FHE 增量=" << std::scientific << std::setprecision(2) << fhe_incr
+                  << std::endl;
+
+        double cs_he = cosineSimilarity(U.col(i), true_evecs.col(i));
+        double cs_pt = cosineSimilarity(pt_U.col(i), true_evecs.col(i));
+        const double he_gap = std::max(0.0, 1.0 - cs_he);
+        const double pt_gap = std::max(0.0, 1.0 - cs_pt);
+        const double fhe_cos_incr = std::max(0.0, he_gap - pt_gap);
+        const double share_pt_cos = (he_gap > 1e-15) ? pt_gap / he_gap * 100.0 : 0.0;
+        std::cout << "    cos_" << (i + 1) << " 总差=" << std::scientific << std::setprecision(2) << he_gap
+                  << "  其中 迭代极限=" << pt_gap
+                  << " (" << std::fixed << std::setprecision(1) << share_pt_cos << "%)"
+                  << "  FHE 增量=" << std::scientific << std::setprecision(2) << fhe_cos_incr
+                  << std::endl;
+    }
+
+    std::cout << "\n  Server 耗时: " << std::fixed << std::setprecision(1) << server_ms << " ms" << std::endl;
+    std::cout << "\n=== 完成 ===\n" << std::endl;
+    return 0;
+}
+
+// 纯明文 mirror 模式：跳过所有 HE 操作，复用 Client 的数据生成 + 明文 Lanczos
+// + CW + reconstruct 流程，输出"明文 Lanczos 极限 vs Eigen 真值"对照。
+// 由于 generateLowRankDataset (seed=20240415)、generateCovarianceMatrix (seed=42)、
+// randomUnitVector (seed=7) 均使用固定 seed，本模式与 bootstrap 模式在同一 d
+// 下使用严格相同的 (C, v₀)，可直接与历史 HE 日志做配对对照。
+static int runMirrorOnly(int d, int m_iter, int K,
+                         int dataset_N, int true_rank, double noise,
+                         bool enable_fro, int fro_skip_first)
+{
+    std::cout << "=== 明文 mirror (d=" << d << ", m_iter=" << m_iter
+              << ", K=" << K
+              << ", FRO=" << (enable_fro ? "ON" : "OFF");
+    if (enable_fro) std::cout << "(skip_first=" << fro_skip_first << ")";
+    std::cout << ") ===" << std::endl;
+    std::cout << "  说明：与 bootstrap 模式同 (C, v₀)，但全程明文，用 std::sqrt 替代 Newton" << std::endl;
+
+    Client client(d, 1, m_iter, /*enable_bootstrap*/ false,
+                  /*levels_after_bootstrap*/ 12, /*enable_he*/ false);
+    if (dataset_N > 0) {
+        std::cout << "  数据：低秩合成集 N=" << dataset_N
+                  << " rank=" << true_rank << " noise=" << noise << std::endl;
+        client.generateLowRankDataset(dataset_N, true_rank, noise);
+    } else {
+        std::cout << "  数据：随机协方差 A^T·A + I" << std::endl;
+        client.generateCovarianceMatrix();
+    }
+
+    Eigen::MatrixXd C_original = client.covMatrix();
+    Eigen::SelfAdjointEigenSolver<Eigen::MatrixXd> true_solver(C_original);
+    Eigen::VectorXd true_evals = true_solver.eigenvalues().reverse();
+    Eigen::MatrixXd true_evecs = true_solver.eigenvectors().rowwise().reverse();
+
+    double trace_C = client.normalizeCovariance();
+    std::cout << "  trace(C) = " << std::fixed << std::setprecision(4) << trace_C << std::endl;
+
+    Eigen::VectorXd v0 = randomUnitVector(d);
+
+    auto t0 = Clock::now();
+    auto pt = client.plaintextHeMirrorLanczos(v0, m_iter, enable_fro, fro_skip_first);
+    CWFilterResult pt_cw = client.cullumWilloughbyFilter(pt.T, K);
+    Eigen::MatrixXd pt_U = client.reconstructEigenvectors(pt.V_total, pt_cw, K);
+    auto t1 = Clock::now();
+    double mirror_ms = std::chrono::duration<double, std::milli>(t1 - t0).count();
+
+    Eigen::VectorXd pt_evals = pt_cw.good_eigenvalues * trace_C;
+    int K_cmp = std::min({K,
+                          static_cast<int>(pt_evals.size()),
+                          static_cast<int>(true_evals.size()),
+                          static_cast<int>(pt_U.cols()),
+                          static_cast<int>(true_evecs.cols())});
+
+    std::cout << "\n  T_" << pt.actual_m << " =\n" << pt.T << std::endl;
+    std::cout << "  耗时: " << std::setprecision(2) << mirror_ms << " ms" << std::endl;
+
+    std::cout << "\n" << std::string(60, '=') << std::endl;
+    std::cout << "  [对照表] 明文 mirror vs Eigen 真值（同 (C, v₀)）" << std::endl;
+    std::cout << std::string(60, '=') << std::endl;
+    std::cout << "  指标            明文 mirror         Eigen 真值          相对误差" << std::endl;
+    std::cout << "  ────────────────────────────────────────────────────────────────────────" << std::endl;
+    for (int i = 0; i < K_cmp; ++i) {
+        const double pv = pt_evals(i);
+        const double tv = true_evals(i);
+        const double err = (std::abs(tv) > 1e-15)
+            ? std::abs(pv - tv) / std::abs(tv) : 0.0;
+        std::cout << "  λ_" << (i + 1) << "            "
+                  << std::setw(12) << std::setprecision(6) << pv << "          "
+                  << std::setw(12) << tv << "          "
+                  << std::scientific << std::setprecision(2) << err
+                  << std::fixed << std::endl;
+    }
+    std::cout << std::endl;
+    for (int i = 0; i < K_cmp; ++i) {
+        double cs = cosineSimilarity(pt_U.col(i), true_evecs.col(i));
+        double gap = std::max(0.0, 1.0 - cs);
+        std::cout << "  cos_" << (i + 1) << "          "
+                  << std::setw(12) << std::setprecision(8) << cs << "          "
+                  << std::setw(12) << 1.0 << "          "
+                  << std::scientific << std::setprecision(2) << gap
+                  << std::fixed << std::endl;
+    }
+
+    Eigen::MatrixXd V_true_K = true_evecs.leftCols(K_cmp);
+    Eigen::MatrixXd V_pt_K = pt_U.leftCols(K_cmp);
+    double r2v = pca_eval::principalComponentR2(V_pt_K, V_true_K);
+    std::cout << "\n  R²(V)          "
+              << std::setw(12) << std::setprecision(8) << r2v << "          "
+              << std::setw(12) << 1.0 << "          "
+              << std::scientific << std::setprecision(2) << std::max(0.0, 1.0 - r2v)
+              << std::fixed << std::endl;
+
+    if (client.hasData()) {
+        const Eigen::MatrixXd& Xc = client.centeredData();
+        double r2x_pt = pca_eval::reconstructionR2(Xc, V_pt_K);
+        double r2x_tr = pca_eval::reconstructionR2(Xc, V_true_K);
+        std::cout << "  R²(X)          "
+                  << std::setw(12) << std::setprecision(8) << r2x_pt << "          "
+                  << std::setw(12) << r2x_tr << "          "
+                  << std::scientific << std::setprecision(2) << std::max(0.0, r2x_tr - r2x_pt)
+                  << std::fixed << std::endl;
+    }
+
     std::cout << "\n=== 完成 ===\n" << std::endl;
     return 0;
 }
@@ -395,7 +606,26 @@ int main(int argc, char** argv)
         return runOnce(cfg);
     }
 
+    if (mode == "mirror") {
+        // 纯明文 mirror：./he_pca mirror <m_iter> <d>
+        // 环境变量与 bootstrap 模式共用（DATASET_N / TRUE_RANK / NOISE_SIGMA / K
+        // / ENABLE_FRO / FRO_SKIP_FIRST）。秒级出结果，专门用于跟历史 HE 日志做对照。
+        int m_iter = (argc >= 3) ? std::atoi(argv[2]) : 8;
+        int d      = (argc >= 4) ? std::atoi(argv[3]) : 10;
+        if (m_iter < 1) m_iter = 8;
+        if (d < 2) d = 10;
+        int dataset_N = envInt("DATASET_N", 0);
+        int true_rank = envInt("TRUE_RANK", std::min(d, 5));
+        double noise  = envDouble("NOISE_SIGMA", 0.1);
+        int K         = envInt("K", 3);
+        bool enable_fro = envInt("ENABLE_FRO", 1) != 0;
+        int fro_skip_first = envInt("FRO_SKIP_FIRST", 2);
+        if (fro_skip_first < 0) fro_skip_first = 0;
+        return runMirrorOnly(d, m_iter, K, dataset_N, true_rank, noise,
+                             enable_fro, fro_skip_first);
+    }
+
     std::cerr << "未知模式: " << mode << "\n用法: " << argv[0]
-              << " [baseline|bootstrap [m_iter [d]]]" << std::endl;
+              << " [baseline|bootstrap|mirror [m_iter [d]]]" << std::endl;
     return 1;
 }

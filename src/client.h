@@ -22,11 +22,14 @@ class Client {
 public:
     // enable_bootstrap=false: 轻量模式，仅生成基本密钥，跳过 Bootstrap 密钥生成
     // levels_after_bootstrap: Bootstrap 后可用层数（预留给 Lanczos + Newton）
+    // enable_he=false: 纯明文模式，跳过 CryptoContext / KeyGen，
+    //   仅用于 plaintext mirror 对照与 ground-truth 计算。
     Client(int d = 10,
            int p = 1,
            int m = 3,
            bool enable_bootstrap = false,
-           uint32_t levels_after_bootstrap = 12);
+           uint32_t levels_after_bootstrap = 12,
+           bool enable_he = true);
 
     void generateCovarianceMatrix();
 
@@ -94,6 +97,21 @@ public:
         int reorth_b,
         double sigma,
         unsigned seed) const;
+
+    // HE-Lanczos 的"明文逐操作镜像"，用于把 FHE 增量误差与迭代算法误差分离。
+    //   - 算法路径与 server.cpp::lanczosIteration 完全一致：
+    //       W = C·V − β_prev·V_prev   →   α = V·W   →   W_new = W − α·V
+    //     可选 FRO（含 fro_skip_first 与 HE 端语义对齐）→ β = ‖W_new‖。
+    //   - 用 std::sqrt 替代 Newton 1/√x：隔离 Newton 近似误差（误差源 C）。
+    //   - 不注入任何噪声：隔离 CKKS 噪声（误差源 A）。
+    //   返回的 T、V_total 经过 CW + reconstructEigenvectors 后即得
+    //   "Krylov 子空间 m 步 + 浮点精度"能达到的最佳 Ritz 对，
+    //   该结果 vs Eigen 真值 = B1（迭代不完备） + B2（浮点正交性丢失）。
+    LanczosPROResult plaintextHeMirrorLanczos(
+        const Eigen::VectorXd& v0,
+        int m_iter,
+        bool enable_fro,
+        int fro_skip_first) const;
 
     std::vector<double> plaintextMirrorResidualNormSqGuesses(
         const Eigen::VectorXd& v0,

@@ -1,0 +1,1351 @@
+Adaptive Successive Over-Relaxation Method for
+a Faster Iterative Approximation of
+Homomorphic Operations
+Jungho Moon 1, Zhanibek Omarov 1, Donghoon Yoo 1, Yongdae An 1,
+and Heewon Chung 1
+1Desilo Inc., Seoul, Republic of Korea
+August 30, 2024
+Abstract
+Homomorphic encryption is a cryptographic technique that enables
+arithmetic operations to be performed on encrypted data. However, word-
+wise fully homomorphic encryption schemes, such as BGV, BFV, and
+CKKS schemes, only support addition and multiplication operations on
+ciphertexts. This limitation makes it challenging to perform non-linear
+operations directly on the encrypted data. To address this issue, prior
+research has proposed efficient approximation techniques that utilize iter-
+ative methods, such as functional composition, to identify optimal poly-
+nomials. These approximations are designed to have a low multiplicative
+depth and a reduced number of multiplications, as these criteria directly
+impact the performance of the approximated operations.
+In this paper, we propose a novel method, named as adaptive suc-
+cessive over-relaxation (aSOR), to further optimize the approximations
+used in homomorphic encryption schemes. Our experimental results show
+that the aSOR method can significantly reduce the computational effort
+required for these approximations, achieving a reduction of 2–9 times com-
+pared to state-of-the-art methodologies. We demonstrate the effectiveness
+of the aSOR method by applying it to a range of operations, including
+sign, comparison, ReLU, square root, reciprocal of m-th root, and divi-
+sion. Our findings suggest that the aSOR method can greatly improve
+the efficiency of homomorphic encryption for performing non-linear oper-
+ations.
+1 Introduction
+Fully homomorphic encryption (FHE) is a fundamental cryptographic principle
+that enables the evaluation of an arithmetic or logical circuit representing a func-
+tion while maintaining the privacy of the corresponding messages. By allowing
+1
+Figure 1: MLaaS with FHE for inference.
+arithmetic and logical operations to be performed on encrypted messages, FHE
+guarantees the privacy while allowing meaningful computation. Clients can keep
+their data in encrypted format in the cloud and perform computations, such as
+inference, prediction, statistics, and more, directly on the encrypted data with-
+out revealing their confidential information. Similarly, the cloud-based service
+providers do not need to reveal their secrets, such as models or methods, to the
+clients.
+As an example of application areas, FHE can be used as a technology for
+protecting the clients’ privacy when deploying Machine Learning as a Service
+(MLaaS) on public clouds. In MLaaS, cloud servers can access clients’ raw
+data, and hence potentially introduce privacy risks. The privacy of the clients’
+data can be protected using FHE as depicted in Figure 1. Since the client’s
+data is encrypted by FHE before sending it to the server, the data never leaves
+the control of the client in plaintext. The server only receives the encrypted
+data and evaluates the machine learning model, which consists of FHE-friendly
+components as suggested in this work, with the given encrypted data. The result
+of the inference is also encrypted and only the client can decrypt and see the
+result. In this manner, the server acquires no knowledge of either the input or
+the output of such MLaaS pipeline, ensuring data privacy. This solution is called
+Privacy Preserving Machine Learning (PPML) [16, 22, 30, 25]. In addition to
+its deployment within PPML, FHE finds extensive applicability across various
+domains such as medical data analysis [28, 3, 35], financial data analysis [40],
+secure searchable encryption [43, 4], secure database [38, 41], and so on.
+Gentry first introduced the blueprint of FHE scheme in [19], and since then
+several studies [6, 5, 18, 17, 9, 13] have aimed to construct efficient FHE schemes.
+2
+FHE schemes can be categorized into two types: word-wise FHE schemes (such
+as BGV [6], BFV [5, 18], and CKKS [9]) and bit-wise FHE schemes (such as
+FHEW [17] and CGGI [13]), depending on the primitive operations between
+ciphertexts. Word-wise FHE schemes support primitive operations of addition
+and multiplication on integers or complex numbers, while bit-wise FHE schemes
+support Boolean gates [17] and look-up table based operations [12].
+Non-linear functions such as sign, square root, inverse, comparison, and
+activation functions found in neural nets (including ReLU, Max Pooling, Soft-
+max, and others) are essential for practical real-world applications of FHE.
+Since word-wise FHE schemes only support addition and multiplication opera-
+tions, such non-linear functions must be approximated through iterative meth-
+ods, high-degree polynomials, or other sub-variations like polynomial composi-
+tions [10].
+The efficiency of approximations of non-linear functions is determined by,
+• Computational complexity — the total number of multiplications in the
+arithmetic circuit,
+• Multiplicative depth — length of the longest chain of sequential multipli-
+cations. Depth can also be determined via the largest polynomial degree
+of an arithmetic circuit.
+For example, f(x) = x4 + x3 + 1 has a depth of log 2 4 = 2 and complexity of
+2 + 2 + 0 = 41.
+The practicality of FHE is typically limited by the significant performance
+gap between FHE operations and ordinary calculations. There have been vari-
+ous efforts to bridge this gap, such as the development of hardware accelerators
+(e.g., CraterLake [39], Medha [33], SHARP [27]) and efficient FHE library im-
+plementations (e.g., HElib [21], Microsoft SEAL [34], OpenFHE [2], HEaaN [24],
+TFHE-rs [44]). This work aims to enhance the FHE performance orthogonally
+to these software and hardware optimizations, by improving non-linear function
+approximation methodologies.
+1.1 Related Work
+Cheon et al. [10] have reviewed evaluation methods for various basic functions
+such as inverse and square root which they used to construct an algorithm
+for maximum/minimum of numbers without using Boolean functions. Later,
+the authors [7] have substantially improved their results by introducing a new
+method for evaluating comparison function (equivalent to maximum/minimum)
+for which they needed to carefully devise two new sets of polynomials to achieve
+maximal performance. Lee et al. [29] have shown that the multiplicative depth
+can be further optimized by using compositions of special minimax approximate
+polynomials for approximation of comparison function. Panda [36] has demon-
+strated a fast evaluation method of inverse square root at the cost of additional
+evaluation of the comparison function.
+1with reuse of computation results it further reduces to 3
+3
+Cheon et al.’s works [10, 7] have pioneered efficient polynomial approxima-
+tions for non-linear homomorphic operations. The subsequent works generally
+tend to extend and/or improve their initial efforts. Panda’s work [36] focuses
+on inverse square root while showing worse performance in addition to requir-
+ing an auxiliary computation. Lee et al. [29] have achieved performance on par
+with ours for comparison function, but their approach is limited to compari-
+son function only. Our work stands out in that it directly extends well-known
+iterative methods, such as Newton’s method and Goldschmidt’s method, with
+simple-to-implement modification. Our approach is more versatile and can be
+applied to a wider range of iterative functions.
+1.2 Our Contribution
+In this paper, we further develop ideas introduced in the successive over-relaxation
+(SOR) [42, 15] method to improve the efficiency for iterative methods that are
+commonly used for homomorphic evaluation of non-linear functions. Our pri-
+mary contribution, adaptive successive over-relaxation method (aSOR), is a gen-
+eral purpose method for a faster evaluation of iterative processes (Section 2.2).
+The term ”adaptive” in aSOR refers to the continuous adjustment of the re-
+laxation coefficient to ensure the fastest convergence at each step. SOR is a
+general-purpose method that is not limited to FHE or certain iterative func-
+tions. We demonstrate the practicality and high performance of aSOR by ap-
+proximating non-linear functions such as comparison, sign, ReLU, square root,
+inverse square root, reciprocal of m-th root, inversion (division), max pooling,
+and softmax as possible applications of this methodology. Overall, we find that,
+in general, aSOR outperforms state-of-the-art iterative methods used in FHE,
+achieving a speedup ranging from 2 to 9 times faster, with the improvement
+increasing as the accuracy of the termination criteria becomes tighter.
+Organization Section 2 presents definitions of homomorphic encryption and
+various approximation algorithms. In Section 3, we introduce the main idea
+of our work, which is adaptive successive over-relaxation (aSOR). We then de-
+scribe the application of aSOR to several non-linear approximations in Section 4,
+including Cheon et al.’s comparison function [10, 7], Goldschmidt’s inverse cal-
+culation [20, 10], Goldschmidt’s square root and inverse square root calculation,
+and Newton-Raphson’s method for square root calculation [1, 37]. Finally, in
+Section 5, we provide benchmarks with specific parameters.
+2 Preliminaries
+2.1 Fully Homomorphic Encryption
+Fully homomorphic encryption (FHE) allows for computations to be performed
+directly on ciphertexts without requiring decryption. FHE schemes are classified
+as bitwise and word-wise as we mentioned in Section 1. The basic operations
+4
+of bitwise schemes are logic gates, whereas the basic operations of word-wise
+schemes are addition and multiplication. In this paper, we focus only on word-
+wise FHE schemes, and the terminology FHE refers to word-wise FHE.
+An FHE scheme can be represented by a quintuple of probabilistic polynomial-
+time algorithms, denoted by FHE = (KeyGen, Enc, Dec,
+Add, Mult), which are defined as follows:
+• KeyGen(params) → (pk, sk, evk); This algorithm takes a parameterparams,
+which is determined by the security parameter λ and the multiplicative
+depth L, and outputs a public key pk, a secret key sk, and an evaluation
+key ek.
+• Enc(pk, m) → c; This algorithm takes a message m ∈ P and a public key
+pk as inputs, and outputs a ciphertext c ∈ C, where P and C denote the
+plaintext space and the ciphertext space, respectively.
+• Dec(sk, c) → m: This algorithm takes a ciphertext c ∈ C and a secret key
+sk as inputs, and outputs a message m ∈ P.
+• Add(c1, c2, evk) → cadd; This algorithm takes ciphertexts c1 ∈ C and c2 ∈
+C of plaintexts m1 ∈ P and m2 ∈ P, respectively, with an evaluation key
+evk as inputs, and outputs a ciphertext cadd ∈ C of m1 + m2.
+• Mult(c1, c2, evk) → cmult; This algorithm takes ciphertexts c1 ∈ C and
+c2 ∈ C of plaintexts m1 ∈ P and m2 ∈ P, respectively, with an evaluation
+key evk as inputs, and outputs a ciphertext cmult ∈ C of m1 · m2.
+The computational efficiency of an arithmetic circuit f in an FHE scheme
+is primarily determined by its computational complexity, which corresponds to
+the number of multiplications, and its multiplicative depth. Therefore, mini-
+mizing these parameters is essential for achieving practical performance. In the
+remainder of the paper, we will concentrate on the non-scalar multiplicative
+depth and computational complexity, disregarding the number of additions and
+scalar multiplications in our analysis of computational efficiency.
+2.2 Iterative Process
+An iterative process is a computational technique used to refine an initial guess
+solution value x1 until a terminal condition is met. Convergence rate and at-
+traction basin, which denotes the range of initial values that converge, are im-
+portant properties of any iterative process. Examples of well-known iterative
+processes include the Goldschmidt’s division algorithm [20] and the Newton-
+Raphson method [1].
+In an iterative process of the form xn+1 = f(xn), where xfp = f(xfp) and the
+subscript ”fp” denotes the “fixed point”, or convergence point, off, the sequence
+xn (n ≥ 1) starting from x1 converges to the true solution xfp provided that the
+initial guess x1 lies within the convergence region. Since f is not restricted to
+be linear, the commonly used notion of spectral radius is not applicable.
+5
+3 Adaptive successive over-relaxation method
+The adaptive successive over-relaxation (aSOR) method introduced in this work
+is based on the conventional successive over-relaxation (SOR) method [42, 15],
+which aims to improve the convergence of iterative processes (as discussed in
+Section 2.2) by scaling the input using a relaxation factor k (often denoted as
+ω in literature). The SOR method is typically used for faster solving of linear
+systems of equations in the form Ax = b, where the relaxation factor remains
+constant across iterations. The focus of this work is on non-linear scalar valued
+iterative processes with variable relaxation factorki, where i denotes an iteration
+number. All values of ki are predetermined, and no just-in-time decisions are
+made based on the output of any particular iteration.
+Consider the function f(x) = x(2 − x) as a simple example, where the input
+range is x1 ∈ [ϵ, 1] for 0 < ϵ < 1. The functional composition of the example
+function can be denoted as x3 = f(f(x1)) = f (2)(x1), and more generally,
+xn+1 = f (n)(x1). It is clear that lim n→∞ f n(x) = 1, and the fixed point of f
+is xfp = 1. We can call this function as the ”almost sign” function because it
+makes any positive number 0 < x ≤ 1 converge to unity, although it does not
+work for negative numbers. The discussion of this particular function is still
+useful for its application in Goldschmidt’s division algorithm, as discussed in
+Section 4.2.
+Increasing the value of n leads to an increasingly better approximation, as il-
+lustrated in Figure 2 (Left). We will restrict the initial input range tox1 ∈ [ϵ1, 1],
+where ϵ1 ≪ 1 and the subscript i indicates the iteration number. Consequently,
+the input range for the i’th iteration can be defined as xi ∈ [ϵi, 1]. Also, it
+is helpful to reinterpret this problem in terms of shrinking input ranges. For
+every pair of i and j with 0 < i < j , we aim to have a narrower input range
+xj ∈ [ϵj, 1] compared to xi ∈ [ϵi, 1], where ϵj > ϵ i. The narrowing of the
+input/output interval is achieved through iterative evaluation.
+Instead of directly evaluating f(x), the idea lies in computing f(kx) even in
+the first iteration such that,
+f(k1x1) ∈ [min(f(k1ϵ1), f(k1)), 1],
+which is also the input range for the next iteration. That is, the idea of aSOR
+iterative composition is to evaluate,
+xn = f(kn−1xn−1)
+= f(kn−1f(kn−2xn−2))
+= f(kn−1f(. . . f(f(k1x1)))).
+In general, the optimal relaxation factor k may differ for each iteration, and
+can be determined as follows:
+ki = arg max
+ki
+[min(f(kiϵi), f(ki))].
+The relaxation factors ki are to be chosen such that the output range constricts
+maximally at each iteration i. And this process yields the array of optimal
+6
+0.00 0.25 0.50 0.75 1.00
+x
+0.00
+0.25
+0.50
+0.75
+1.00
+fn(x)
+n = 1
+n = 2
+n = 3
+n = 4
+n = 5
+0 2 4 6 8 10 12
+n
+10.0
+7.5
+5.0
+2.5
+0.0
+Minimal value, log2 ( )
+fn(x)
+fn(kx)
+Figure 2: Left: Composite evaluation of “almost sign” f(x) = x(2 − x) function
+for various n values. Right: Illustration of shrinkage of minimal input value
+ϵ for increasing n with normal evaluation (blue) and aSOR method (orange).
+n = 0 corresponds to the initial input with ϵ1 = 2−10.
+ki. For the specific example given, the maximum criterion is achieved when
+f(ϵi) = f(kiϵi) or ki = 2/(ϵi +1), as shown in Figure 3. Selecting the maximally
+optimal relaxation factor for each iteration is the core idea of aSOR method.
+Assuming an initial input range floor of ϵ1 = 2−10, and considering n itera-
+tions to evaluate the function f, Figure 2 (Right) demonstrated the accelerated
+input range shrinkage achieved by the aSOR method in comparison to nor-
+mal evaluation. As can be observed, the difference between the two methods
+increases naturally with larger values of n.
+We can now formalize the aSOR method and the necessary conditions for
+any iterative function f.
+Definition 1 (Fixed point) Given a function f, a fixed point is the “conver-
+gence point” of the iterative evaluation for f which can be achieved by xfp =
+limn→∞ f n(x) for some small but finite ε > |x − xfp|.
+Definition 2 (Attraction basin) Given a function f, the attraction basin is
+defined as a maximal contiguous range x ∈ [a, b] such that xfp = limn→∞ f n(x)
+where a ≤ xfp ≤ b.
+Assuming that x1 ∈ [a1, b1] ⊂ [a, b] is the expected input range at the first
+iteration, it implies that the initial expected input range isstrictly narrower than
+the maximally allowed range (or the attraction basin). The iterative process can
+be interpreted as an array of intervals,
+[an, bn] ⊂ [an−1, bn−1] ⊂ · · · ⊂ [a1, b1] ⊂ [a, b],
+where [ai+1, bi+1] = f([ai, bi]),
+lim
+n→∞
+an = lim
+n→∞
+bn = xfp.
+7
+Table 1: Example of sign approximation without aSOR
+i 0 1 2 3 4 5 6
+xi -0.25 -0.36 -0.52 -0.71 -0.89 -0.98 -0.99
+Table 2: Example of sign approximation with aSOR
+i 0 1 2 3
+ki - 1.51 1.28 1.06
+xi -0.25 -0.54 -0.87 -0.99
+As long as [ kiai, kibi] ⊂ [a, b], such ki can be used without ruining the
+convergence criteria. We can compare the results of the i-th iteration with and
+without the relaxation factor ki as follows:
+f([ai, bi]) = [ai+1, bi+1]
+f([kiai, kibi]) = [a′
+i+1, b′
+i+1].
+If [ a′i + 1, b′i + 1] ⊂ [ai+1, bi+1], then the relaxation factor ki is considered
+valid as it accelerates the convergence. Empirically, ki ≥ 1 and generally,
+limn→∞ kn = 1. The aSOR method chooses an optimal ki at each iteration
+such that
+ki = arg max
+ki
+(ci+1 − c′
+i+1), (1)
+where ci+1 = bi+1 − ai+1 and c′
+i+1 = b′
+i+1 − a′
+i+1 with ci+1 > c ′
+i+1.
+4 Applications of aSOR method
+We will demonstrate the aSOR method using several exemplary non-linear func-
+tions, including comparison, inversion, square root, and reciprocal of m-th root.
+Since only additions and multiplications are available as primitive operations
+in word-wise FHE schemes, non-linear functions cannot be evaluated directly.
+Instead, non-linear functions are approximated via polynomials. In practice,
+Goldschmidt’s division algorithm [20] and Newton-Raphson method [37] are
+widely used for this purpose.
+8
+Figure 3: Graphical illustration of finding the optimal ki. (a) when ki = 1,
+ϵi+1 = f(ϵi) < f (1) = 1. (b) when ki is chosen so that ϵi+1 = f(kϵi) < f (ki) <
+1, larger ki makes ϵi+1 larger. ki is chosen too small. (c) when ki is chosen so
+that ϵi+1 = f(ki) < f (kiϵi) < 1, smaller ki makes ϵi+1 larger. ki is chosen too
+large. (d) when ki is chosen so that ϵi+1 = f(kiϵi) = f(ki) < 1, we can get
+the largest ϵi+1 while maximally reducing the number of needed iterations. ki
+is optimal.
+4.1 Sign, Comparison and ReLU
+For the sake of simplicity, we define a comparison function Cmp and a sign
+function Sgn: for a, b ∈ R,
+Cmp(a, b) =
+
+
+
+1 if a > b
+1/2 if a = b
+0 if a < b
+Sgn(a − b) =
+
+
+
+1 if a > b
+0 if a = b
+−1 if a < b
+Note that Cmp does not satisfy linearity and it can be obtained from Sgn
+since
+Cmp(a, b) = Sgn(a − b) + 1
+2 .
+With an additional multiplication after comparison evaluation, ReLU can be
+easily obtained via ReLU( x) = x · Cmp(x, 0).
+9
+Algorithm 1 RelaxationFactor(f, α, ϵ)
+INPUT: a polynomial f(z), z ∈ [ϵ, 1], α, ϵ ∈ R ∩ [0, 1]
+OUTPUT: a list of the relaxation factors
+1: ϵ1 ← ϵ and i ← 1
+2: K ← []
+3: while 1 − ϵi > 2−α do
+4: ki = arg maxki[min(f(kiϵi), f(ki))]
+5: append ki to K
+6: ϵi+1 ← f(ki)
+7: i ← i + 1
+8: end while
+9: return K
+In [7], they constructed a set of composite polynomials to approximate the
+sign function. We use
+f(x) = −1
+2 x3 + 3
+2 x (2)
+which shows the best performance within the set of polynomials in [7] when
+applying the aSOR method.
+The input range for the sign function is x ∈ [ϵ, 1], and the composition pro-
+cess is repeated for n iterations until the convergence criteria 2 −α is met. That
+is, the iterative composition xi+1 = f(xi) is repeated n times until |f(xn+1) −
+Sgn(x)| < 2−α. In other words, given the initial input range ϵ ≤ x1 ≤ 1 (or
+equivalently for negative input −1 ≤ x1 ≤ − ϵ, as Equation 2 is an odd func-
+tion), we expect the final output range to be 1 − 2−α ≤ xn+1 ≤ 1. Similar
+convergence criteria will be used the rest of the non-linear functions too.
+To apply the aSOR method for the sign function, we first need to pre-
+calculate the relaxation factors ki with 1 ≤ i ≤ n as given in Algorithm 1.
+Specifically, to get the ki for Equation 2, the maxima criteria occurs at
+ki =
+p
+3/(ϵ2
+i + ϵi + 1). Next, we can immediately apply this method perform a
+faster sign function as given in Algorithm 2. Numerical evaluations are given in
+Table 1 and Table 2.
+4.2 Inversion
+Goldschmidt’s Division Algorithm Goldschmidt’s [20] division algorithm
+is a well-known algorithm to perform a division operation by iterative multipli-
+10
+cations. More precisely, for x ∈ (0, 2) the inversion could be interpreted as,
+1
+x = 1
+1 − (1 − x)
+= 1 + (1 − x)
+1 − (1 − x)2
+= (1 + (1 − x))(1 + (1 − x)21
+)
+1 − (1 − x)22
+= · · ·
+= (1 + (1 − x)) · · ·(1 + (1 − x)2n−1
+)
+1 − (1 − x)2n (3)
+and the denominator converges to 1 for a large enough n. Thus, by computing
+and multiplying
+
+1 + (1 − x)2i
+
+iteratively, we can approximate 1 /x. The au-
+thors in [10] proposed a new method for computing inversion via Goldschmidt’s
+division algorithm. For x ∈ (0, 2), Equation (3) implies that an approximated
+value of 1/x can be obtained by
+1
+x ≈
+nY
+i=0
+
+1 + (1 − x)2i
+They prove that for x ∈ [2−n, 1) their construction required Θ(log α + n) itera-
+tions to converge to 1 /x with an error bound of 2 α.
+Instead of taking their approach, we take a different formulation of Gold-
+schmidt’s division algorithm. Let ai and bi be denominator and numerator after
+i iterations, respectively. Then,
+ai = 1 − (1 − x)2i
+bi =
+nY
+i=0
+
+1 + (1 − x)2i−1
+and ai+1 can be re-written as
+ai+1 = 1 − (1 − x)2i+1
+=
+
+1 − (1 − x)2i
+1 + (1 − x)2i
+= ai(2 − ai) (4)
+11
+Algorithm 2 Sign(x, α, ϵ)
+INPUT: x ∈ [−1, −ϵ] ∪ [ϵ, 1], α, ϵ ∈ R ∩ [0, 1]
+OUTPUT: an approximate value of 1 if x > 0, -1 if x < 0 and 0 otherwise
+1: f ← Equation 2.
+2: ϵ1 ← ϵ and i ← 1
+3: K ← RelaxationF actor(f, α, ϵ)
+4: while 1 − ϵi > 2−α do
+5: ki ← i-th element of K
+6: x ← f(kix)
+7: ϵi+1 ← f(ki)
+8: i ← i + 1
+9: end while
+10: return x
+Similarly, bi+1 becomes
+bi+1 =
+nY
+i=0
+
+1 + (1 − x)2i+1
+=
+
+1 + (1 − x)2i nY
+i=0
+
+1 + (1 − x)2i−1
+= bi(2 − ai).
+When ai is close to 1, bi is close to 1 /x. Therefore, Goldschmidt’s inver-
+sion algorithm — Equation 4, for input x ∈ R can be re-expressed as evaluating
+f(x) = x(2−x) iteratively. This function is similar to fn(x) used in the previous
+section: both functions get through the origin (0, 0) and (1, 1) and monotoni-
+cally increase for 0 ≤ x ≤ 1 and monotonically decrease for x > 1. Hence, the
+relaxation factor idea can also be utilized with f(x) = x(2 − x). It then follows
+that,
+bi+1 = kibi(2 − kiai)
+ai+1 = kiai(2 − kiai)
+where a1 = x, y1 = 1, and ki is an relaxation factor for the i-th iteration of the
+composite evaluation.
+This relaxation factor can also be computed by Algorithm 1. That is, once a
+set of ki for particular ϵ, α are computed there is no need for repeat calculations.
+This has been summarized in Algorithm 3.
+4.3 Inverse Square Root and Square Root
+Goldschmidt’s inverse Square Root Algorithm Goldschmidt’s inverse
+square root algorithm is a numerical method achieved by iterative process. This
+12
+Algorithm 3 Inverse(α, ϵ, x)
+INPUT: x ∈ [ϵ, 1], α, ϵ ∈ R ∩ [0, 1]
+OUTPUT: an approximate value of 1 /x
+1: f ← z(2 − z)
+2: ϵ1 ← ϵ and i ← 1
+3: a ← x
+4: b ← 1
+5: K ← RelaxationF actor(f, α, ϵ)
+6: while 1 − ϵi > 2−α do
+7: ki ← i-th element of K
+8: b ← kib(2 − kia)
+9: a ← kia(2 − kia)
+10: ϵi+1 ← ki(2 − ki)
+11: i ← i + 1
+12: end while
+13: return b
+algorithm utilizes composable f(x) = x(3 − x)2/4 that converges to 1 for the
+input range of (0 , 1]. This composite function also gets through the origin (0,
+0) and (1, 1) and monotonically increases for 0 ≤ x ≤ 1 and monotonically
+decreases for x > 1. Therefore, aSOR is to be applied here similarly. In Al-
+gorithm 1, the optimal relaxation factor ki can be achieved by finding the first
+positive ki that satisfies f(kiϵi) = f(ki).
+Formally, similar to the Goldschmidt’s algorithm,
+1
+x = 1
+a0
+= (3 − a0)2/4
+a0(3 − a0)2/4 = b2
+1
+a1
+= b2
+1
+(3 − a1)2/4
+a1(3 − a1)2/4 = b2
+1
+b2
+2
+a2
+= b2
+1b2
+2
+(3 − a2)2/4
+a2(3 − a2)2/4 = b2
+1b2
+2
+b2
+3
+a3
+= · · ·
+= b2
+1b2
+2 · · · b2
+n−2b2
+n−1
+(3 − an−1)2/4
+an−1(3 − an−1)2/4
+= b2
+1b2
+2 · · · b2
+n−2b2
+n−1
+b2
+n
+an
+≈
+ nY
+i
+bi
+!2
+(5)
+1√x =
+nY
+i
+bi (6)
+When an converges to 1,Qn
+i bi converges to 1√x according to Equations 5 and 6.
+If an converges to 1 faster via relaxation factors ki, Qn
+i bi will also converge
+13
+to 1√x. For the sake of completeness, the procedure of applying the relaxation
+factor for such iterative process is given below,
+1
+x = 1
+a0
+= k0(3 − k0a0)2/4
+k0a0(3 − k0a0)2/4 = b2
+1
+a1
+= b2
+1
+k1(3 − k1a1)2/4
+k1a1(3 − k1a1)2/4 = b2
+1
+b2
+2
+a2
+= b2
+1b2
+2
+k2(3 − k2a2)2/4
+k2a2(3 − k2a2)2/4 = b2
+1b2
+2
+b2
+3
+a3
+= · · ·
+= b2
+1b2
+2 · · · b2
+n−2b2
+n−1
+kn−1(3 − kn−1an−1)2/4
+kn−1an−1(3 − kn−1an−1)2/4
+= b2
+1b2
+2 · · · b2
+n
+an
+≈
+ nY
+i
+bi
+!2
+. (7)
+The algorithm is given in Algorithm 4.
+Goldschmidt’s Square Root Algorithm Since √x = x/√x, we can readily
+reuse the previous algorithm with minimal modification as,
+1√x =
+nY
+i
+bi
+√x = ai
+nY
+i
+bi.
+The algorithm is also given in Algorithm 4, with a slight modification thatb ← x
+for square root calculation.
+4.4 Reciprocal of m-th root
+Newton-Raphson Method Newton–Raphson [1] method is a root-finding
+algorithm that returns approximate roots of a polynomial. Given a function
+g defined over x ∈ R, and its derivative g′, we begin with a first guess y1
+for the root of the function g. A better approximation for the root is y2 is
+y2 = y1 − g(y1)
+g′(y1). Geometrically, ( y1, 0) is the intersection with the x-axis of the
+tangent to the graph of f at (y1, g(y1)). The process is repeated as
+yi+1 = yi − g(yi)
+g′(yi) = f(yi)
+until a sufficiently accurate value is reached. In this paper, we utilize such an
+iterative procedure to approximate reciprocal m-th root of x, that is, x− 1
+m .
+14
+Let g(yi) = y
+− 1
+m
+i − x, by Newton-Raphson’s method, we have
+yi+1 = yi − g(yi)
+g′(yi) = yi
+(m + 1) − xym
+i
+m
+
+= f(yi). (8)
+This iterative process can be repeated with a starting value of y1 = 1 to
+obtain increasingly better approximations to x− 1
+m . However, we cannot blindly
+apply the relaxation factor yet as this function f does not pass through (1 , 1)
+for an arbitrary input x.
+We can overcome this limitation by introducing a dummy intermediate vari-
+able zi = x
+1
+m ·yi which changes the iterative updating rule to (from Equation 8),
+x
+1
+m yi+1 = x
+1
+m yi
+(m + 1) − xym
+i
+m
+
+zi+1 = zi
+(m + 1) − zm
+i
+m
+
+= f(zi).
+Here, f(x) converges to 1 for the input range of (0 , 1]. This composite function
+also passes the origin (0, 0) and (1, 1); monotonically increases for 0 ≤ x ≤ 1;
+and monotonically decreases for x > 1. Therefore, aSOR can be applied here
+similarly.
+If the range of x is given as 0 < ϵ 1 ≤ x ≤ 1, then x
+1
+m ∈ [ϵ1
+1
+m , 1] and
+z1 ∈ [ϵ1
+1
+m y1, y1] as zi = x
+1
+m yi. If y1 = 1, then the minimum range limit of z1 is
+ϵz
+1 = ϵ1
+1
+m and the maximum range limit of z1 is 1, which is similar to the sign
+function with the range of [ ϵz
+1, 1]. This enables us to use relaxation method for
+the reciprocal of m-th root.
+The relaxation factor ki for each i-th iteration can be computed so that
+f(kiϵz
+i ) = f(ki), and yi+1 = kiyi((m + 1) − x(kiyi)m)/m. After n iterations of
+composite polynomial, yn can be finally calculated where n is pre-determined
+by α. This has been summarized in Algorithm 5.
+5 Performance Analysis
+Importantly, the methods described in this work are not tied to CKKS [9] or
+even FHE in general. To our knowledge, CKKS happens to be the most efficient
+scheme for the described aSOR method. We will briefly provide reasons on why
+aSOR method could implemented efficiently with CKKS in the following section.
+5.1 CKKS Scheme and Scale Adjustment
+CKKS scheme [9] and its RNS variant [8] are the state-of-the-art FHE schemes
+that support approximate arithmetic for addition and multiplication operations.
+CKKS scheme encodes a raw data vector into a plaintext cyclotomic polynomial
+and then encrypts the encoded plaintext using the RLWE (Ring Learning with
+Errors) cryptosystem [32].
+15
+Algorithm 4 (Inverse)SquareRoot(x, α, ϵ)
+INPUT: x ∈ [ϵ, 1], α, ϵ ∈ R ∩ [0, 1]
+OUTPUT: an approximate value of 1 /x
+1: f ← z(3 − z)2/4
+2: ϵ1 ← ϵ and i ← 1
+3: a ← x
+4: b ← x
+5: b ← 1 (In case of inverse square root)
+6: K ← RelaxationF actor(f, α, ϵ)
+7: while 1 − ϵi > 2−α do
+8: ki ← i-th element of K
+9: b ← √kib(3 − kia)/2
+10: a ← kia(3 − kia)2/4
+11: ϵi+1 ← ki(3 − ki)2/4
+12: i ← i + 1
+13: end while
+14: return b
+One of the main challenges of the CKKS scheme is the approximation error
+that is inherent to almost every operation in the scheme [14, 26]. The CKKS
+scheme introduces several sources of error including encoding, encryption, rescal-
+ing, and relinearization errors. The CKKS error analysis and its impact on the
+aSOR method are presented in Appendix B.
+The CKKS scheme uses fixed-point arithmetic. A data vector is scaled with a
+large integer, called the scaling factor ∆, and then rounded to the integer before
+the encryption. When two data vectors encrypted with the CKKS scheme are
+multiplied homomorphically, the scaling factors of the two are also multiplied.
+This scaling factor should be reduced to the original value by using the rescaling
+operation. Each encoded plaintext can be interpreted as an integer vector x,
+which could also potentially overflow just like machine integers, divided by its
+scale ∆. As a mental analogy, it is helpful to imagine a ciphertext as x/∆.
+The scale of a ciphertext can be modified as follows:
+x/∆1 × k = x/∆2.
+This scale adjustment results in an efficient multiplication/division of the ci-
+phertext by a scalar k, which consumes no depth and could potentially reduce
+the scale at the same time. This is extremely similar to machine bit-shifting
+for fast multiplication/division by the powers of two. Therefore, such multipli-
+cations by a relaxation factor k can be done nearly free of computational cost,
+which is why this method works so well for this particular FHE scheme.
+We believe that this method has not been explored before in other fields due
+to the requirement of multiplication by a constant factork, which can sometimes
+be as computationally expensive as running an additional iterative evaluation
+loop.
+16
+Algorithm 5 ReciprocalRoot(x, m, α, ϵ)
+INPUT: x ∈ [ϵ, 1], α, ϵ ∈ R ∩ [0, 1]
+OUTPUT: An approximate value of x− 1
+m
+1: f ← z((m + 1) − zm)/m
+2: ϵ1 ← ϵ and i ← 1
+3: y ← 1
+4: K ← RelaxationF actor(f, α, ϵ)
+5: while 1 − ϵi > 2−α do
+6: ki ← i-th element of K
+7: y ← kiy((m + 1) − x(kiy)m)/m
+8: ϵi+1 ← ki((m + 1) − km
+i )/m
+9: i ← i + 1
+10: end while
+11: return y
+Figure 4: Comparison of the scale management of naive method and proposed
+method to compute f(x) = kx2 when k = 1.5. c.c.m. : ciphertext-ciphertext
+multiplication, c.p.m. : ciphertext-plaintext multiplication, a.s. : adjusting
+scale r.s. : rescaling, u.s. : upscaling by 2 1. (a) Without scale adjustment
+(b) With scale adjustment (c) With scale adjustment by pre-selected prime
+modulus.
+CKKS scale management becomes more involved as it is now necessary to
+decide on the optimal rescaling moduli, based on the pre-calculated array of ki
+values with the scale adjustment in mind. In the most optimal scenario, the
+scale should be always rescaled back to the “waterline level” (defined as the
+lowest scale without loss of significant bits [31]) after each iterative evaluation
+to maximally suppress growth of the error bits in the ciphertexts.
+Such scale adjustment might seem to come at the cost of having haphaz-
+ard scales across ciphertexts. However, after performing any of the operations
+discussed before, the scale could be brought back to an arbitrary level via multi-
+plication by unity of the needed scale. Such upscaling when necessary has been
+used before in CKKS compilers such as HECATE [31]. Ideally, our methodology
+should be embedded within a CKKS circuit compiler, where the compiler would
+automatically decide on the most optimal rescaling moduli to perform aSOR
+17
+6 7 8 9 10 11 12 13
+0
+5
+10
+15
+20
+25
+30
+(c) Square root
+Gol. sqrt
+Algorithm 4
+6 7 8 9 10 11 12 13
+0
+10
+20
+30
+40
+50depth
+(a) Sign
+[9]
+Algorithm 2
+6 7 8 9 10 11 12 13
+0
+5
+10
+15
+20
+25
+30
+(d) Inverse sqrt (Gol.)
+Gol. inv. sqrt
+Algorithm 4
+6 7 8 9 10 11 12 13
+0
+5
+10
+15
+20
+25
+(e) Inverse sqrt (NR)
+NR inv. sqrt
+Algorithm 5
+6 7 8 9 10 11 12 13
+0
+3
+6
+9
+12
+15
+18
+(b) Inverse
+[10]
+Algorithm 3
+Figure 5: Summary of depth results for basic non-linear functions.
+optimally.
+As an example, let us imagine a computation of f(x) = kx2 with k = 1.5
+for the sake of compatibility of the presented algorithms but the value of k, in
+principle, does not matter. Let us also assume that the scales, waterline scale,
+and the rescaling moduli are all equal to 2 30 and the x ciphertext starts at
+level 0 (assuming increasing level convention as we progress further along the
+computation). Naive computation of f would require two rescaling operations
+and hence at least two levels (equivalent to computing x3) as illustrated in
+Figure 4 (a).
+As shown in Figure 4 (b) and (c), the calculation could be carried out more
+efficiently with scale adjustment via the following steps:
+1. Calculate square( x) = x2: scale 2 60 and level 0.
+2. Adjust the scale of square( x) = x2 by log 2 1.5 = 0 .585 to complete the
+calculation of kx2: scale 2 60/ log2 1.5 = 259.415 and level 0 (rescaling now
+would result in loss of significant bits as the result would fall below the
+waterline scale).
+3. Upscale by multiplication of nearest integer scale unity 2 60−59.00 to make
+the resulting ciphertext to have the scale 260.415. Alternatively, the rescal-
+ing modulus could be chosen to be around 2 29.415 to exactly match the
+needed rescaling value — Figure 4 (b) and (c); this would be even more
+efficient as we would not need perform cipher-plain multiplication.
+4. Apply relinearization and rescaling: scale 2 30.415 and level 1.
+Performing this “scale trick” not only reduces the number of rescaling op-
+erations but could potentially remove one multiplication (if the next rescaling
+modulus is chosen accordingly) resulting in a much more efficient calculation
+overall. Additionally, if the values of k are comparably large with rescaling
+moduli, this methodology could effectively “rescale” ciphertexts without explic-
+itly performing the rescaling operation honestly.
+18
+6 7 8 9 10 11 12 13
+0
+10
+20
+30
+40
+50
+60
+70
+80
+(c) Square root
+Gol. sqrt
+Algorithm 4
+6 7 8 9 10 11 12 13
+0
+25
+50
+75
+100
+125
+150
+175
+200Time (s)
+(a) Sign
+[9]
+Algorithm 2
+6 7 8 9 10 11 12 13
+0
+20
+40
+60
+80
+(d) Inverse sqrt (Gol.)
+Gol. inv. sqrt
+Algorithm 4
+6 7 8 9 10 11 12 13
+0
+10
+20
+30
+40
+50
+(e) Inverse sqrt (NR)
+NR inv. sqrt
+Algorithm 5
+6 7 8 9 10 11 12 13
+0
+3
+6
+9
+12
+15
+18
+(b) Inverse
+[10]
+Algorithm 3
+Figure 6: Summary of time results for basic non-linear functions.
+5.2 Benchmarks of Basic Non-linear Functions
+Our experiments were conducted on Linux Ubuntu 18.04.6 using AMD EPYC
+7502-32 CPU. We used CKKS scheme implemented in Microsoft SEAL library [34]
+with the highest polynomial degree of 2 17 and the initial scale ∆ = 2 40. In the
+experiment, we compare our algorithm to the previous work using three criteria:
+1) the number of iterations, 2) the required multiplicative depth, 3) the compu-
+tational complexity, and 4) the computational time in encrypted state. In this
+section, we will consider ϵ = 2−α to make the same precision of input and out-
+put of all operations. The results are concisely summarized in Table A.1, where
+Depth indicates multiplicative depth, and Complexity indicates computational
+complexity. All of the metrics tend to show better improved with increasing α
+value.
+The baseline of our benchmarks is Cheon et al.’s works [10] and [7] as they
+reviewed a large set of functions while being simple in implementation. Multi-
+plicative depth benchmarks are summarized in Figure 5, and time benchmarks
+are summarized in Figure 6. Complete benchmarks are given in Table A.1 to
+avoid visual clutter.
+Comparison Figure 5 (a) shows the multiplicative depth comparison results
+for comparison function. The time in Figure 6 (a) is not amortized, i.e to
+get the amortized time per ciphertext slot the time should be divided by 2 16.
+Algorithm 2 outperforms the previous work in all metrics — Table A.1. The
+multiplicative depth and the number of multiplications are both reduced, indi-
+cating a no-compromises improvement. Generally, the aSOR method reduces
+the computation time by about 6–9 times — Figure 6 (a).
+Lee et al. [29] showed a similar performance improvement to this work, but
+they focused only on the comparison function. Additionally, their work requires
+sophisticated pre-calculations using dynamic programming.
+Inversion Figure 5 (b) and Figure 6 (b) show that inverse operation is im-
+proved in depth, time and the ratios have a tendency to increase as α increases.
+19
+Goldschmidt Square Root Figure 5 (c) and Figure 6 (c) show that our
+method improves Goldschmidt Square Root algorithm in depth and especially
+in computation time considerably; almost 4 times faster when α is 6, which
+increases to about 8 times faster when α is 13.
+Goldschmidt Square Root and Inverse Square Root are mostly the same
+algorithm except that they have a different initialization stage (Algorithm 4).
+Depth and time comparisons are given in Figure 5 (d) and Figure 6 (d).
+Goldschmidt and Newton Raphson Inverse Square Root Figure 5 (e)
+and Figure 6 (e) compare the performance of aSOR for Inverse Square Root op-
+eration. Our method reduces the computation time significantly when applying
+it to both inverse square root algorithms — 4–9 times faster.
+While Goldschmidt algorithm shows the better performance in complexity,
+Newton-Raphson method outperforms it in depth and time. For FHE applica-
+tions, it is suggested to use Newton-Raphson method as it consumes less depth
+which is very much desirable in practice — Table A.1.
+5.3 Applications
+The methodologies developed in this work can be readily applied to various
+functions. Since word-wise FHE schemes are natively compatible with addition,
+subtraction and multiplication, the importance of an efficient methodology to
+perform the division operation alone (Algorithm 3) cannot be overstated. The
+following subsections demonstrate the possible applications of the presented
+methods in this paper.
+Softmax The softmax function takes in a vector of real numbers and outputs
+a valid vector of probabilities. For a vector X = (x1, . . . , xt), softmax is defined
+as,
+softmax(X) = 1Pt
+i=i exp(xi)
+(exp(x1), exp(x2), . . . ,exp(xt)).
+In order to approximate the exponential function, we utilized the elementary
+definition of exp(x) [11] as,
+exp(x) = lim
+k→∞
+
+1 + x
+n
+n
+≃
+
+1 + x
+2r
+2r
+.
+Next, the inverse function can be approximately computed via Goldschmidt’s
+division algorithm (Algorithm 3). Almost a two-fold improvement over the
+previous methodology [23] has been achieved as shown in Table 3 (3 classes,
+α = 2−7, ϵ = 2−9, 2−15, 2−29 per column).
+Max pooling Max pooling is a common operation typically found in convo-
+lutional neural networks, which essentially reduces to computation of maximal
+value among 2-dimensional array of pixels. For n distinct positive number of
+20
+Table 3: Summary of results for Softmax
+Softmax range [ −3, 3] [ −5, 5] [ −10, 10]
+Ref [23] Depth 17 29 46
+Complexity 30 49 68
+Ours Depth 12 20 29
+Complexity 20 31 34
+Table 4: Summary of results for Max Pooling
+Filter size 2 × 2 3 × 3 4 × 4
+Ref [11] Depth 42 52 59
+Complexity 122 217 336
+Ours Depth 27 32 36
+Complexity 92 177 290
+pixels (a1, a2, ..., an), the maximal value max(a1, a2, ..., an) could be calculated
+using the following identity [23],
+lim
+k→∞
+ak
+i
+ak
+1 + · · · + akn
+=
+ 1, if ai is maximal.
+0, otherwise.
+For this application k = 27, α = 2−7, ϵ = 1/255 were chosen to demonstrate
+the potential improvement in both complexity and depth of the algebraic circuits
+as shown in Table 4.
+6 Conclusion
+We propose adaptive successive over-relaxation method (aSOR). aSOR method
+derives inspiration from the usual SOR method and implements adaptive (vary-
+ing) relaxation factor to always have the greatest impact on the convergence.
+To our knowledge, the methodology performs the best when used in tandem
+with FHE schemes such as CKKS due to the fact that constant multiplications
+could be performed at practically free of computational cost. We have used
+SEAL library implementation of the CKKS scheme and performed our bench-
+marks using various input/output precision specifications. With CKKS scheme
+we find that the overall improvement of evaluation of the non-linear functions
+is around 2 to 9 times in terms of execution time.
+Concrete and ready-to-use evaluation algorithms are presented in detail for
+sign, (inverse) square root, and negative inverse power functions. Given the to-
+day’s needs for privacy preserving solutions for real-world applications in statis-
+tics, machine learning and other disciplines, such ready-to-use algorithms are
+crucial for usage of FHE in industrial and practical applications.
+21
+A Detailed benchmarks
+Detailed performance metrics for all the algorithms presented in this work are
+listed in Table A.1.
+B CKKS error analysis
+Following Section 3, the iterative operations of
+f([ϵn, 1]) = [ϵn+1, 1]
+could incur errors during encryption and evaluations in CKKS scheme.
+We adopt the notation of some distributions from [8, 9]. For a real σ > 0,
+DG(σ2) samples a vector inZN by drawing its coefficient independently from the
+discrete Gaussian distribution of variance σ2. For a positive integer h, HWT(h)
+is the set of signed binary vectors in 0, ±1N for which Hamming weight is exactly
+h. Next, l, Bi, νi denote a level, an upper bound on the message mi, and the
+noise of the encrypted message mi respectively.
+Let us call E enc
+n , E add
+n , E mul
+n , E ks
+n , E rs
+n as maximal absolute errors which could
+occur during encoding and encryption, addition, multiplication, key switching
+(for relinearization and rotation), and rescaling respectively during the n-th
+iteration. Then, the errors can be defined as follows [9]:
+E enc
+n = 8
+√
+2σN + 6σ
+√
+N + 16σ
+√
+hN
+E add
+n = B1 + B2
+E mul
+n = ν1B2 + ν2B1 + B1B2
+E ks
+n = B + 8√
+3 N σQ
+P
+p
+l2 + 1 + (k + 1)(
+√
+3N + 8√
+3
+√
+hN)
+E rs
+n = q−1
+l B +
+√
+3N + 8√
+3
+√
+hN
+The size of errors can be managed by choosing a proper FHE parameter set.
+For convenience, let us denote En as the total error per iteration ( E enc
+n>0 = 0).
+To completely guarantee the correctness of our algorithms in this work, the
+input ranges could be conservatively redefined as,
+[ϵn+1, 1] → [ϵn+1 − En, 1 + En].
+This range needs to re-normalized to [ ϵ, 1]-like form before proceeding with the
+next iteration. To do so, this range is divided by the maximum value 1 + En,
+such that  ϵn+1 − En
+1 + En
+, 1
+
+is the new range. We can re-define a new minimum input value as,
+ϵ′
+n+1 = ϵn+1 − En
+1 + En
+,
+22
+and proceed with the next n + 1-th iteration as usual. In practice and in this
+work, such precautious measures are not necessary when the ϵi values are suffi-
+ciently large.
+References
+[1] Saba Akram and Quarrat Ul Ann. “Newton Raphson method”. In: Inter-
+national Journal of Scientific & Engineering Research6.7 (2015), pp. 1748–
+1752.
+[2] Ahmad Al Badawi et al. “OpenFHE: Open-Source Fully Homomorphic
+Encryption Library”. In: Proceedings of the 10th Workshop on Encrypted
+Computing & Applied Homomorphic Cryptography . WAHC’22. Los An-
+geles, CA, USA: Association for Computing Machinery, 2022, pp. 53–63.
+doi: 10 . 1145 / 3560827 . 3563379. url: https : / / doi . org / 10 . 1145 /
+3560827.3563379.
+[3] Sagarika Behera et al. “Preserving the Privacy of Medical Data using Ho-
+momorphic Encryption and Prediction of Heart Disease using K-Nearest
+Neighbor”. In: 2022 IEEE International Conference on Data Science and
+Information System (ICDSIS). July 2022, pp. 1–6.doi: 10.1109/ICDSIS55133.
+2022.9915983.
+[4] Charlotte Bonte and Ilia Iliashenko. “Homomorphic String Search with
+Constant Multiplicative Depth”. In:Proceedings of the 2020 ACM SIGSAC
+Conference on Cloud Computing Security Workshop . CCSW’20. Virtual
+Event, USA: Association for Computing Machinery, 2020, pp. 105–117.
+isbn: 9781450380843. doi: 10 . 1145 / 3411495 . 3421361. url: https :
+//doi.org/10.1145/3411495.3421361.
+[5] Zvika Brakerski. “Fully Homomorphic Encryption without Modulus Switch-
+ing from Classical GapSVP”. In: Advances in Cryptology - CRYPTO .
+2012, pp. 868–886.
+[6] Zvika Brakerski, Craig Gentry, and Vinod Vaikuntanathan. “(Leveled)
+fully homomorphic encryption without bootstrapping”. In: ITCS. 2012,
+pp. 309–325.
+[7] Jung Hee Cheon, Dongwoo Kim, and Duhyeong Kim. “Efficient Homo-
+morphic Comparison Methods with Optimal Complexity”. In: Advances
+in Cryptology - ASIACRYPT . Vol. 12492. 2020, pp. 221–256.
+[8] Jung Hee Cheon et al. “A full RNS variant of approximate homomorphic
+encryption”. In: Selected Areas in Cryptography–SAC 2018: 25th Inter-
+national Conference, Calgary, AB, Canada, August 15–17, 2018, Revised
+Selected Papers 25. Springer. 2019, pp. 347–368.
+[9] Jung Hee Cheon et al. “Homomorphic Encryption for Arithmetic of Ap-
+proximate Numbers”. In: Advances in Cryptology - ASIACRYPT . 2017,
+pp. 409–437.
+23
+[10] Jung Hee Cheon et al. “Numerical Method for Comparison on Homomor-
+phically Encrypted Numbers”. In: Advances in Cryptology - ASIACRYPT.
+2019, pp. 415–445.
+[11] Jung Hee Cheon et al. “Numerical method for comparison on homomor-
+phically encrypted numbers”. In: International Conference on the Theory
+and Application of Cryptology and Information Security . Springer. 2019,
+pp. 415–445.
+[12] Ilaria Chillotti et al. “Faster Packed Homomorphic Operations and Ef-
+ficient Circuit Bootstrapping for TFHE”. In: Advances in Cryptology –
+ASIACRYPT 2017. Ed. by Tsuyoshi Takagi and Thomas Peyrin. Cham:
+Springer International Publishing, 2017, pp. 377–408. isbn: 978-3-319-
+70694-8.
+[13] Ilaria Chillotti et al. “TFHE: Fast Fully Homomorphic Encryption Over
+the Torus”. In: J. Cryptol. 33.1 (2020), pp. 34–91.
+[14] Anamaria Costache et al. On the precision loss in approximate homo-
+morphic encryption. Cryptology ePrint Archive, Paper 2022/162. https:
+//eprint.iacr.org/2022/162. 2022. url: https://eprint.iacr.org/
+2022/162.
+[15] Jr David M. Young. “Iterative methods for Solving Partial Difference
+Equations of Elliptic Type”. 1950. url: https://web.ma.utexas.edu/
+CNA/DMY/david_young_thesis.pdf.
+[16] Nathan Dowlin et al. “CryptoNets: Applying Neural Networks to En-
+crypted Data with High Throughput and Accuracy”. In: Proceedings of
+the 33rd International Conference on International Conference on Ma-
+chine Learning - Volume 48 . ICML’16. New York, NY, USA: JMLR.org,
+2016, pp. 201–210.
+[17] L´ eo Ducas and Daniele Micciancio. “FHEW: Bootstrapping Homomor-
+phic Encryption in Less Than a Second”. In: Advances in Cryptology -
+EUROCRYPT. 2015, pp. 617–640.
+[18] Junfeng Fan and Frederik Vercauteren. Somewhat Practical Fully Homo-
+morphic Encryption. Cryptology ePrint Archive, Paper 2012/144. https:
+//eprint.iacr.org/2012/144. 2012. url: https://eprint.iacr.org/
+2012/144.
+[19] Craig Gentry. “Fully homomorphic encryption using ideal lattices”. In:
+STOC. 2009, pp. 169–178.
+[20] Robert E Goldschmidt. “Applications of division by convergence”. PhD
+thesis. Massachusetts Institute of Technology, 1964.
+[21] Shai Halevi and Victor Shoup. “HElib: Software library for homomorphic
+encryption”. http://github.com/shaih/HElib.git. 2018.
+[22] Ehsan Hesamifard et al. “Privacy-preserving Machine Learning as a Ser-
+vice”. In: PoPETs 2018.3 (2018), pp. 123–142.
+24
+[23] Seungwan Hong et al. “Secure tumor classification by shallow neural net-
+work using homomorphic encryption”. In: BMC genomics 23.1 (2022),
+pp. 1–19.
+[24] CryptoLab Inc. HEaaN: Homomorphic Encryption for Arithmetic of Ap-
+proximate Numbers. https://heaan.it/. 2022.
+[25] Nikola Jovanovic et al. “Private and Reliable Neural Network Inference”.
+In: Proceedings of the 2022 ACM SIGSAC Conference on Computer and
+Communications Security. CCS ’22. Los Angeles, CA, USA: Association
+for Computing Machinery, 2022, pp. 1663–1677.isbn: 9781450394505. doi:
+10.1145/3548606.3560709. url: https://doi.org/10.1145/3548606.
+3560709.
+[26] Andrey Kim, Antonis Papadimitriou, and Yuriy Polyakov. “Approximate
+Homomorphic Encryption with Reduced Approximation Error”. In: Top-
+ics in Cryptology – CT-RSA 2022 . Ed. by Steven D. Galbraith. Cham:
+Springer International Publishing, 2022, pp. 120–144. isbn: 978-3-030-
+95312-6.
+[27] Jongmin Kim et al. “SHARP: A Short-Word Hierarchical Accelerator for
+Robust and Practical Fully Homomorphic Encryption”. In: Proceedings
+of the 50th Annual International Symposium on Computer Architecture .
+ISCA ’23. Orlando, FL, USA: Association for Computing Machinery, 2023.
+isbn: 9798400700958. doi: 10 . 1145 / 3579371 . 3589053. url: https :
+//doi.org/10.1145/3579371.3589053.
+[28] Miran Kim et al. “Ultrafast homomorphic encryption models enable secure
+outsourcing of genotype imputation”. In:Cell Systems 12.11 (2021), 1108–
+1120.e4. issn: 2405-4712. doi: https://doi.org/10.1016/j.cels.2021.
+07 . 010. url: https : / / www . sciencedirect . com / science / article /
+pii/S240547122100288X.
+[29] Eunsang Lee et al. “Minimax approximation of sign function by compos-
+ite polynomial for homomorphic comparison”. In: IEEE Transactions on
+Dependable and Secure Computing (2021).
+[30] Joon-Woo Lee et al. “Privacy-Preserving Machine Learning With Fully
+Homomorphic Encryption for Deep Neural Network”. In: IEEE Access 10
+(2022), pp. 30039–30054.
+[31] Yongwoo Lee et al. “HECATE: Performance-Aware Scale Optimization for
+Homomorphic Encryption Compiler”. In: 2022 IEEE/ACM International
+Symposium on Code Generation and Optimization (CGO) . 2022, pp. 193–
+204. doi: 10.1109/CGO53902.2022.9741265.
+[32] Vadim Lyubashevsky, Chris Peikert, and Oded Regev. “On ideal lattices
+and learning with errors over rings”. In: Advances in Cryptology - EURO-
+CRYPT. 2010, pp. 1–23.
+25
+[33] Ahmet Can Mert et al. “Medha: Microcoded Hardware Accelerator for
+computing on Encrypted Data”. In: IACR Transactions on Cryptographic
+Hardware and Embedded Systems 2023.1 (Nov. 2022), pp. 463–500. doi:
+10.46586/tches.v2023.i1.463-500 . url: https://tches.iacr.org/
+index.php/TCHES/article/view/9959.
+[34] Microsoft. SEAL: Simple Encrypted Arithmetic Library. https://github.
+com/Microsoft/SEAL. 2022.
+[35] Kundan Munjal and Rekha Bhatia. “A systematic review of homomorphic
+encryption and its contributions in healthcare industry”. In: Complex &
+Intelligent Systems (May 2022), pp. 1–28. issn: 2199-4536. doi: 10.1007/
+s40747-022-00756-z .
+[36] Samanvaya Panda. Polynomial Approximation of Inverse sqrt Function
+for FHE. Cryptology ePrint Archive, Paper 2022/423. 2022.
+[37] J Raphson. Analysis Aequationum Universalis. London . 1690.
+[38] Xuanle Ren et al. “HEDA: Multi-Attribute Unbounded Aggregation over
+Homomorphically Encrypted Database”. In: Proc. VLDB Endow. 16.4
+(Dec. 2022), pp. 601–614. issn: 2150-8097. doi: 10 . 14778 / 3574245 .
+3574248. url: https://doi.org/10.14778/3574245.3574248.
+[39] Nikola Samardzic et al. “CraterLake: A Hardware Accelerator for Effi-
+cient Unbounded Computation on Encrypted Data”. In:Proceedings of the
+49th Annual International Symposium on Computer Architecture . ISCA
+’22. New York, New York: Association for Computing Machinery, 2022,
+pp. 173–187. isbn: 9781450386104. doi: 10.1145/3470496.3527393. url:
+https://doi.org/10.1145/3470496.3527393.
+[40] M. Siva Sangari et al. “A Survey on Homomorphic Encryption for Finan-
+cial Cryptography Workout”. en. In: Homomorphic Encryption for Fi-
+nancial Cryptography: Recent Inventions and Challenges . Cham: Springer
+International Publishing, 2023, pp. 13–27. isbn: 978-3-031-35535-6. doi:
+10.1007/978-3-031-35535-6_2 . url: https://doi.org/10.1007/978-
+3-031-35535-6_2 .
+[41] Olamide Timothy Tawose et al. “Toward Efficient Homomorphic Encryp-
+tion for Outsourced Databases through Parallel Caching”. In: Proc. ACM
+Manag. Data 1.1 (May 2023). doi: 10.1145/3588920 . url: https://
+doi.org/10.1145/3588920.
+[42] Wikipedia contributors. Successive over-relaxation — Wikipedia, The Free
+Encyclopedia. https : / / en . wikipedia . org / w / index . php ? title =
+Successive _ over - relaxation & oldid = 1109147320. [Online; accessed
+26-September-2022]. 2022.
+26
+[43] Ahmed El-Yahyaoui and Mohamed Dafir EC-Chrif El Kettani. “Fully
+Homomorphic Encryption: Searching over Encrypted Cloud Data”. In:
+Proceedings of the 2nd International Conference on Big Data, Cloud and
+Applications. BDCA’17. Tetouan, Morocco: Association for Computing
+Machinery, 2017. isbn: 9781450348522. doi: 10.1145/3090354.3090364.
+url: https://doi.org/10.1145/3090354.3090364.
+[44] Zama. TFHE-rs: A Pure Rust Implementation of the TFHE Scheme for
+Boolean and Integer Arithmetics Over Encrypted Data. https://github.
+com/zama-ai/tfhe-rs. 2022.
+27
+Table A.1: Summary of benchmark results for basic non-linear functions
+α 6 7 8 9 10 11 12 13
+Sign algorithm as in [7]
+Iterations 12 14 16 18 20 22 24 26
+Depth 24 28 32 36 40 44 48 52
+Complexity 24 28 32 36 40 44 48 52
+Time (s) 27 .0 40 .7 55 .9 74 .0 97 .0 133 .0 159 .0 208 .0
+Algorithm 2
+Sign
+Iterations 6 7 8 9 10 11 12 12
+Depth 12 14 16 18 20 22 24 24
+Complexity 12 14 16 18 20 22 24 24
+Time (s) 4 .4 6 .3 8 .5 11 .7 16 .0 20 .2 26 .9 26 .9
+Goldschmidt 1/x [10]
+Iterations 9 10 11 12 13 14 16 16
+Depth 9 10 11 12 13 14 16 16
+Complexity 9 10 11 12 13 14 16 16
+Time (s) 4 .2 5 .1 6 .8 8 .4 10 .3 12 .7 18 .2 18 .2
+Algorithm 3
+Inverse
+Iterations 5 6 6 7 8 8 9 9
+Depth 5 6 6 7 8 8 9 9
+Complexity 5 6 6 7 8 8 9 9
+Time (s) 1 .2 1 .8 1 .8 2 .5 3 .3 3 .3 4 .4 4 .4
+Goldschmidt √x
+Iterations 7 8 9 11 12 13 14 15
+Depth 14 16 18 22 24 26 28 30
+Complexity 14 16 18 22 24 26 28 30
+Time (s) 10 .4 14 .7 20 .0 35 .2 50 .9 66 .0 72 .0 79 .0
+Algorithm 4
+(Inverse)SquareRoot
+Iterations 4 5 5 6 6 7 7 8
+Depth 8 10 10 12 12 14 14 16
+Complexity 8 10 10 12 12 14 14 16
+Time (s) 2 .7 4 .4 4 .4 6 .7 6 .7 10 .4 10 .4 14 .9
+Goldschmidt 1/√x
+Iterations 7 8 9 11 12 13 14 15
+Depth 14 16 18 22 24 26 28 30
+Complexity 14 16 18 22 24 26 28 30
+Time (s) 9 .9 12 .9 19 .1 32 .2 45 .7 67 .0 80 .0 94 .0
+Algorithm 4
+(Inverse)SquareRoot
+Iterations 4 5 5 6 6 7 7 8
+Depth 8 10 10 12 12 14 14 16
+Complexity 7 9 9 11 11 13 13 15
+Time (s) 2 .4 4 .1 4 .1 6 .6 6 .6 9 .8 9 .8 12 .8
+Newton-Raphson 1/√x
+Iterations 6 7 8 9 11 12 13 14
+Depth 12 14 16 18 22 24 26 28
+Complexity 18 21 24 27 33 36 39 42
+Time (s) 6 .2 9 .0 12 .1 16 .1 24 .9 33 .4 43 .5 54 .3
+Algorithm 5
+ReciprocalRoot
+Iterations 3 4 4 5 5 6 6 7
+Depth 6 8 8 10 10 12 12 14
+Complexity 9 12 12 15 15 18 18 21
+Time (s) 1 .5 2 .6 2 .6 4 .1 4 .1 6 .2 6 .2 9 .0
+28
