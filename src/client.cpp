@@ -2,32 +2,97 @@
 
 #include <algorithm>
 #include <cmath>
+#include <cstdint>
+#include <fstream>
 #include <iostream>
+#include <limits>
 #include <random>
 #include <stdexcept>
+#include <string>
+#include <vector>
 
 using namespace lbcrypto;
 
 namespace {
 
-// 收集 Lanczos 需要的旋转索引：2 的幂，用于 rotate-and-sum 全 slot 求和
-// 以及维度相关的小步长（用于 packScalarsToVector 等）
-std::vector<int32_t> collectRotationIndices(int /*d*/, uint32_t num_slots)
+// 收集 Diagonal+BSGS Lanczos 所需的全部 EvalRotate 索引：
+//   (a) innerProductReplicated 的 sum-over-d：±1, ±2, ±4, ..., ±d/2
+//   (b) matvecDiagonal 在 BSGS 模式下：
+//         baby steps  Rot(v, +j)      j = 0..b-1   ← 正向
+//         giant steps Rot(acc, +b·i)  i = 0..a-1   ← 正向
+//       且 inverse 方向不需要（matvec 全部正向 rotate）
+//   (c) 无 BSGS 时（bsgs_b=0）：matvec 用 ±0..d-1（这里我们生成 +1..+d-1）
+//
+// 注意：OpenFHE rotation key 的 ± 是分别的索引（左/右循环）。
+// 实际生产中只需要正向 rotate，但 inner product 对称写法可以同时用 ± 简化。
+//
+// 对 d=256, b=16: 共 30~40 个独立索引（远少于之前 ±1..±num_slots/2 = 28 个，
+// 但 multiplicativeDepth ≥ 50 时单 key ~250 MB 仍是 KeyGen 内存大头）。
+std::vector<int32_t> collectRotationIndices(int d, int bsgs_b, uint32_t num_slots)
 {
-    // 实际运行时仅 Server::innerProduct 的 rotate-and-sum 使用旋转，
-    // 步长都是 2 的幂（1, 2, 4, ..., num_slots/2）。之前额外枚举了 2(d+6)
-    // 个小步旋转键，从未被调用，却让 d=4096 需要 8000+ 个 RotKey（~260 GB）。
+    if (d <= 0) return {};
+
     std::vector<int32_t> steps;
+    auto push_both = [&](int32_t s) {
+        if (s == 0) return;
+        steps.push_back(s);
+        steps.push_back(-s);
+    };
+
+    // (a) inner product over replicated vector: log_2(d) 步 power-of-2 rotate
+    for (int s = 1; s < d; s *= 2) {
+        push_both(s);
+    }
+
+    // 默认只生成 BSGS 模式的 keys（d=256 时约 30 个，可控）。
+    // 想跑 plain diag（BSGS_B=0）需要 +1..+d-1 的全部 d-1 个 keys，
+    // 对 d=256 ≈ 60 GB key 内存，会让 KeyGen 直接 OOM ──
+    // 故 plain diag fallback 仅在 d ≤ 32 时启用（用于小维度调试）。
+    if (bsgs_b > 0 && d % bsgs_b == 0) {
+        const int b = bsgs_b;
+        const int a = d / b;
+        for (int j = 1; j < b; ++j) push_both(j);
+        for (int i = 1; i < a; ++i) push_both(i * b);
+    }
+    if (d <= 32) {
+        // 小 d 时附带生成 plain diag 全部 keys，便于 BSGS_B=0 切换调试
+        for (int k = 1; k < d; ++k) push_both(k);
+    }
+
+    // 兼容：保留全 slot 旋转 power-of-2 keys（log num_slots ≈ 14 个），
+    // 部分会跟上面去重。这些 key 主要用于 inner product 全 slot 回退路径。
     for (uint32_t s = 1; s < num_slots; s *= 2) {
         steps.push_back(static_cast<int32_t>(s));
         steps.push_back(-static_cast<int32_t>(s));
     }
+
     std::sort(steps.begin(), steps.end());
     steps.erase(std::unique(steps.begin(), steps.end()), steps.end());
     return steps;
 }
 
+int pickBsgsFactor(int d) {
+    if (d <= 1) return 0;
+    int best = 0;
+    double best_dist = std::numeric_limits<double>::infinity();
+    const double target = std::sqrt(static_cast<double>(d));
+    for (int b = 1; b <= d; ++b) {
+        if (d % b != 0) continue;
+        double dist = std::abs(static_cast<double>(b) - target);
+        if (dist < best_dist) {
+            best_dist = dist;
+            best = b;
+        }
+    }
+    // b == 1 退化为 plain diagonal (a=d, baby step 数 0)，不如直接 plain
+    // b == d 同理（giant step 数 0）。两端都不算"有意义的 BSGS"，返回 0。
+    if (best <= 1 || best >= d) return 0;
+    return best;
+}
+
 } // namespace
+
+int Client::autoBsgsB() const { return pickBsgsFactor(d_); }
 
 Client::Client(int d, int p, int m, bool enable_bootstrap,
                uint32_t levels_after_bootstrap, bool enable_he)
@@ -81,7 +146,7 @@ void Client::setupCryptoContext(bool enable_bootstrap, uint32_t levels_after_boo
     keys_ = cc_->KeyGen();
     cc_->EvalMultKeyGen(keys_.secretKey);
 
-    std::vector<int32_t> rot_steps = collectRotationIndices(d_, num_slots_);
+    std::vector<int32_t> rot_steps = collectRotationIndices(d_, pickBsgsFactor(d_), num_slots_);
     cc_->EvalRotateKeyGen(keys_.secretKey, rot_steps);
 
     if (enable_bootstrap) {
@@ -151,6 +216,66 @@ void Client::generateLowRankDataset(int N, int true_rank, double noise_sigma)
     C_ = (X_centered_.transpose() * X_centered_) / static_cast<double>(N - 1);
 }
 
+void Client::generateFromBinaryFile(const std::string& path,
+                                    bool normalize_to_unit,
+                                    int max_samples)
+{
+    std::ifstream f(path, std::ios::binary);
+    if (!f) {
+        throw std::runtime_error("generateFromBinaryFile: 无法打开 " + path);
+    }
+
+    uint32_t N_in = 0;
+    uint32_t d_in = 0;
+    f.read(reinterpret_cast<char*>(&N_in), sizeof(uint32_t));
+    f.read(reinterpret_cast<char*>(&d_in), sizeof(uint32_t));
+    if (!f) {
+        throw std::runtime_error("generateFromBinaryFile: 读 header 失败 " + path);
+    }
+    if (static_cast<int>(d_in) != d_) {
+        throw std::invalid_argument(
+            "generateFromBinaryFile: 文件 d=" + std::to_string(d_in)
+            + " 与 Client d=" + std::to_string(d_) + " 不一致");
+    }
+
+    int N = static_cast<int>(N_in);
+    if (max_samples > 0 && max_samples < N) {
+        N = max_samples;
+    }
+    if (N < 2) {
+        throw std::invalid_argument(
+            "generateFromBinaryFile: N=" + std::to_string(N) + " 至少要 2");
+    }
+
+    Eigen::MatrixXd X(N, d_);
+    std::vector<double> row(d_);
+    for (int i = 0; i < N; ++i) {
+        f.read(reinterpret_cast<char*>(row.data()),
+               static_cast<std::streamsize>(sizeof(double) * d_));
+        if (!f) {
+            throw std::runtime_error(
+                "generateFromBinaryFile: 读第 " + std::to_string(i) + " 行失败");
+        }
+        for (int j = 0; j < d_; ++j) {
+            X(i, j) = row[j];
+        }
+    }
+
+    if (normalize_to_unit) {
+        // 像素值 0..255 → [0, 1]（跟 Panda 2021 / Ma 2023 一致）
+        X /= 255.0;
+    }
+
+    Eigen::RowVectorXd mean = X.colwise().mean();
+    X_centered_ = X.rowwise() - mean;
+    C_ = (X_centered_.transpose() * X_centered_) / static_cast<double>(N - 1);
+
+    std::cout << "  [dataset] 加载二进制 " << path
+              << "  N=" << N << "  d=" << d_
+              << (normalize_to_unit ? "  (像素归一化到 [0,1])" : "")
+              << std::endl;
+}
+
 std::vector<Ciphertext<DCRTPoly>> Client::encryptCovMatrix() const
 {
     std::vector<Ciphertext<DCRTPoly>> enc_C(d_);
@@ -164,6 +289,103 @@ std::vector<Ciphertext<DCRTPoly>> Client::encryptCovMatrix() const
         enc_C[i] = cc_->Encrypt(keys_.publicKey, pt);
     }
     return enc_C;
+}
+
+std::vector<Ciphertext<DCRTPoly>> Client::encryptCovMatrixDiagonal(int bsgs_b) const
+{
+    if (d_ <= 0) {
+        throw std::invalid_argument("encryptCovMatrixDiagonal: d 必须 > 0");
+    }
+    if (static_cast<int>(num_slots_) % d_ != 0) {
+        throw std::invalid_argument(
+            "encryptCovMatrixDiagonal: num_slots (" + std::to_string(num_slots_)
+            + ") 必须能被 d (" + std::to_string(d_) + ") 整除");
+    }
+    if (bsgs_b < 0) {
+        throw std::invalid_argument("encryptCovMatrixDiagonal: bsgs_b 不能为负");
+    }
+    if (bsgs_b > 0 && d_ % bsgs_b != 0) {
+        throw std::invalid_argument(
+            "encryptCovMatrixDiagonal: d=" + std::to_string(d_)
+            + " 必须能被 bsgs_b=" + std::to_string(bsgs_b) + " 整除");
+    }
+
+    const int reps = static_cast<int>(num_slots_) / d_;
+    std::vector<Ciphertext<DCRTPoly>> enc_diag(d_);
+
+    for (int k = 0; k < d_; ++k) {
+        // diag_k[i] = C[i, (i+k) mod d_]
+        std::vector<double> diag(d_, 0.0);
+        for (int i = 0; i < d_; ++i) {
+            diag[i] = C_(i, (i + k) % d_);
+        }
+
+        // BSGS 预旋转：
+        //   BSGS 等式 diag ⊙ Rot(v, b·i) = Rot(Rot(diag, -b·i) ⊙ v, b·i)
+        //   故 Client 需要预先把 diag_k 做 cyclic-right rotation by (b·i_g) mod d，
+        //   等价于 cyclic-left rotation by (d - b·i_g mod d) mod d。
+        //   注意方向 ── 之前的实现写反了 (+b·i_g 左旋)，对 b·i_g 不是 d/2
+        //   的 i 会算错（如 d=16, b=4 时 i=1, i=3 错位 4 个 slot），
+        //   导致 HE 跑出来跟明文 mirror 完全不一致而 cos≈0。
+        if (bsgs_b > 0) {
+            int i_g = k / bsgs_b;
+            int right_shift = (bsgs_b * i_g) % d_;          // 想要的右旋
+            int left_shift  = (d_ - right_shift) % d_;       // 等价的左旋
+            if (left_shift != 0) {
+                std::vector<double> rotated(d_, 0.0);
+                for (int i = 0; i < d_; ++i) {
+                    rotated[i] = diag[(i + left_shift) % d_];
+                }
+                diag.swap(rotated);
+            }
+        }
+
+        // 在 num_slots 长 plaintext 内 cyclic-replicate diag d/num_slots 次
+        std::vector<double> packed(num_slots_, 0.0);
+        for (int r = 0; r < reps; ++r) {
+            for (int i = 0; i < d_; ++i) {
+                packed[r * d_ + i] = diag[i];
+            }
+        }
+
+        Plaintext pt = cc_->MakeCKKSPackedPlaintext(packed);
+        enc_diag[k] = cc_->Encrypt(keys_.publicKey, pt);
+    }
+    return enc_diag;
+}
+
+Ciphertext<DCRTPoly> Client::encryptColumnVectorReplicated(const Eigen::VectorXd& v) const
+{
+    if (v.size() != d_) {
+        throw std::invalid_argument("encryptColumnVectorReplicated: 维度与 d_ 不一致");
+    }
+    if (static_cast<int>(num_slots_) % d_ != 0) {
+        throw std::invalid_argument(
+            "encryptColumnVectorReplicated: num_slots 必须能被 d 整除");
+    }
+    const int reps = static_cast<int>(num_slots_) / d_;
+    std::vector<double> packed(num_slots_, 0.0);
+    for (int r = 0; r < reps; ++r) {
+        for (int i = 0; i < d_; ++i) {
+            packed[r * d_ + i] = v(i);
+        }
+    }
+    Plaintext pt = cc_->MakeCKKSPackedPlaintext(packed);
+    return cc_->Encrypt(keys_.publicKey, pt);
+}
+
+Eigen::VectorXd Client::decryptReplicatedVector(
+    const Ciphertext<DCRTPoly>& ct) const
+{
+    Plaintext pt;
+    cc_->Decrypt(keys_.secretKey, ct, &pt);
+    pt->SetLength(d_);
+    const auto& vals = pt->GetRealPackedValue();
+    Eigen::VectorXd v(d_);
+    for (int i = 0; i < d_; ++i) {
+        v(i) = vals[static_cast<size_t>(i)];
+    }
+    return v;
 }
 
 std::vector<Ciphertext<DCRTPoly>> Client::encryptBlockVec(const Eigen::MatrixXd& V) const

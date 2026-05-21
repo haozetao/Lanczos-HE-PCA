@@ -45,105 +45,136 @@ bool Server::bootstrapIfNeeded(
     return true;
 }
 
-Ciphertext<DCRTPoly> Server::innerProduct(
+Ciphertext<DCRTPoly> Server::innerProductReplicated(
     const Ciphertext<DCRTPoly>& a,
     const Ciphertext<DCRTPoly>& b,
-    int /*dim*/) const
+    int d) const
 {
-    // 逐元素乘积
+    if (d <= 0) {
+        throw std::invalid_argument("innerProductReplicated: d 必须 > 0");
+    }
+    if (d & (d - 1)) {
+        throw std::invalid_argument(
+            "innerProductReplicated: d=" + std::to_string(d)
+            + " 暂仅支持 2 的幂");
+    }
+    // a, b 是 replicated 向量：slot[i] = vec[i mod d]
+    // 逐元素乘后用 d-step rotate-and-sum：在 log2(d) 次旋转后，前 d 个 slot
+    // 内每个 slot 都等于 Σ_{i=0..d-1} a_i * b_i。由于 a, b 在 [d, 2d) 段
+    // 也是相同向量的副本，cyclic-rotate by num_slots 对前 d slot 的求和
+    // 等价于 cyclic-rotate by d (因 d | num_slots)，故 log2(d) 步刚好覆盖。
     auto product = cc_->EvalMult(a, b);
-
-    // 全 slot rotate-and-sum：旋转步长覆盖到 num_slots_/2
-    // 必须覆盖全 slot 因为 packScalarsToVector 依赖每个 slot i 都含完整内积，
-    // 不能只保证 slot 0 正确（下游 mask[i]=1 会从 slot i 取值）
-    for (uint32_t step = 1; step < num_slots_; step *= 2) {
-        auto rotated = cc_->EvalRotate(product, static_cast<int32_t>(step));
+    for (int step = 1; step < d; step *= 2) {
+        auto rotated = cc_->EvalRotate(product, step);
         product = cc_->EvalAdd(product, rotated);
     }
     return product;
+}
+
+Ciphertext<DCRTPoly> Server::matvecDiagonal(
+    const std::vector<Ciphertext<DCRTPoly>>& enc_C_diag,
+    const Ciphertext<DCRTPoly>& v_ct,
+    int d,
+    int bsgs_b) const
+{
+    if (d <= 0) {
+        throw std::invalid_argument("matvecDiagonal: d 必须 > 0");
+    }
+    if (static_cast<int>(enc_C_diag.size()) != d) {
+        throw std::invalid_argument(
+            "matvecDiagonal: enc_C_diag 大小 " + std::to_string(enc_C_diag.size())
+            + " 与 d=" + std::to_string(d) + " 不一致");
+    }
+    if (bsgs_b < 0 || (bsgs_b > 0 && d % bsgs_b != 0)) {
+        throw std::invalid_argument(
+            "matvecDiagonal: bsgs_b=" + std::to_string(bsgs_b)
+            + " 必须为 0 或 d 的因子");
+    }
+
+    // ── Plain Diagonal: result = Σ_{k=0..d-1} diag_k ⊙ Rot(v, k) ──
+    if (bsgs_b == 0) {
+        Ciphertext<DCRTPoly> result;
+        for (int k = 0; k < d; ++k) {
+            Ciphertext<DCRTPoly> vrot = (k == 0) ? v_ct : cc_->EvalRotate(v_ct, k);
+            auto term = cc_->EvalMult(enc_C_diag[static_cast<size_t>(k)], vrot);
+            if (k == 0) {
+                result = term;
+            } else {
+                result = cc_->EvalAdd(result, term);
+            }
+        }
+        return result;
+    }
+
+    // ── BSGS: k = b·i + j, i ∈ [0, a), j ∈ [0, b), ab = d ─────────────────
+    //   Cv = Σ_i Rot( Σ_j diag'_{bi+j} ⊙ Rot(v, j), b·i )
+    //   diag'_{bi+j} = Rot(diag_{bi+j}, -b·i)  ← Client 已预算
+    const int b = bsgs_b;
+    const int a = d / b;
+
+    // Baby steps: 预算 b 个 Rot(v, j)
+    std::vector<Ciphertext<DCRTPoly>> v_baby(static_cast<size_t>(b));
+    v_baby[0] = v_ct;
+    for (int j = 1; j < b; ++j) {
+        v_baby[static_cast<size_t>(j)] = cc_->EvalRotate(v_ct, j);
+    }
+
+    Ciphertext<DCRTPoly> result;
+    for (int i = 0; i < a; ++i) {
+        // 内 sum: accumulator = Σ_j diag'_{bi+j} ⊙ v_baby[j]
+        Ciphertext<DCRTPoly> accumulator;
+        for (int j = 0; j < b; ++j) {
+            int k = i * b + j;
+            auto term = cc_->EvalMult(
+                enc_C_diag[static_cast<size_t>(k)],
+                v_baby[static_cast<size_t>(j)]);
+            if (j == 0) {
+                accumulator = term;
+            } else {
+                accumulator = cc_->EvalAdd(accumulator, term);
+            }
+        }
+        // Giant step: 把 accumulator cyclic-rotate by b·i 回到正确位置
+        Ciphertext<DCRTPoly> shifted = (i == 0) ? accumulator
+                                                : cc_->EvalRotate(accumulator, i * b);
+        if (i == 0) {
+            result = shifted;
+        } else {
+            result = cc_->EvalAdd(result, shifted);
+        }
+    }
+    return result;
 }
 
 Ciphertext<DCRTPoly> Server::scalarVecMultiply(
     const Ciphertext<DCRTPoly>& scalar_ct,
     const Ciphertext<DCRTPoly>& vec_ct) const
 {
-    // scalar_ct 来自 innerProduct，已全 slot 填充 → 直接逐元素乘
+    // scalar_ct 来自 innerProductReplicated，已全 slot 填充 → 直接逐元素乘
     return cc_->EvalMult(scalar_ct, vec_ct);
 }
 
-void Server::ensureSlotMasks(int d) const
-{
-    if (d < 0) {
-        throw std::invalid_argument("ensureSlotMasks: d must be non-negative");
-    }
-    if (slot_masks_.size() >= static_cast<size_t>(d)) {
-        return;
-    }
-
-    const size_t old_size = slot_masks_.size();
-    slot_masks_.reserve(static_cast<size_t>(d));
-    for (size_t i = old_size; i < static_cast<size_t>(d); ++i) {
-        std::vector<double> mask(num_slots_, 0.0);
-        mask[i] = 1.0;
-        slot_masks_.push_back(cc_->MakeCKKSPackedPlaintext(mask));
-    }
-}
-
-Ciphertext<DCRTPoly> Server::packScalarsToVector(
-    const std::vector<Ciphertext<DCRTPoly>>& scalar_cts, int d) const
-{
-    // 每个 scalar_cts[i] 所有 slot 都含标量值
-    // 用掩码 [0,...,1,...,0]（位置 i 为 1）提取到正确 slot，再累加
-    ensureSlotMasks(d);
-    Ciphertext<DCRTPoly> result;
-
-    for (int i = 0; i < d; ++i) {
-        auto masked = cc_->EvalMult(scalar_cts[i], slot_masks_[static_cast<size_t>(i)]);
-
-        if (i == 0) {
-            result = masked;
-        } else {
-            result = cc_->EvalAdd(result, masked);
-        }
-    }
-    return result;
-}
-
-std::vector<Ciphertext<DCRTPoly>> Server::matmul(
-    const std::vector<Ciphertext<DCRTPoly>>& enc_C,
-    const std::vector<Ciphertext<DCRTPoly>>& enc_V,
-    int d) const
-{
-    int p = static_cast<int>(enc_V.size());
-    std::vector<Ciphertext<DCRTPoly>> result(d * p);
-
-    for (int i = 0; i < d; ++i) {
-        for (int j = 0; j < p; ++j) {
-            result[i * p + j] = innerProduct(enc_C[i], enc_V[j], d);
-        }
-    }
-    return result;
-}
-
 Server::LanczosResult Server::lanczosIteration(
-    const std::vector<Ciphertext<DCRTPoly>>& enc_C,
-    const std::vector<Ciphertext<DCRTPoly>>& enc_V1,
+    const std::vector<Ciphertext<DCRTPoly>>& enc_C_diag,
+    const Ciphertext<DCRTPoly>& v1_ct,
     int d,
-    int p,
     int m_iter,
     double eigenvalue_guess,
     const std::vector<double>& per_iter_eigenvalue_guesses,
     int newton_iters,
+    int bsgs_b,
     const std::vector<double>& asor_k_factors,
     LanczosStats* stats_out,
     bool enable_fro,
     int fro_skip_first)
 {
-    if (p != 1) {
-        throw std::invalid_argument("lanczosIteration: 仅支持 p=1");
-    }
     if (m_iter < 1) {
         throw std::invalid_argument("lanczosIteration: m_iter 至少为 1");
+    }
+    if (static_cast<int>(enc_C_diag.size()) != d) {
+        throw std::invalid_argument(
+            "lanczosIteration: enc_C_diag 大小 " + std::to_string(enc_C_diag.size())
+            + " 与 d=" + std::to_string(d) + " 不一致");
     }
 
     const bool use_asor = !asor_k_factors.empty();
@@ -169,7 +200,7 @@ Server::LanczosResult Server::lanczosIteration(
     out.betas.reserve(static_cast<size_t>(std::max(0, m_iter - 1)));
     out.V_all.reserve(m_iter);
 
-    Ciphertext<DCRTPoly> V = enc_V1[0];
+    Ciphertext<DCRTPoly> V = v1_ct;
     Ciphertext<DCRTPoly> V_prev;
     Ciphertext<DCRTPoly> beta_prev_ct;
     const double fallback_guess =
@@ -188,12 +219,8 @@ Server::LanczosResult Server::lanczosIteration(
 
         out.V_all.push_back(V);
 
-        // Step 1: W = C · V  （逐行 innerProduct 后 pack）
-        std::vector<Ciphertext<DCRTPoly>> scalars(d);
-        for (int i = 0; i < d; ++i) {
-            scalars[i] = innerProduct(enc_C[i], V, d);
-        }
-        Ciphertext<DCRTPoly> Wvec = packScalarsToVector(scalars, d);
+        // Step 1: W = C · V  （Diagonal/BSGS matvec，直接输出 replicated 向量）
+        Ciphertext<DCRTPoly> Wvec = matvecDiagonal(enc_C_diag, V, d, bsgs_b);
 
         // Step 1b: W = W − β_{j-1} · v_{j-1}
         if (iter > 0) {
@@ -201,8 +228,8 @@ Server::LanczosResult Server::lanczosIteration(
             Wvec = cc_->EvalSub(Wvec, bv);
         }
 
-        // Step 2: α = V^T · W
-        auto alpha = innerProduct(V, Wvec, d);
+        // Step 2: α = V^T · W   (replicated 内积，log d 步 rotate)
+        auto alpha = innerProductReplicated(V, Wvec, d);
         out.alphas.push_back(alpha);
 
         const bool is_last = (iter == m_iter - 1);
@@ -221,14 +248,14 @@ Server::LanczosResult Server::lanczosIteration(
             if (enable_fro && iter >= fro_skip) {
                 for (int k = 0; k < iter; ++k) {
                     const auto& Vk = out.V_all[k];
-                    auto proj_k = innerProduct(Vk, Wnew, d);
+                    auto proj_k = innerProductReplicated(Vk, Wnew, d);
                     auto sub_k = scalarVecMultiply(proj_k, Vk);
                     Wnew = cc_->EvalSub(Wnew, sub_k);
                 }
             }
 
             // Step 4: β = ||W_new|| via Newton 1/√x
-            auto norm_sq = innerProduct(Wnew, Wnew, d);
+            auto norm_sq = innerProductReplicated(Wnew, Wnew, d);
             const double iter_guess =
                 (static_cast<size_t>(iter) < per_iter_eigenvalue_guesses.size())
                     ? per_iter_eigenvalue_guesses[static_cast<size_t>(iter)]

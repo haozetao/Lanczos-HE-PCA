@@ -12,6 +12,7 @@
 #include <chrono>
 #include <algorithm>
 #include <cmath>
+#include <cstdio>
 #include <cstdlib>
 #include <cstring>
 #include <iomanip>
@@ -31,7 +32,12 @@ using Clock = std::chrono::high_resolution_clock;
 
 static Eigen::VectorXd randomUnitVector(int d)
 {
-    std::mt19937 rng(7);
+    // 默认 seed=7 在某些 d / 数据集组合下会让 v₀ 与 λ_1 真方向几乎正交，
+    // 导致 Krylov 子空间漏掉主特征方向（如 d=64 + 低秩合成数据集）。
+    // 用环境变量 V0_SEED 可覆盖，便于在踩雷时换种子。
+    const char* seed_env = std::getenv("V0_SEED");
+    unsigned seed = seed_env ? static_cast<unsigned>(std::atoi(seed_env)) : 7u;
+    std::mt19937 rng(seed);
     std::normal_distribution<double> dist(0.0, 1.0);
     Eigen::VectorXd v(d);
     for (int i = 0; i < d; ++i) {
@@ -99,7 +105,12 @@ struct RunConfig {
     bool enable_bootstrap;
     uint32_t levels_after_bootstrap;
     const char* label;
-    // 若 dataset_N > 0，使用低秩数据生成（R²(X) 可计算），否则沿用旧的随机协方差
+    // 数据源优先级（互斥）：
+    //   dataset_file 非空 → 加载二进制真实数据（Yale / MNIST / Fashion-MNIST）
+    //   否则 dataset_N > 0 → 低秩合成（generateLowRankDataset）
+    //   否则                 → generateCovarianceMatrix（旧随机协方差）
+    std::string dataset_file;
+    int dataset_max_samples = 0;        // 仅在 dataset_file 模式下生效，0=不限
     int dataset_N = 0;
     int true_rank = 0;
     double noise_sigma = 0.0;
@@ -124,7 +135,18 @@ static int runOnce(const RunConfig& cfg)
     std::cout << "\n[Phase 1] Client setup" << std::endl;
     auto tc0 = Clock::now();
     Client client(cfg.d, cfg.p, cfg.m_iter, cfg.enable_bootstrap, cfg.levels_after_bootstrap);
-    if (cfg.dataset_N > 0) {
+    if (!cfg.dataset_file.empty()) {
+        const char* norm_env = std::getenv("DATASET_NORMALIZE");
+        bool normalize = (norm_env == nullptr) ? true : (std::atoi(norm_env) != 0);
+        std::cout << "  数据: 二进制真实数据集 " << cfg.dataset_file
+                  << (normalize ? "  (像素 /255 → [0,1])"
+                                : "  (像素保留 0..255 原值)");
+        if (cfg.dataset_max_samples > 0)
+            std::cout << "  (max N=" << cfg.dataset_max_samples << ")";
+        std::cout << std::endl;
+        client.generateFromBinaryFile(cfg.dataset_file, normalize,
+                                      cfg.dataset_max_samples);
+    } else if (cfg.dataset_N > 0) {
         std::cout << "  数据: 低秩合成集 N=" << cfg.dataset_N
                   << " rank=" << cfg.true_rank
                   << " noise=" << cfg.noise_sigma << std::endl;
@@ -190,8 +212,30 @@ static int runOnce(const RunConfig& cfg)
     // ── Phase 2: Server 密态 Lanczos ──
     std::cout << "\n[Phase 2] Server HE-Lanczos" << std::endl;
 
-    auto enc_C = client.encryptCovMatrix();
-    auto enc_v = client.encryptColumnVector(v0);
+    // BSGS_B 环境变量：0=plain diag (no BSGS), >0=指定 b, 未设=自动选 sqrt(d) 因子
+    const char* bsgs_env = std::getenv("BSGS_B");
+    int bsgs_b;
+    if (bsgs_env) {
+        bsgs_b = std::atoi(bsgs_env);
+        if (bsgs_b > 0 && cfg.d % bsgs_b != 0) {
+            std::cerr << "BSGS_B=" << bsgs_b << " 不是 d=" << cfg.d
+                      << " 的因子，fallback 到 plain diag" << std::endl;
+            bsgs_b = 0;
+        }
+    } else {
+        bsgs_b = client.autoBsgsB();
+    }
+    if (bsgs_b > 0) {
+        std::cout << "  矩阵打包: Diagonal + BSGS (b=" << bsgs_b
+                  << ", a=" << (cfg.d / bsgs_b) << ", "
+                  << "EvalRotate ≈ " << (bsgs_b + cfg.d / bsgs_b)
+                  << " 次/matvec)" << std::endl;
+    } else {
+        std::cout << "  矩阵打包: Plain Diagonal (BSGS off, "
+                  << "EvalRotate ≈ " << cfg.d << " 次/matvec)" << std::endl;
+    }
+    auto enc_C_diag = client.encryptCovMatrixDiagonal(bsgs_b);
+    auto enc_v = client.encryptColumnVectorReplicated(v0);
 
     Server server(
         client.cryptoContext(), client.publicKey(),
@@ -221,8 +265,8 @@ static int runOnce(const RunConfig& cfg)
     Server::LanczosStats stats;
     auto t0 = Clock::now();
     Server::LanczosResult lr = server.lanczosIteration(
-        enc_C, enc_v, cfg.d, cfg.p, cfg.m_iter, ev_guess, per_iter_guesses,
-        cfg.newton_iters, asor_k, &stats,
+        enc_C_diag, enc_v, cfg.d, cfg.m_iter, ev_guess, per_iter_guesses,
+        cfg.newton_iters, bsgs_b, asor_k, &stats,
         cfg.enable_fro, cfg.fro_skip_first);
     auto t1 = Clock::now();
     double server_ms = std::chrono::duration<double, std::milli>(t1 - t0).count();
@@ -434,6 +478,8 @@ static int runOnce(const RunConfig& cfg)
 // randomUnitVector (seed=7) 均使用固定 seed，本模式与 bootstrap 模式在同一 d
 // 下使用严格相同的 (C, v₀)，可直接与历史 HE 日志做配对对照。
 static int runMirrorOnly(int d, int m_iter, int K,
+                         const std::string& dataset_file,
+                         int dataset_max_samples,
                          int dataset_N, int true_rank, double noise,
                          bool enable_fro, int fro_skip_first)
 {
@@ -446,7 +492,18 @@ static int runMirrorOnly(int d, int m_iter, int K,
 
     Client client(d, 1, m_iter, /*enable_bootstrap*/ false,
                   /*levels_after_bootstrap*/ 12, /*enable_he*/ false);
-    if (dataset_N > 0) {
+    if (!dataset_file.empty()) {
+        const char* norm_env = std::getenv("DATASET_NORMALIZE");
+        bool normalize = (norm_env == nullptr) ? true : (std::atoi(norm_env) != 0);
+        std::cout << "  数据：二进制真实数据集 " << dataset_file
+                  << (normalize ? "  (像素 /255 → [0,1])"
+                                : "  (像素保留 0..255 原值)");
+        if (dataset_max_samples > 0)
+            std::cout << "  (max N=" << dataset_max_samples << ")";
+        std::cout << std::endl;
+        client.generateFromBinaryFile(dataset_file, normalize,
+                                      dataset_max_samples);
+    } else if (dataset_N > 0) {
         std::cout << "  数据：低秩合成集 N=" << dataset_N
                   << " rank=" << true_rank << " noise=" << noise << std::endl;
         client.generateLowRankDataset(dataset_N, true_rank, noise);
@@ -535,11 +592,17 @@ static int runMirrorOnly(int d, int m_iter, int K,
 
 int main(int argc, char** argv)
 {
+    // 让 stdout 行缓冲：HE 运行时若发生大规模 swap 会让全缓冲的 stdout 看上去"卡住"，
+    // 而行缓冲能保证每行 std::cout << ... << std::endl 立刻 flush 到磁盘日志。
+    std::setvbuf(stdout, nullptr, _IOLBF, 0);
+
     std::string mode = (argc >= 2) ? argv[1] : "baseline";
 
     if (mode == "baseline") {
+        // 注：Diagonal Packing 要求 d 是 numSlots 的因子（实践中取 2 的幂即可）。
+        // d=16 是最小 2^k baseline，能完整跑通 Lanczos + Newton + Diagonal matvec。
         RunConfig cfg{
-            /*d*/ 10,
+            /*d*/ 16,
             /*p*/ 1,
             /*m_iter*/ 2,
             /*K*/ 3,
@@ -557,6 +620,9 @@ int main(int argc, char** argv)
         if (m_iter < 1) m_iter = 8;
         if (d < 2) d = 10;
         // 环境变量启用低秩数据集（可计算 R²(X)）
+        const char* dataset_file_env = std::getenv("DATASET_FILE");
+        std::string dataset_file = dataset_file_env ? dataset_file_env : "";
+        int dataset_max_samples = envInt("DATASET_MAX_SAMPLES", 0);
         int dataset_N = envInt("DATASET_N", 0);
         int true_rank = envInt("TRUE_RANK", std::min(d, 5));
         double noise  = envDouble("NOISE_SIGMA", 0.1);
@@ -598,6 +664,8 @@ int main(int argc, char** argv)
             /*enable_bootstrap*/ true,
             /*levels_after_bootstrap*/ levels_after_bootstrap,
             /*label*/ "bootstrap",
+            /*dataset_file*/ dataset_file,
+            /*dataset_max_samples*/ dataset_max_samples,
             /*dataset_N*/ dataset_N,
             /*true_rank*/ true_rank,
             /*noise_sigma*/ noise,
@@ -614,6 +682,9 @@ int main(int argc, char** argv)
         int d      = (argc >= 4) ? std::atoi(argv[3]) : 10;
         if (m_iter < 1) m_iter = 8;
         if (d < 2) d = 10;
+        const char* dataset_file_env = std::getenv("DATASET_FILE");
+        std::string dataset_file = dataset_file_env ? dataset_file_env : "";
+        int dataset_max_samples = envInt("DATASET_MAX_SAMPLES", 0);
         int dataset_N = envInt("DATASET_N", 0);
         int true_rank = envInt("TRUE_RANK", std::min(d, 5));
         double noise  = envDouble("NOISE_SIGMA", 0.1);
@@ -621,7 +692,8 @@ int main(int argc, char** argv)
         bool enable_fro = envInt("ENABLE_FRO", 1) != 0;
         int fro_skip_first = envInt("FRO_SKIP_FIRST", 2);
         if (fro_skip_first < 0) fro_skip_first = 0;
-        return runMirrorOnly(d, m_iter, K, dataset_N, true_rank, noise,
+        return runMirrorOnly(d, m_iter, K, dataset_file, dataset_max_samples,
+                             dataset_N, true_rank, noise,
                              enable_fro, fro_skip_first);
     }
 

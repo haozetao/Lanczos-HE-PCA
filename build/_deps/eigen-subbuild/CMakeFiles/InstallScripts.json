@@ -1,7 +1,0 @@
-{
-	"InstallScripts" : 
-	[
-		"/Users/bytedance/PCA/build/_deps/eigen-subbuild/cmake_install.cmake"
-	],
-	"Parallel" : false
-}

@@ -42,7 +42,21 @@ public:
     //   C_         = X_centered_^T · X_centered_ / (N-1)
     void generateLowRankDataset(int N, int true_rank, double noise_sigma);
 
-    // 已中心化的数据矩阵（仅在 generateLowRankDataset 后有效）
+    // 从二进制文件加载真实数据集（如 Yale / MNIST / Fashion-MNIST 16×16 灰度图），
+    // 由 scripts/prepare_yale.py 等工具预处理生成。文件格式（little-endian）：
+    //   uint32 N         # 样本数
+    //   uint32 d_in      # 必须等于 d_
+    //   float64 × N × d  # row-major X[N, d]，未中心化的原始像素值
+    // 调用后内部保存：
+    //   X_centered_     ← X − mean
+    //   C_              ← X_centered_^T · X_centered_ / (N-1)
+    // 若 normalize_to_unit=true，会先把 X 缩放到 [0, 1]（像素值 / 255），便于与
+    // sklearn / Panda 2021 / Ma 2023 的 baseline 数值范围对齐。
+    void generateFromBinaryFile(const std::string& path,
+                                bool normalize_to_unit = true,
+                                int max_samples = 0);
+
+    // 已中心化的数据矩阵（仅在 generateLowRankDataset / generateFromBinaryFile 后有效）
     const Eigen::MatrixXd& centeredData() const { return X_centered_; }
     bool hasData() const { return X_centered_.rows() > 0; }
 
@@ -53,6 +67,37 @@ public:
 
     std::vector<lbcrypto::Ciphertext<lbcrypto::DCRTPoly>> encryptColumnVector(
         const Eigen::VectorXd& v) const;
+
+    // ── Hybrid (BSGS) Diagonal Packing ────────────────────────────────────────
+    // Halevi-Shoup '18 / Ma 2023: 把 d×d 协方差矩阵按"循环对角线"打包，让
+    //   (C·v)[i] = Σ_k diag_k[i] · v[(i+k) mod d]
+    //       diag_k[i] = C[i, (i+k) mod d]
+    // 主要好处：
+    //   - matvec 内的 EvalRotate 数 d log d → d → 2√d（BSGS）
+    //   - 不再需要 packScalarsToVector（直接输出 replicated 向量）
+    //
+    // 返回 d 个 ct。当 bsgs_b > 0 时：
+    //   - d 必须能被 bsgs_b 整除，记 a = d / bsgs_b
+    //   - 对 k = b*i + j（i ∈ [0,a), j ∈ [0,b)）的对角线，
+    //     已在客户端预先 cyclic-rotate by -b*i，避免 server 端在每个 giant
+    //     step 里多做一次密文旋转（用 plaintext 旋转省成本）
+    // 当 bsgs_b == 0 时：按原始 diag_k 编码（无 BSGS）
+    //
+    // 所有对角线在 slot 内复制 (num_slots / d) 次，保证 Rot(v, k) 与 diag_k
+    // 在长 ct 上做 element-wise mult 时仍然对齐。
+    std::vector<lbcrypto::Ciphertext<lbcrypto::DCRTPoly>> encryptCovMatrixDiagonal(
+        int bsgs_b = 0) const;
+
+    // 把 v ∈ R^d 加密成单个 ct，其 slots 内复制 (num_slots / d) 次：
+    //   slot[i] = v[i mod d]   for i in [0, num_slots)
+    // 这是 Diagonal Packing 模式下所有 Lanczos 向量 (V, W, V_history) 的标准 layout。
+    // 要求 num_slots % d == 0（实践中 d 取 2 的幂即可）。
+    lbcrypto::Ciphertext<lbcrypto::DCRTPoly> encryptColumnVectorReplicated(
+        const Eigen::VectorXd& v) const;
+
+    // 把 replicated 向量 ct 解密为 R^d。仅取前 d 个 slot（其余是复制副本）。
+    Eigen::VectorXd decryptReplicatedVector(
+        const lbcrypto::Ciphertext<lbcrypto::DCRTPoly>& ct) const;
 
     Eigen::MatrixXd decryptToMatrix(
         const std::vector<lbcrypto::Ciphertext<lbcrypto::DCRTPoly>>& enc_W,
@@ -148,6 +193,14 @@ public:
 
     double eigenvalueMagnitudeGuess() const;
     double lanczosResidualNormSqGuess() const;
+
+    // 推荐 BSGS 因子 b：选择 d 的因子使 |b - sqrt(d)| 最小
+    //   d = 16  → 4
+    //   d = 64  → 8
+    //   d = 256 → 16
+    //   d = 1024→ 32
+    // 当 d 是 1 或质数（无非平凡因子）时返回 0（=不启用 BSGS）
+    int autoBsgsB() const;
 
 private:
     int d_, p_, m_;
