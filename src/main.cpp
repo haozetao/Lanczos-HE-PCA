@@ -295,6 +295,42 @@ static int runOnce(const RunConfig& cfg)
     Eigen::MatrixXd V_total = client.decryptLanczosVectors(lr.V_all);
     Eigen::MatrixXd U = client.reconstructEigenvectors(V_total, cw, cfg.K);
 
+    // ── Phase 3b: V_k 逐步漂移诊断 ──
+    // 用同 (C, v₀, m, FRO, Newton, GUESS_SAFETY) 的 *明文 Newton mirror* 作为
+    // 无 CKKS/Bootstrap 噪声的参考轨迹，逐步比对 HE 解密出的 V_k：
+    //   cos_HE_vs_NM = |<V_k(HE), V_k(NewtonMirror)>|
+    //   cos_HE_vs_SQ = |<V_k(HE), V_k(sqrtMirror)>|
+    // 帮助判断"从第几步开始 V_k 开始飘"、"飘是 Newton 近似还是 CKKS 主导"。
+    {
+        auto nm = client.plaintextHeNewtonMirrorLanczos(
+            v0, cfg.m_iter, cfg.enable_fro, cfg.fro_skip_first,
+            ev_guess, per_iter_guesses, cfg.newton_iters);
+        auto sq = client.plaintextHeMirrorLanczos(
+            v0, cfg.m_iter, cfg.enable_fro, cfg.fro_skip_first);
+        const int m_diag = std::min<int>({
+            static_cast<int>(V_total.cols()),
+            nm.actual_m,
+            sq.actual_m});
+        std::cout << "\n  [V_k 漂移诊断] HE 解密 V_k vs 明文 Newton/√x mirror"
+                  << std::endl;
+        std::cout << "    iter   cos(HE,NewtonMirror)   cos(HE,sqrtMirror)   ||V_k(HE)||"
+                  << std::endl;
+        for (int k = 0; k < m_diag; ++k) {
+            const Eigen::VectorXd he_vk = V_total.col(k);
+            const Eigen::VectorXd nm_vk = nm.V_total.col(k);
+            const Eigen::VectorXd sq_vk = sq.V_total.col(k);
+            const double cs_nm = std::abs(pca_eval::cosineSimilarity(he_vk, nm_vk));
+            const double cs_sq = std::abs(pca_eval::cosineSimilarity(he_vk, sq_vk));
+            const double he_norm = he_vk.norm();
+            std::cout << "    " << std::setw(4) << k
+                      << std::fixed << std::setprecision(6)
+                      << "      " << cs_nm
+                      << "             " << cs_sq
+                      << "            " << std::setprecision(4) << he_norm
+                      << std::endl;
+        }
+    }
+
     // ── Phase 4: 验证 ──
     std::cout << "\n" << std::string(60, '=') << std::endl;
     std::cout << "  结果验证 (反归一化: ×" << std::setprecision(2) << trace_C << ")" << std::endl;
@@ -468,6 +504,68 @@ static int runOnce(const RunConfig& cfg)
     }
 
     std::cout << "\n  Server 耗时: " << std::fixed << std::setprecision(1) << server_ms << " ms" << std::endl;
+
+    // ── Phase 7: 重建可视化数据导出（仅当有真实数据集时） ──
+    // 把 PCA 的"原始 X (子集) / 样本均值 / V_he / V_true" 写到磁盘，
+    // 让 Python 脚本独立地把 PCA 重建图渲染出来。
+    // 重建公式（明文逻辑，与 R²(X) 的计算保持一致）：
+    //   x_hat = mean + V_K · V_K^T · (x - mean)
+    // 也就是把样本中心化后投影到前 K 个主成分张成的子空间，再加回均值。
+    // x ∈ R^d 是一张 √d × √d 的灰度图（d=256 → 16×16）。
+    if (const char* viz_path = std::getenv("VIZ_DUMP_PATH")) {
+        const int viz_N = []{
+            if (const char* s = std::getenv("VIZ_DUMP_N")) {
+                int v = std::atoi(s);
+                if (v > 0) return v;
+            }
+            return 12;
+        }();
+        if (client.hasData()) {
+            const Eigen::MatrixXd& Xc = client.centeredData();
+            const Eigen::RowVectorXd& mean = client.sampleMean();
+            const int N_have = static_cast<int>(Xc.rows());
+            const int N_dump = std::min(viz_N, N_have);
+            const int K_dump = K_use;
+            const int d_dump = cfg.d;
+            std::ofstream f(viz_path, std::ios::binary);
+            if (!f) {
+                std::cerr << "  [viz] 无法打开 " << viz_path << " 写入" << std::endl;
+            } else {
+                const uint32_t hdr[3] = {
+                    static_cast<uint32_t>(d_dump),
+                    static_cast<uint32_t>(K_dump),
+                    static_cast<uint32_t>(N_dump)};
+                f.write(reinterpret_cast<const char*>(hdr), sizeof(hdr));
+                // mean (d, float64)
+                for (int j = 0; j < d_dump; ++j) {
+                    double v = mean(j);
+                    f.write(reinterpret_cast<const char*>(&v), sizeof(double));
+                }
+                auto dumpMat = [&](const Eigen::MatrixXd& M){
+                    for (int j = 0; j < d_dump; ++j) {
+                        for (int k = 0; k < K_dump; ++k) {
+                            double v = (k < M.cols()) ? M(j, k) : 0.0;
+                            f.write(reinterpret_cast<const char*>(&v), sizeof(double));
+                        }
+                    }
+                };
+                // V_he (d × K), V_true (d × K)
+                dumpMat(V_enc_K);
+                dumpMat(V_true_K);
+                // X_samples (N_dump × d, 已加回均值 = 原始像素，float64)
+                for (int i = 0; i < N_dump; ++i) {
+                    for (int j = 0; j < d_dump; ++j) {
+                        double v = Xc(i, j) + mean(j);
+                        f.write(reinterpret_cast<const char*>(&v), sizeof(double));
+                    }
+                }
+                std::cout << "  [viz] 导出可视化数据 → " << viz_path
+                          << "  (d=" << d_dump << ", K=" << K_dump
+                          << ", N_samples=" << N_dump << ")" << std::endl;
+            }
+        }
+    }
+
     std::cout << "\n=== 完成 ===\n" << std::endl;
     return 0;
 }
@@ -481,14 +579,21 @@ static int runMirrorOnly(int d, int m_iter, int K,
                          const std::string& dataset_file,
                          int dataset_max_samples,
                          int dataset_N, int true_rank, double noise,
-                         bool enable_fro, int fro_skip_first)
+                         bool enable_fro, int fro_skip_first,
+                         bool use_newton_mirror,
+                         int newton_iters)
 {
-    std::cout << "=== 明文 mirror (d=" << d << ", m_iter=" << m_iter
+    std::cout << "=== 明文 " << (use_newton_mirror ? "Newton mirror" : "sqrt mirror")
+              << " (d=" << d << ", m_iter=" << m_iter
               << ", K=" << K
               << ", FRO=" << (enable_fro ? "ON" : "OFF");
     if (enable_fro) std::cout << "(skip_first=" << fro_skip_first << ")";
     std::cout << ") ===" << std::endl;
-    std::cout << "  说明：与 bootstrap 模式同 (C, v₀)，但全程明文，用 std::sqrt 替代 Newton" << std::endl;
+    if (use_newton_mirror) {
+        std::cout << "  说明：与 bootstrap 模式同 (C, v₀)，全程明文，但归一化使用同 HE 配置的 Newton 近似" << std::endl;
+    } else {
+        std::cout << "  说明：与 bootstrap 模式同 (C, v₀)，但全程明文，用 std::sqrt 替代 Newton" << std::endl;
+    }
 
     Client client(d, 1, m_iter, /*enable_bootstrap*/ false,
                   /*levels_after_bootstrap*/ 12, /*enable_he*/ false);
@@ -521,9 +626,33 @@ static int runMirrorOnly(int d, int m_iter, int K,
     std::cout << "  trace(C) = " << std::fixed << std::setprecision(4) << trace_C << std::endl;
 
     Eigen::VectorXd v0 = randomUnitVector(d);
+    double guess_safety = envDouble("GUESS_SAFETY", defaultGuessSafety(d));
+    const bool use_per_iter_guess = envInt("PER_ITER_GUESS", 1) != 0;
+    std::vector<double> per_iter_guesses;
+    Eigen::VectorXd w_sim = client.covMatrix() * v0;
+    double alpha0_sim = v0.dot(w_sim);
+    Eigen::VectorXd w_res = w_sim - alpha0_sim * v0;
+    double norm_sq_sim = w_res.squaredNorm();
+    double ev_guess = std::max(norm_sq_sim * guess_safety, 1e-18);
+    if (use_per_iter_guess) {
+        per_iter_guesses = client.plaintextMirrorResidualNormSqGuesses(v0, m_iter);
+        for (double& g : per_iter_guesses) {
+            g = std::max(g * guess_safety, 1e-18);
+        }
+    }
+    if (use_newton_mirror) {
+        std::cout << "  Newton mirror: newton_iters=" << newton_iters
+                  << "  guess_safety=" << std::setprecision(2) << guess_safety
+                  << "  per_iter_guess=" << (use_per_iter_guess ? "ON" : "OFF")
+                  << std::endl;
+    }
 
     auto t0 = Clock::now();
-    auto pt = client.plaintextHeMirrorLanczos(v0, m_iter, enable_fro, fro_skip_first);
+    auto pt = use_newton_mirror
+        ? client.plaintextHeNewtonMirrorLanczos(
+              v0, m_iter, enable_fro, fro_skip_first,
+              ev_guess, per_iter_guesses, newton_iters)
+        : client.plaintextHeMirrorLanczos(v0, m_iter, enable_fro, fro_skip_first);
     CWFilterResult pt_cw = client.cullumWilloughbyFilter(pt.T, K);
     Eigen::MatrixXd pt_U = client.reconstructEigenvectors(pt.V_total, pt_cw, K);
     auto t1 = Clock::now();
@@ -540,7 +669,9 @@ static int runMirrorOnly(int d, int m_iter, int K,
     std::cout << "  耗时: " << std::setprecision(2) << mirror_ms << " ms" << std::endl;
 
     std::cout << "\n" << std::string(60, '=') << std::endl;
-    std::cout << "  [对照表] 明文 mirror vs Eigen 真值（同 (C, v₀)）" << std::endl;
+    std::cout << "  [对照表] 明文 "
+              << (use_newton_mirror ? "Newton mirror" : "sqrt mirror")
+              << " vs Eigen 真值（同 (C, v₀)）" << std::endl;
     std::cout << std::string(60, '=') << std::endl;
     std::cout << "  指标            明文 mirror         Eigen 真值          相对误差" << std::endl;
     std::cout << "  ────────────────────────────────────────────────────────────────────────" << std::endl;
@@ -674,7 +805,7 @@ int main(int argc, char** argv)
         return runOnce(cfg);
     }
 
-    if (mode == "mirror") {
+    if (mode == "mirror" || mode == "newton-mirror") {
         // 纯明文 mirror：./he_pca mirror <m_iter> <d>
         // 环境变量与 bootstrap 模式共用（DATASET_N / TRUE_RANK / NOISE_SIGMA / K
         // / ENABLE_FRO / FRO_SKIP_FIRST）。秒级出结果，专门用于跟历史 HE 日志做对照。
@@ -689,15 +820,18 @@ int main(int argc, char** argv)
         int true_rank = envInt("TRUE_RANK", std::min(d, 5));
         double noise  = envDouble("NOISE_SIGMA", 0.1);
         int K         = envInt("K", 3);
+        int newton_iters = envInt("NEWTON_ITERS", 3);
+        if (newton_iters < 1) newton_iters = 3;
         bool enable_fro = envInt("ENABLE_FRO", 1) != 0;
         int fro_skip_first = envInt("FRO_SKIP_FIRST", 2);
         if (fro_skip_first < 0) fro_skip_first = 0;
         return runMirrorOnly(d, m_iter, K, dataset_file, dataset_max_samples,
                              dataset_N, true_rank, noise,
-                             enable_fro, fro_skip_first);
+                             enable_fro, fro_skip_first,
+                             mode == "newton-mirror", newton_iters);
     }
 
     std::cerr << "未知模式: " << mode << "\n用法: " << argv[0]
-              << " [baseline|bootstrap|mirror [m_iter [d]]]" << std::endl;
+              << " [baseline|bootstrap|mirror|newton-mirror [m_iter [d]]]" << std::endl;
     return 1;
 }

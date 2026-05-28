@@ -1,0 +1,15 @@
+  Lanczos 单步最大深度估算 = 26  → levels_after_bootstrap = 30
+  GUESS_SAFETY 未设置，将按 d=256 自动使用 4
+=== FHE-PCA [bootstrap] (d=256, m_iter=8, Newton=3, Bootstrap=ON, FRO=ON(skip_first=2)) ===
+
+[Phase 1] Client setup
+  数据: 二进制真实数据集 data/yale_16x16.bin
+  [dataset] 加载二进制 data/yale_16x16.bin  N=165  d=256  (像素归一化到 [0,1])
+  CryptoContext + KeyGen 耗时: 19805.3 ms
+  multiplicativeDepth = 52   numSlots = 16384
+  trace(C) = 11.5229
+  plaintext sim: α_0=0.004942  ||W||²=5.1944e-04  guess(safety=4.0)=1/√x=21.94
+  per-iter Newton guess: ON  count=7  range=[1.962e-03, 1.752e-02]
+
+[Phase 2] Server HE-Lanczos
+  aSOR: 关闭（标准 Newton 3 轮）；如需开启: ASOR_EPS=0.9 ASOR_ALPHA=4 ...

@@ -1,0 +1,2447 @@
+Computers & Security 138 (2024) 103658
+Available online 15 December 2023
+0167-4048/© 2023 Elsevier Ltd. All rights reserved.
+Contentslistsavailableat ScienceDirect
+Computers & Security
+journal homepage: www.elsevier.com/locate/cose
+Improved privacy-preserving PCA using optimized homomorphic matrix 
+multiplication
+XirongMa a, ChuanMa b, YaliJiang a,∗, ChunpengGe a,c
+a School of Software, Shandong University, China
+b Zhejiang Lab, China
+c Joint SDU-NTU Centre for Artiﬁcial Intelligence Research (C-FAIR), China
+A R T I C L E I N F O A B S T R A C T
+Keywords:
+Privacy-preserving PCA
+CKKS
+Homomrophic matrix multiplication
+Cloud computing
+Machine learning as a service
+Principal Component Analysis (PCA) is a pivotal technique widely utilized in the realms of machine learning and 
+data analysis. It aims to reduce the dimensionality of a dataset while minimizing the loss of information. In recent 
+years, there have been endeavors to utilize homomorphic encryption in privacy-preserving PCA algorithms for 
+secure cloud computing. These approaches commonly employ a PCA routine known as PowerMethod, which 
+takes the covariance matrix as input and generates an approximate eigenvector corresponding to the primary 
+component of the dataset. However, their performance is constrained by the absence of an eﬃcient homomorphic 
+covariance matrix computation circuit and an accurate homomorphic vector normalization strategy in the 
+PowerMethod algorithm. In this study, we propose a novel approach to privacy-preserving PCA that addresses 
+these limitations, resulting in superior eﬃciency, accuracy, and scalability compared to previous approaches.
+We attain such eﬃciency and precision through the following contributions: (i) We implement space and speed 
+optimization techniques for a homomorphic matrix multiplication method, speciﬁcally tailored for parallel 
+computing scenarios. (ii) Leveraging the beneﬁts of this optimized matrix multiplication, we devise an eﬃcient 
+homomorphic circuit for computing the covariance matrix homomorphically. (iii) Utilizing the covariance 
+matrix, we develop a novel and eﬃcient homomorphic circuit for the PowerMethod that incorporates a universal 
+homomorphic vector normalization strategy to enhance both its accuracy and practicality.
+Our privacy-preserving PCA scheme, implemented using our innovative homomorphic PowerMethod circuit, 
+surpasses the state-of-the-art approach with an average speedup of 1.9 times on datasets with size 200 ×256. 
+Notably, our scheme demonstrates an even more remarkable estimated speedup of 25 times when applied to 
+larger datasets of size 60000 ×256, along with an R2 accuracy improvement of up to 0.285, showcasing eﬃciency 
+and accuracy that has not been reported by previous approaches.
+1. Introduction
+Principal Component Analysis (PCA) (Hotelling, 1933), (Pearson, 
+1901) is a widely employed dimensionality reduction technique. It 
+enables high-dimensional data mapped to a lower-dimensional space, 
+preserving the most essential features while minimizing redundant in-
+formation and noise. In essence, when applied to a dataset, PCA aims to 
+identify a set of vectors known as principal components which represent 
+the directions of maximum variance in the dataset. Subsequently, it be-
+comes possible to project the dataset onto these principal components 
+to achieve a lower-dimensional representation. PCA is widely adopted 
+in data analysis and machine learning, including data preprocessing, 
+* Corresponding author.
+E-mail address:jiang.yl@sdu.edu.cn(Y.Jiang).
+feature extraction, data compression, and visualization. It helps us un-
+derstand the relationships within a dataset and provides a simpler and 
+more manageable representation.
+Due to the signiﬁcance and versatility of PCA, it is leveraged as one 
+of the supported technologies in cloud computing services, enabling 
+users to perform enhanced data analysis leveraging the computational 
+power of the cloud. However, concerns regarding the trustworthiness 
+of cloud storage hinder users from directly performing analysis and 
+processing of sensitive data in the cloud. Instead, it is needed to incor-
+porate privacy protection measures into their data before outsourcing 
+it to mitigate the risk of potential attacks from an untrusted cloud 
+environment. Speciﬁcally, users and cloud servers can negotiate and 
+https://doi.org/10.1016/j.cose.2023.103658
+Received 5 July 2023; Received in revised form 24 October 2023; Accepted 12 December 2023
+Computers & Security 138 (2024) 103658
+2
+X.Ma,C.Ma,Y.Jiangetal.
+employ privacy-preserving algorithm routines to process sensitive data 
+in the cloud while ensuring privacy. Therefore, the proposition of a 
+practical and eﬃcient privacy-preserving PCA technique would greatly 
+beneﬁt users by enabling them to perform PCA on sensitive data in the 
+cloud.
+To provide readers with a more comprehensive understanding of 
+privacy-preserving PCA in the context of cloud computing, we illustrate 
+the concept with a simple scenario: A resource-constrained user wishes 
+to perform machine learning tasks using the platform and computa-
+tional resources of a cloud server, where PCA may emerge as a pivotal 
+component in the initial phase of model training, particularly when con-
+fronted with datasets of substantial complexity, such as those containing 
+myriad attributes like images. However, the dataset in question is im-
+bued with a sense of privacy, and the user is reluctant to disclose the 
+privacy to the cloud. In this predicament, the conventional approach 
+of executing PCA on the cloud becomes untenable, given the inherent 
+inability to outsource conﬁdential data. Consequently, a meticulously 
+crafted privacy-preserving PCA solution should be devised, ensuring 
+that the user can execute PCA seamlessly on the cloud, all the while 
+guarding the privacy of the dataset.
+It is imperative to note that in this paper, our primary emphasis 
+centers around the algorithms allowing the user to privately obtain 
+the principal components from his or her private datasets leveraging 
+the computational resources of the cloud, based on the aforementioned 
+cloud computing scenario.
+Nevertheless, privacy-preserving PCA can have diﬀerent meanings 
+in other contexts or scenarios. In some research, privacy-preserving PCA 
+is considered the process of using pre-computed principal components 
+to conduct the dimensionality reduction mapping of a private dataset 
+(Arnold and Saniie, 2023). This diﬀers from our focus, and the distinc-
+tion can be likened to the machine learning terms “training” (principal 
+components searching) and “inference” (dataset projecting).
+In other cases, researchers consider the scenario of multi-party 
+privacy-preserving PCA, where multiple entities each holding a private 
+dataset aim to compute the PCA results of the merged dataset with-
+out disclosing individual privacy (Liu et al., 2020), (Froelicher et al., 
+2023). In this situation, the major goal is to distribute computation 
+tasks among multiple parties and preserve privacy for each data owner, 
+where a cloud server is not necessarily needed, and privacy-preserving 
+PCA may be achieved in a distributed manner among multiple parties.
+One possible approach for implementing a privacy-preserving PCA 
+technique in our cloud computing scenario involves utilizing homo-
+morphic encryption. Homomorphic encryption is an important privacy-
+preserving technique that allows computations to be performed on en-
+crypted data without decryption. This technology serves to safeguard 
+data privacy while preserving data usability, rendering it extensively 
+employed in domains such as cloud computing and cross-domain com-
+putation. Over the past ﬁfteen years, a class of homomorphic schemes 
+based on the Ring Learning With Errors (R-LWE) problem (Lyuba-
+shevsky et al., 2010) has rapidly developed (e.g., but not limited to 
+Brakerski et al., 2014, Fan and Vercauteren, 2012, Cheon et al., 2017, 
+Cheon et al., 2019). These schemes naturally possess SIMD properties 
+and support homomorphic addition and multiplication operations. As a 
+result, a plethora of privacy-preserving data analysis algorithms based 
+on these schemes have emerged, including privacy-preserving PCA 
+schemes tailored for cloud service scenarios (Lu et al., 2016), (Rathee 
+et al., 2018), (Panda, 2021). These existing homomorphic encryption-
+based privacy-preserving PCA methods utilized an iterative algorithm 
+known as PowerMethod to compute the dominant eigenvector of the 
+covariance matrix of the dataset, which corresponds to the ﬁrst princi-
+pal component. This algorithm selects an initial approximation of the 
+dominant eigenvector and continually applies the covariance matrix 
+transformation to reﬁne its approximation (see Algorithm1for detail). 
+There are two major limitations among the homomorphic PoweMethod 
+algorithms in the previous approaches.
+Firstly, these approaches lack the capability to compute the co-
+variance matrix homomorphically, the PowerMethod necessitates the 
+input of the dataset covariance matrix, but to our knowledge, previ-
+ous schemes have not oﬀered a homomorphic solution for computing 
+this matrix. Instead, they resort to alternative methods. Some require 
+users to compute the covariance matrix locally which burdens the users 
+with additional computational tasks and deviates from the original in-
+tent of cloud services (Rathee et al., 2018). Others decompose the 
+covariance matrix transformation within the PowerMethod into dataset 
+matrix transformations to avoid explicit involvement of the covariance 
+matrix but introduce extra computational complexity(Panda,  2021).
+Secondly, there is a potential loss of accuracy due to the absence of 
+a universal vector normalization strategy. In each iteration of Power-
+Method, normalization is required to control the length of the vector. 
+In the homomorphic context, iterative algorithms are typically used to 
+approximate the inverse square root function for normalization. The 
+accuracy of these algorithms heavily relies on the selection of param-
+eters such as the evaluation interval and the number of iterations. To 
+our knowledge, no prior research has presented a universal strategy 
+to determine these parameter settings in the realm of homomorphic 
+PowerMethod algorithms. Consequently, existing homomorphic Power-
+Method algorithms may potentially suﬀer from inaccuracy due to this 
+inherent limitation.
+1.1. Our contributions
+We propose an eﬃcient privacy-preserving PCA algorithm that over-
+comes the obstacles above. To achieve this, we make the following 
+contributions.
+Homomorphic Covariance Matrix Computation with Optimized 
+Matrix Multiplication (Section 4, 5): We enhance the eﬃciency of 
+a cutting-edge homomorphic matrix multiplication algorithm, both in 
+terms of time and space, to render it more apt for parallel comput-
+ing scenarios. Subsequently, we employ it as a fundamental element 
+to design a proﬁcient algorithm for homomorphic covariance matrix 
+computation, which harnesses the parallel computation capabilities of 
+multiple matrix multiplication instances.
+Privacy-preserving PCA using Homomorphic PowerMethod  (Sec-
+tion 6): PowerMethod consists of two main components: covariance 
+matrix transformation and vector normalization. We ﬁrst design an eﬃ-
+cient homomorphic circuit for covariance matrix transformation. Next, 
+we employ an iterative algorithm approximating the inverse square root 
+(InvSRT) function to perform the vector normalization and propose a 
+systematic approach to parameterize the iterative algorithm. Finally, 
+we present the process of performing privacy-preserving PCA utilizing 
+our homomorphic PowerMethod circuit.
+Implementation (Section 7)We compare our proposed solution with 
+existing approaches, highlighting that our algorithm outperforms previ-
+ous methods in terms of computational eﬃciency, precision, and scala-
+bility.
+2. Related work
+2.1. Privacy-preserving PCA in cloud computing scenario
+The initial attempts at performing PCA on an RLWE-based homo-
+morphic encryption scheme are made by Lu et al. (2016)a n d Rathee 
+et al. (2018). They propose using an iterative algorithm called Power-
+Method to compute principal components in a homomorphic encryption 
+setting. The PowerMethod iteratively computes 𝐯 ←Cov ⋅𝐯, and it can 
+be proven that 𝐯converges to the dominant eigenvector of the covari-
+ance matrix Cov after a ﬁnite number of steps, where the dominant 
+eigenvector is equivalent to a principal component. However, they ﬁnd 
+the homomorphic computation of the covariance matrix to be ineﬃ-
+cient for arbitrary sample sizes. Therefore, their scheme requires the 
+client (of cloud service) to compute and send the encryption of ∑ 𝐱𝑇
+𝑖𝐱𝑖
+Computers & Security 138 (2024) 103658
+3
+X.Ma,C.Ma,Y.Jiangetal.
+Fig. 1. Systemarchitecture.
+(where 𝐱𝑖represents the row vector form of the samples in the dataset 
+𝑋), which not only causes the computational burden on the user but 
+also becomes trivial because PowerMethod is no harder than comput-
+ing ∑ 𝐱𝑇
+𝑖𝐱𝑖in plaintext space. Furthermore, their PCA schemes cannot 
+normalize the approximate eigenvector 𝐯during the iterations of Pow-
+erMethod, and the length of the approximate eigenvector is prone to 
+overﬂow since the homomorphic encryption they used only supports 
+homomorphic operations on modular integers (Brakerski et al., 2014).
+Subsequently, aw o r k by Panda (Panda, 2021) migrates the Pow-
+erMethod to another RLWE-based homomorphic encryption scheme 
+known as CKKS that supports approximate computation on complex 
+numbers (Cheon et al., 2017). The CKKS scheme enables them to per-
+form vector normalization using an iterative algorithm of the inverse 
+square-root function. However, their work provides only one possi-
+ble implementation of the iterative algorithm without demonstrating 
+how to choose its evaluation interval and the number of iterations. As 
+a result, their solution lacks both accuracy and practicality. Further-
+more, thePowerMethod  in their work is done by iteratively computing 
+𝐯 ←1∕𝑁⋅𝑋𝑇(𝑋𝐯) (where 𝑋is the centered dataset), rather than di-
+rectly computing the covariance matrix transformation. This makes the 
+complexity of the PowerMethod dependent on the size of the dataset 
+rather than the size of the covariance matrix, which is ineﬃcient for 
+datasets with a large number of samples.
+2.2. Homomorphic encryption matrix multiplication
+Numerous approaches are proposed on how to construct secure ma-
+trix multiplication algorithms using homomorphic encryption schemes 
+based on the RLWE problem (Duong et al., 2016), (Mishra et al., 2021), 
+(Rathee et al., 2018), (Jiang et al., 2018), (Wang and Huang, 2019). 
+Among them, the work by Jiang et al. (2018) introduces a scheme for 
+secure real number matrix multiplication based on the CKKS scheme. 
+To the best of our knowledge, it remains the state-of-the-art RLWE 
+homomorphic encryption-based approach for real number matrix mul-
+tiplication. In a recent study by Jang et al. (2022), they further improve 
+this scheme by migrating it to a variant of CKKS based on the multivari-
+ate polynomial learning with errors (m-RLWE) problem.
+Nevertheless, few have systematically discussed the performance of 
+homomorphic matrix multiplication within parallel computation sce-
+narios. We believe that delving into this matter is of utmost importance, 
+as parallel computation plays a pivotal role in expediting extensive ma-
+trix operations that involve multiple ciphertexts. Eﬃciently executing 
+multiple instances of homomorphic matrix multiplication in parallel 
+is instrumental in accelerating large-scale computations, warranting a 
+thorough exploration of this aspect.
+3. Preliminaries
+3.1. General notation
+We use italic letters, such as 𝑎, to represent polynomial elements or 
+numbers. We use bold letters, such as 𝐚, to represent vectors, and up-
+percase letters, such as 𝐴, to represent matrices. The symbols ⊕and ⊙
+denote elementwise addition and multiplication. The notation 𝜌(𝐚; 𝑘)
+represents the result of cyclically left-shifting (or rotating) the com-
+ponents of vector 𝐚 by 𝑘positions. Additionally, we use (ℤ∕𝑞ℤ, +) to 
+represent a modulo 𝑞additive group, where we use two sets of integers: 
+(−𝑞∕2, 𝑞∕2]and [0, 𝑞−1]to refer to two diﬀerent representations of the 
+residue class. We deﬁne [𝑎]𝑞as the result of reducing 𝑎modulo 𝑞that 
+falls into (−𝑞∕2, 𝑞∕2], and 𝑎mod𝑞as the result falling into [0, 𝑞−1].
+3.2. System architecture
+The system architecture for privacy-preserving PCA in the cloud 
+computing context comprises two entities: the user and the cloud server 
+engaged in a privacy-preserving protocol (see Fig.1). The user aims to 
+upload his or her private dataset to the untrusted cloud, leveraging its 
+computational power for PCA and obtaining the computed result. Dur-
+ing this procedure, the user encrypts the private dataset 𝑋using some 
+encryption function 𝐸𝑛𝑐resulting in ciphertext 𝑐𝑡(𝑋) to prohibit the 
+cloud from gaining any useful information related to user data. Then, 
+after receiving 𝑐𝑡(𝑋), the cloud performs a privacy-preserving PCA tak-
+ing 𝑐𝑡(𝑋)as input and outputting 𝑐𝑡(𝑉)as the ciphertext encrypting the 
+expected PCA result. Finally, the user can decrypt 𝑐𝑡(𝑉)and recover the 
+expected result by using the function 𝐷𝑒𝑐.
+3.3. Threat model
+We base our system architecture on a semi-honest security model. 
+In speciﬁc terms, we consider the user’s dataset to be private, while 
+the privacy-preserving PCA algorithm executed in the cloud is visible 
+to both the user and the cloud, making it non-private. Thus, the cloud 
+is assumed to be semi-honest from the perspective of the user. This 
+implies that the cloud will not actively violate the established inter-
+action rules and protocols, ensuring the correct execution of privacy-
+preserving PCA. However, the cloud maintains a curiosity about the 
+user’s private data, attempting to access the underlying plaintexts of 
+the received ciphertexts.
+3.4. Homomorphic encryption for arithmetic of approximate numbers
+Homomorphic encryption is a cutting-edge ﬁeld in cryptography and 
+serves as a powerful component for privacy-preserving computations. 
+Computers & Security 138 (2024) 103658
+4
+X.Ma,C.Ma,Y.Jiangetal.
+The CKKS scheme we mentioned earlier is a homomorphic encryption 
+scheme supporting approximate arithmetic on complex vector space. It 
+provides an encoding method to store up to 𝑁∕2ﬂoating point val-
+ues in plaintext or ciphertext, which are represented by polynomials in 
+the domain 𝑅𝑄𝐿= ℤ𝑄𝐿[𝑋]∕(𝑋𝑁+1), where 𝑄𝐿= ∏𝐿
+0 𝑞𝑖, and 𝑁is a 
+power of 2. Operations over the domain are performed simultaneously 
+on all encoded values, known as SIMD processing. The security of CKKS 
+is based on the RLWE problem, so some noise is introduced into the en-
+crypted values. We brieﬂy introduce the operations provided by CKKS 
+in the following.
+– 𝑠 ←SecKeyGen(⋅)generates the secret key 𝑠
+– 𝑝𝑘, 𝑠𝑤𝑘𝑠 ←PubKeyGen(𝑠)generates public key 𝑝𝑘and a series of 
+switching keys 𝑠𝑤𝑘𝑠 ={𝑠𝑤𝑘𝑠𝑖,𝑠𝑗} where 𝑠𝑤𝑘𝑠𝑖,𝑠𝑗helps switch the 
+secret inside a ciphertext from 𝑠𝑗to 𝑠𝑖. Notice that switching keys 
+can be quite large in size. Typically, a group of switching keys 
+together can occupy a space ranging from tens of megabytes to 
+several gigabytes or even more.
+– 𝑐𝑡(𝑚) ∈𝑅2
+𝑄𝐿
+←Enc(𝑝𝑘, 𝑚)encryptes a plaintext vector 𝑝.
+– 𝑚′←Dec(𝑠𝑘, 𝑐𝑡(𝑚))decrypts the ciphertext 𝑐𝑡(𝑚)and output 𝑚′≈
+𝑚
+– 𝑐𝑡(𝑚1 +𝑚2) ←Add(𝑐𝑡(𝑚1), 𝑐𝑡(𝑚2)) performs addition of the en-
+crypted vectors.
+– 𝑐𝑡(𝑚1 ⊙𝑚2) ←PMult(𝑐𝑡(𝑚1), 𝑚2) performs elementwise multipli-
+cation between encrypted vector 𝑐𝑡(𝑚1) and plaintext vector 𝑚2. 
+Rescaling is needed to control the noise growth in the result.
+– 𝑐𝑡(𝑚1 ⊙𝑚2) ←Mult(𝑐𝑡(𝑚1), 𝑐𝑡(𝑚2))performs elementwise multipli-
+cation between encrypted vectors. Rescaling and relinearization 
+operations are required to control the size and noise growth of the 
+result.
+– 𝑐𝑡(𝜌(𝑚, 𝑘)) ←Rot(𝑐𝑡(𝑚), 𝑟𝑡𝑘𝑘)performs cyclic rotation of step 𝑘on 
+the encrypted vector, where 𝑟𝑡𝑘𝑘is an instance of switching key 
+𝑠𝑤𝑘𝑠5𝑘,𝑠and 𝑠is the secret inside the encrypted vector.
+Notably, for a given set of modulus products 𝑄𝐿, the homomorphic 
+operations are limited to a multiplication depth of at most 𝐿because 
+rescaling consumes the modulus level of ciphertexts (any ciphertext in 
+𝑅2
+𝑄𝑙
+is at the 𝑙-th modulus level, and rescaling brings the ciphertext to 
+a lower level 𝑅2
+𝑄
+𝑙−1
+). Once the modulus level of a ciphertext reaches 0, 
+it can no longer participate in homomorphic multiplication operations. 
+To perform operations with a greater multiplication depth, we need to 
+conduct an operation called modulus refresh which raises the modulus 
+level of the ciphertext. The modulus refresh can be achieved either by 
+decrypting and re-encrypting the ciphertexts or by applying the boot-
+strapping function to the ciphertexts.
+We build our privacy-preserving PCA scheme upon a full Residue 
+Number System (RNS) variant of the CKKS scheme (Cheon et al., 2019) 
+implemented in the Lattigo library (Lattigo, 2022). This variant allows 
+eﬃcient polynomial multiplication by representing polynomials in both 
+the RNS and NTT (Number Theoretic Transform) domains. We refer to 
+AppendixAfor more details of the full-RNS CKKS scheme.
+3.5. Homomorphic matrix operation
+Our optimization for the homomorphic matrix multiplication is de-
+rived from the scheme proposed by Jiang et al. (2018)f o r the CKKS 
+scheme. They utilize a homomorphic linear transformation technique 
+to build up the homomorphic matrix multiplication. We will introduce 
+both of these techniques in the following.
+3.5.1. Homomorphic linear transformation
+Halevi et al. ﬁrst propose an approach to achieve linear transfor-
+mations in the context of homomorphic encryption (Halevi and Shoup, 
+2014). They pointed out that any linear transformation 𝑈𝐦 can be rep-
+resented as:
+𝑈⋅𝐦 =
+∑
+0≤𝓁<𝑛
+(𝐮𝓁⊙𝜌(𝐦 ; 𝓁)), (1)
+where 𝐮𝓁represents the 𝓁-th diagonal vector of 𝑈: 𝐮𝓁 =(𝑈0,𝓁, 𝑈1,𝓁+1, ...,
+𝑈𝑛−1,(𝓁+𝑛−1) mod𝑛). By associating 𝐦 with the ciphertext and 𝑈with 
+the plaintext matrix in (1), we can eﬀectuate a homomorphic linear 
+transformation 𝑈𝐦 through 𝑛ciphertext rotations, 𝑛plaintext multi-
+plication, and 𝑛 −1ciphertext additions. An algorithm known as Baby 
+Step Giant Step (BSGS) can be employed to minimize the number of ro-
+tation operations involved (Halevi and Shoup, 2018): if there exists an 
+arithmetic progression {𝑠𝑘=𝑎 ⋅𝑘| −𝑑<𝑘 <𝑑, 𝑑=𝑑1𝑑2}such that all 
+indices 𝓁corresponding to non-zero diagonal vectors in 𝑈belong to 
+this arithmetic progression, then Equation (1)c a n be reformulated as 
+follows:
+𝑈𝐦 =
+∑
+−𝑑2<𝑖<𝑑2,0≤𝑗<𝑑1
+(
+𝐮𝑎⋅(𝑑1⋅𝑖+𝑗) ⊙𝜌(𝐦 ;𝑎⋅(𝑑1 ⋅𝑖+𝑗))
+)
+=
+∑
+−𝑑2<𝑖<𝑑2
+𝜌
+(
+∑
+0≤𝑗<𝑑1
+(
+𝜌(𝐮𝑎⋅(𝑑1⋅𝑖+𝑗);−𝑎⋅𝑑1 ⋅𝑖)⊙𝜌(𝐦 ;𝑎⋅𝑗)
+)
+;𝑎⋅𝑑1 ⋅𝑖
+)
+.
+(2)
+Further optimization can be achieved by analyzing the rotation 
+operations. Halevi et al. introduce a ciphertext rotation optimization 
+technique called hoisting which reconstructs the internal operations for 
+rotating a ciphertext 𝑐=(𝑐0, 𝑐1) ∈𝑅2
+𝑄𝑙
+by 𝑘steps in the following se-
+quence. (i) Decompose: Decompose 𝑐1 into a vector 𝐜 based on the 
+decomposition base 𝐛 of the rotation key 𝑟𝑡𝑘𝑘. (ii)Permute: Perform 
+automorphism 𝜙𝑘∶𝑋→𝑋5𝑘
+(m o d𝑋𝑁+1) on each component of 𝐜. 
+(iii)MultSum: Perform the inner product (𝑐′
+0, 𝑐′
+1) ← ⟨𝐜,rtk𝑘⟩, resulting 
+in a hoistedciphertext in 𝑅2
+𝑄𝑙𝑃. (iv) ModDown: Reduce the modulus of 
+the hoisted ciphertext to bring it back to 𝑅2
+𝑄𝑙
+. Here, Decompose and
+ModDowninvolve NTT and CRT basis extensions, which dominate the 
+computational complexity of the rotation operation. The rotation key is 
+only involved in the MultSum. Therefore, multiple rotations performed 
+on the same ciphertext can share the result of Decompose(ct) when all 
+the corresponding rotation keys are available.
+Bossuat et al. apply the hoisting idea to the BSGS-optimized lin-
+ear transformation algorithm (Bossuat et al., 2021). They apply the 
+hoisting technique to the rotations 𝜌(𝐦 ; 𝑎 ⋅𝑗), 0 ≤𝑗≤𝑑1 in Equation 
+(2)b u t do not perform the ﬁnal step of the rotation, ModDown, im-
+mediately. Instead, they multiply the intermediate hoisted ciphertexts 
+with the corresponding pre-rotated diagonal vectors 𝜌(𝐮𝑎⋅(𝑑1⋅𝑖+𝑗); −𝑎 ⋅
+𝑑1 ⋅𝑖) and aggregate the products in 𝑅2
+𝑃𝑄𝓁
+. ModDown is ﬁnally 
+applied to the aggregated result. This optimization method is re-
+ferred to as the double-hoisting technique. It reduces the computa-
+tional complexity of the BSGS-optimized linear transformation from 
+(𝑑2 +𝑑1) ⋅(MultSum+ ModDown+ Decompose+ Permute)to (𝑑2 +
+𝑑1) ⋅(MultSum+ Permute) +(𝑑2 +1)  ⋅(Decompose+ ModDown).
+In the subsequent discussion, we assume that all the rotation keys 
+required for performing any homomorphic encryption linear transfor-
+mation are loaded into memory prior to the computation. This is the 
+current implementation strategy in the Lattigo library. Although it is 
+theoretically possible to load a key into memory only when it is needed 
+for computation and release it soon afterward to control a smaller mem-
+ory footprint for keys, we do not recommend this practice. Because it 
+may incur additional time for disk read/write operations and disrupt 
+the compactness of the storage structure. Especially, it will signiﬁcantly 
+slow down the speed of consecutive linear transformation computation.
+3.5.2. Homomorphicmatrix  multiplication by Jiang et al.
+Jiang et al. proposed a homomorphic matrix multiplication ap-
+proach based on the aforementioned linear transformation algorithm 
+and its BSGS optimization (Jiang et al., 2018). A square matrix 𝐴of 
+size 𝑛 ×𝑛can be encoded as a vector 𝐚with 𝑛2 components using the 
+row ordering encoding. Considering the multiplication of matrices 𝐴
+Computers & Security 138 (2024) 103658
+5
+X.Ma,C.Ma,Y.Jiangetal.
+and 𝐵, Jiang et al. ﬁrst encode 𝐴, 𝐵into vectors 𝐚𝐛 with row ordering, 
+then compute the following equation:
+𝐜=
+𝑛−1∑
+𝑘=0
+(𝐶𝑘𝑍𝐚)⊙(𝑅𝑘𝑇𝐛), (3)
+where 𝐶, 𝑍, 𝑅, and 𝑇are speciﬁc permutation matrices, and the 𝐜is 
+the encoding vector of the matrix 𝐴𝐵. They also design another per-
+mutation matrix transformation 𝐺for matrix transposition: 𝐚′=𝐺𝐚, 
+such that 𝐚′represents the transpose 𝐴𝑇of the matrix 𝐴represented 
+by 𝐚. The BSGS algorithm is employed for the transformations 𝑍, 𝑇and 
+𝐺to greatly enhance eﬃciency. However, Jiang et al. treat BSGS as a 
+black-box operation without considering internal optimization by hoist-
+ing techniques.
+3.6. Principal component analysis using PowerMethod
+Principal Component Analysis (PCA) is frequently employed for the 
+dimensionality reduction of a dataset. Its fundamental concept involves 
+identifying orthogonal axes that maximize the variance of the dataset 
+projected onto these axes, which are referred to as principal compo-
+nents. Finding the top 𝑘principal components is equivalent to determin-
+ing the 𝑘largest eigenvectors of the covariance matrix of the dataset.
+The covariance matrix Σof the dataset 𝑋is given by Σ = 1
+𝑁𝑋𝑇𝑋−
+𝜇𝜇𝑇, where 𝑢𝑇= 1
+𝑁
+∑𝑁−1
+𝑖=0 𝐱𝑇
+𝑖. The PowerMethod is an approximate 
+algorithm for computing the dominant eigenvector of the covariance 
+matrix (see Algorithm1). It accepts a covariance matrix and its initial 
+approximation of the dominant eigenvector and continuously applies 
+the covariance matrix transformation to the approximate eigenvector 
+to make it more and more accurate. The overﬂow should be prevented 
+by normalizing the approximate vector after each matrix transforma-
+tion. The EigenShift algorithm is used to shift the covariance matrix in 
+terms of eigenvectors (see Algorithm2). It takes the covariance matrix 
+and the top 𝑘eigenvectors as inputs and outputs the 𝑘-shifted covari-
+ance matrix, where the (𝑘 +1)-th dominant eigenvector of the original 
+covariance matrix becomes the 1-th dominant eigenvector of the shifted 
+one. By combining the PowerMethod and the EigenShift, we can com-
+pute the top principal components of the dataset.
+Algorithm 1 PowerMethod.
+Input: Σ: covariance matrix of the dataset; 𝑙𝑃: number of iterations.
+Output: 𝐮1, 𝜆1: dominant eigen-vector of Σand its eigen-value
+1: Choose a random vector 𝐯(0) of size 𝑑
+2: for𝑖 =1 to 𝑙𝑃do
+3: 𝐯(𝑖) ←Σ𝐯(𝑖−1)
+4: 𝐯(𝑖) ← 𝐯(𝑖)∕||𝐯(𝑖)||
+5: end for
+6: return 𝐮1 = 𝐯(𝑙𝑃) and 𝜆1 =||𝐯(𝑙𝑃)||∕||𝐯(𝑙𝑃−1)||
+Algorithm 2 EigenShift.
+Input: Σ: covariance matrix of the dataset; {𝐮𝑖, 𝜆𝑖}: the 𝑖-th dominant eigenvector of Σ
+and its eigenvalue.
+Output: Σ𝑘: 𝑘-shifted covariance matrix of 𝑋
+1: for𝑖 =1 to 𝑘 −1 do
+2: Σ𝑖+1 =Σ𝑖−𝜆𝑖𝐮𝑖𝐮𝑇
+𝑖
+3: end for
+4: return Σ𝑘
+3.7. Iterative algorithm of inverse square root function
+The inverse square-root (InvSRT) function is used to perform vector 
+normalization in the PowerMethod algorithm. One feasible approach to 
+evaluate InvSRT homomorphically is to use iterative algorithms such as 
+Newton’s Method (see Algorithm 3). These methods take the point 𝑥
+for evaluation and an appropriate initial approximation of 1√
+𝑥as input 
+and output a more accurate result after a ﬁnite number of iterations. We 
+will use the term iterative InvSRT algorithm to refer to these methods in 
+subsequent discussions. Providing a closer initial approximation for the 
+iterative InvSRT algorithm can result in better convergence speed. Prior 
+researches propose employing piecewise functions, Taylor expansions, 
+and rational polynomials as functions to compute the initial approxima-
+tion of the iterative InvSRT (Panda, 2022),(Qu  and Xu, 2022).
+Algorithm 3 Newton’s method.
+Input: 𝑥0: target evaluation point of inverse square-root function; 𝑦0: initial approxima-
+tion of 1√𝑥0
+Output: 𝑦𝑑: more precise approximation of 1√𝑥0
+1: for𝑖 =1 to 𝑑do
+2: 𝑦𝑖← 1
+2𝑦𝑖−1(3 −𝑥0𝑦2
+𝑖−1)
+3: end for
+4: return 𝑦𝑑
+4. Optimized homomorphic matrix multiplication
+In this section, we improve the homomorphic matrix multiplication 
+proposed by Jinag et al. to better serve our covariance matrix computa-
+tion. Speciﬁcally, we ﬁrst optimize the matrix multiplication with hoist-
+ing techniques to reduce its computation complexity (Section 4.1.1). 
+Then, we analyze the space complexity of the hoisting-optimized ma-
+trix multiplication in parallel computation scenarios, during which we 
+observe a problem that the large number of rotation keys required may 
+occupy the memory and limit the performance of parallel computation 
+(Section 4.1.2). To address this problem, we introduce techniques to 
+reduce these rotation keys (Section 4.2). In the ﬁnal subsection, we 
+discuss the security of the proposed optimizations on homomorphic 
+computations, aﬃrming that they do not compromise the security of 
+the underlying encryption scheme.
+4.1. Homomorphic matrix multiplication equipped with hoisting techniques
+4.1.1. Applying hoisting techniques to linear transformation components
+The hoisting techniques can be applied to the following lin-
+ear transformations involved in the 𝑛 × 𝑛matrix multiplication: 
+𝑍, 𝑇, {𝐶𝑘, 𝑅𝑘|1 ≤𝑘 <𝑛} (recall Equation (3)). We initially focus on 
+𝑍and 𝑇. 𝑍comprises 2𝑛 −1non-zero diagonal vectors with indices 
+ranging from −𝑛 +1 to 𝑛 −1. On the other hand, 𝑇consists of only 
+𝑛non-zero diagonal vectors, with indices 𝑘 ⋅𝑛for 0 ≤𝑘 <𝑛. Both 𝑍
+and 𝑇exhibit a well-behaved arithmetic progression in the indices of 
+their non-zero diagonal vectors. This property enables the BSGS algo-
+rithm to reduce the number of rotations from 𝑂(𝑛)to 𝑂(𝑛1 +𝑛2), where 
+𝑛1, 𝑛2 denotes the inner and outer loop count. The double-hoisting tech-
+nique can be naturally applied to the BSGS version of 𝑍and 𝑇, further 
+reducing their rotation complexity.
+The transformation 𝐶𝑘has only two non-zero diagonal vectors: 𝑘
+and 𝑘 −𝑛, while 𝑅𝑘has only one non-zero diagonal vector: 𝑛 ⋅𝑘, for 
+1 ≤𝑘 <𝑛. There is no need to apply BSGS optimization on these trans-
+formations due to the scarcity of their non-zero diagonals. Nonetheless, 
+we can still enhance their eﬃciency using the hoisting technique. We 
+observe that the rotation steps in the inner loop of 𝑍form a sub-
+sequence of the non-zero diagonal indices in the transformation set 
+{𝐶𝑘|0 ≤𝑘 <𝑛}. Similarly, rotation steps used for the inner loop of 𝑇
+form a subsequence of the non-zero diagonal indices in the set {𝑅𝑘|0 ≤
+𝑘 <𝑛}. This observation implies that the rotation keys of the double-
+hoisting 𝑍and 𝑇are basically suﬃcient to perform the transformations 
+{𝐶𝑘, 𝑅𝑘|0 ≤𝑘 <𝑛}with the hoisting technique (column shifting trans-
+formations require an extra rotation step −𝑛to perform rotations of 
+steps 𝑘 −𝑛, 𝑘 =1, 2, …  , 𝑛 −1). In particular, we can achieve further 
+optimization by emulating the strategy used in the double-hoisting 
+technique for the transformations 𝐶𝑘. Deferring the ﬁnal ModDown
+operations in the rotations associated with the two non-zero diagonal 
+Computers & Security 138 (2024) 103658
+6
+X.Ma,C.Ma,Y.Jiangetal.
+Table 1
+Rotation Complexity and Minimal Rotation Keys requirement Comparison between BSGS and dh-
+BSGS scheme for Z, T linTrans. 𝑛1 and 𝑛2 denote the inner loop count and the outer loop count in 
+the BSGS algorithm. The complexity of the linear transformations is indicated by the ciphertext rota-
+tions performed. More speciﬁcally, these rotations are decomposed into their four internal operations:
+MultSum(𝑀𝑆), Permute(𝑃𝑚), Decompose(𝐷𝑝), and ModDown(𝑀𝐷).
+Scheme LinTrans MinRotKeys Complexity(Rotations)
+Origin 𝑍 2𝑛2 +1 ( 𝑛1 +2𝑛2) ⋅(𝑀𝑆+𝑃𝑚+𝐷𝑝+𝑀𝐷)
+Optimized 𝑍𝑛 1 +2𝑛2 −2 ( 𝑛1 +2𝑛2) ⋅(𝑀𝑆+𝑃𝑚)+ (2𝑛2 +1) ⋅(𝐷𝑝+𝑀𝐷)
+Origin 𝑇𝑛 2 +1 ( 𝑛1 +𝑛2) ⋅(𝑀𝑆+𝑃𝑚+𝐷𝑝+𝑀𝐷)
+Optimized 𝑇𝑛 1 +𝑛2 −2 ( 𝑛1 +𝑛2) ⋅(𝑀𝑆+𝑃𝑚)+ (𝑛2 +1) ⋅(𝐷𝑝+𝑀𝐷)
+Origin {𝐶𝑘|0 ≤𝑘<𝑛}2 ( 2 𝑛−1)⋅(𝑀𝑆+𝑃𝑚+𝐷𝑝+𝑀𝐷)
+Optimized {𝐶𝑘|0 ≤𝑘<𝑛} 𝑛𝑍1 +1 (2 𝑛−1)⋅(𝑀𝑆+𝑃𝑚)+(2𝑛∕𝑛𝑍1 +2) ⋅𝐷𝑝+(2𝑛∕𝑛𝑍1 +𝑛)𝑀𝐷
+Origin {𝑅𝑘|0 ≤𝑘<𝑛}1 ( 𝑛−1)⋅(𝑀𝑆+𝑃𝑚+𝐷𝑝+𝑀𝐷)
+Optimized {𝑅𝑘|0 ≤𝑘<𝑛} 𝑛𝑇1 (𝑛−1)⋅(𝑀𝑆+𝑃𝑚)+ (𝑛∕𝑛𝑇1 +1) ⋅𝐷𝑝+(𝑛−1)⋅𝑀𝐷
+vectors, we multiply the two hoisted ciphertexts with the corresponding 
+plaintext diagonal vectors in 𝑅𝑄𝑙𝑃and aggregate the results. ModDown
+is then applied to the aggregated value.
+We compared the ciphertext rotation complexity of various linear 
+transformations in homomorphic matrix multiplication before and after 
+applying the aforementioned hoisting technique (see Table1). We can 
+observe that the number of operations Decompose and ModDown is 
+signiﬁcantly decreased by the hoisting techniques. However, the min-
+imal number of rotation keys required is increased by the inner loop 
+counts of 𝑍and 𝑇. The increment of the rotation keys may cause 
+memory limitation in a scenario where multiple matrix multiplication 
+instances are desired to run in parallel. We will discuss this problem in 
+the next subsection.
+4.1.2. Parallelizability and space complexity analysis
+The matrix multiplication proposed by Jiang et al. exhibits paral-
+lelizability. Considering Equation (3), we can perform transformation 
+sets {𝐶𝑘𝑍𝐚|0 ≤𝑘 <𝑛} and {𝑅𝑘𝑇𝐛|0 ≤𝑘 <𝑛} in parallel with two 
+threads. This idea can be extended to a one-to-manyscenario where ma-
+trix 𝑋is multiplied with multiple matrices {𝑌𝑖|𝑖 =1, 2, …  , 𝑑}. We can 
+precompute and store {𝐶𝑘𝑍𝐱|𝑘 =0, …  , 𝑛} (or {𝑅𝑘𝑇𝐱|𝑘 =0, …  , 𝑛}), 
+and perform the remaining steps of Equation (3)i n parallel for each 
+𝑌𝑖with 𝑑threads. This approach saves the time required for 𝑑−1com-
+putations of {𝐶𝑘𝑍𝐱} (or {𝑅𝑘𝑇𝐱}). We can further consider multiple 
+parallel one-to-many computations, which can save more time when 
+{𝑌𝑖|𝑖 =1, 2, …  , 𝑑} also need to be repeatedly involved in calculations 
+with a set of {𝑋𝑖|𝑖 =1, 2, …  , 𝑑}.
+However, we concern that suﬃcient space for the aforementioned 
+parallel computation of matrix multiplication cannot be easily obtained. 
+The space complexity of matrix multiplication is determined by the 
+rotation key space of 𝑍and 𝑇, as well as the intermediate cipher-
+texts cached by all parallel instances of transformations. On one hand, 
+the total number of rotation keys required in matrix multiplication is 
+𝑛𝑍1 +2𝑛𝑍2 +𝑛𝑇1 +𝑛𝑇2 −3. On the other hand, the number of interme-
+diate ciphertexts that need to be cached increases with the number of 
+parallel instances of matrix multiplication. For example, 𝑑instances of 
+matrix multiplication collectively require caching 𝑛regular ciphertexts 
+and 𝑑⋅𝑛𝑇1 (or 𝑑⋅𝑛𝑍1) hoisted ciphertexts under the one-to-many sce-
+nario. The scalability of increasing parallel instances might be hindered 
+by the large space requirement for rotation keys.
+4.2. Rotation key reduction for homomorphic matrix multiplication
+We aim to minimize the number of rotation keys for homomor-
+phic matrix multiplication, thereby freeing up space for the parallel 
+computation of more instances. We introduce two types of rotation 
+key reduction techniques in the following subsection. The ﬁrst tech-
+nique is a simple key substitution method. For an arithmetic sequence 
+of rotations applied on a ciphertext, the simple key substitution con-
+structs this sequence of rotation by repeatedly performing rotation with 
+one of its subsequences, resulting in a reduction in the number of re-
+quired rotation keys. However, this approach compromises the beneﬁts 
+brought by the hoisting technique, leading to a decrease in the overall 
+speed of matrix multiplication. The second technique involves apply-
+ing a decomposition called diagonal convergence decomposition to the 
+transformations 𝑍and 𝑇. The number of non-zero diagonal vectors in 
+the decomposed transformations is signiﬁcantly reduced, resulting in a 
+notable reduction in the number of keys while preserving the integrity 
+of hoisting.
+4.2.1. Simple key substitution method
+Recall that we only utilize the rotation keys from the inner loop of 
+transformation 𝑇to perform all ciphertext rotations of the row transfor-
+mations (see Section4.1.1). This approach is an instance of the simple 
+key substitution method which can be described as follows: when ap-
+plying a sequence of rotations to a ciphertext, if the rotation steps form 
+an arithmetic progression starting from 0, then any subsequence start-
+ing from 0 of that arithmetic progression can be used to perform the 
+rotations. However, using shorter subsequence results in fewer beneﬁts 
+from the hoisting technique, as the hoisting technique cannot be fully 
+deployed across the entire sequence but only within individual subse-
+quences. Employing this method to reduce the rotation keys required 
+for the inner loop of 𝑍(or 𝑇) from 𝑛1 to 𝑛′
+1 leads to an additional cost 
+of 𝑛1∕𝑛′
+1 Decomposeand ModDownoperations and a subsequent eﬀect 
+on the row (or column) transformations. Moreover, the simple key sub-
+stitution method has marginal eﬀectiveness when the inner loop count 
+of the linear transformation is relatively small. This is because fewer it-
+erations in the inner loop imply an increase in the number of outer loop 
+iterations and the corresponding required keys.
+4.2.2. Decomposition of diagonal vector convergence for speciﬁc 
+permutation matrix
+We present the second method for reducing the required rotation 
+keys in matrix multiplication to overcome the limitations of the sim-
+ple key substitution. Recall that the number of rotation keys required to 
+perform a homomorphic linear transformation is essentially determined 
+by the number of non-zero diagonal vectors in that linear transforma-
+tion. This implies that if we can decompose 𝑍and 𝑇into transforma-
+tion with fewer non-zero diagonal vectors, we can reduce the number of 
+rotation keys. Henceforth, we ﬁrst establish a concept called diagonal 
+convergence decomposition in Deﬁnition1to describe a decomposition 
+method that reduces the number of non-zero diagonal vectors in lin-
+ear transformations. This decomposition represents the original matrix 
+as a sum and product of several matrices, such that the combined set 
+of these decomposed matrices has fewer distinct non-zero diagonal in-
+dices compared to the original matrix. To better focus on the diagonals, 
+we also deﬁne the diagonal coordinate of a matrix unit and the rules 
+converting it back to the normal coordinate that locates units using the 
+row and column index in Deﬁnitions2,3.
+Constructing a diagonal convergence decomposition method that ap-
+plies to all matrices might not be a straightforward task. Therefore, we 
+will speciﬁcally focus on designing the diagonal convergence decom-
+position for 𝑍and 𝑇. Both 𝑍and 𝑇are permutation matrices, which 
+Computers & Security 138 (2024) 103658
+7
+X.Ma,C.Ma,Y.Jiangetal.
+are Boolean matrices with the properties that each row and each col-
+umn contain exactly one 1 value. We observe that when decomposing a 
+Boolean matrix 𝐴of size 𝑛 ×𝑛into a product of two Boolean matrices 
+𝐴2𝐴1, for any non-zero diagonal 𝑘in 𝐴and its 𝑖-th element 𝐴𝐷(𝑘,𝑖), if 
+𝐴𝐷(𝑘,𝑖) is 1, there always exist a diagonal 𝑘1 in 𝐴1 and a diagonal 𝑘2 in 
+𝐴2 such that the elements in the 𝑘1-th diagonal of 𝐴1 are 1 in the same 
+column as 𝐴𝐷(𝑘,𝑖), the elements in the 𝑘2-th diagonal of 𝐴2 are 1 in the 
+same row as 𝐴𝐷(𝑘,𝑖), and 𝑘 =𝑘1 +𝑘2 mod𝑛(see Theorem1). In Deﬁ-
+nition4, we utilize Theorem1to construct a method for decomposing 
+a single diagonal in 𝐴into diagonals in 𝐴1 and 𝐴2.
+Deﬁnition 1. We refer to a matrix decomposition as a diagonal con-
+vergence decompositionwhen it expresses a square matrix as a prod-
+uct and sum of a series of matrices, and the total number of distinct 
+diagonal vector indices in these matrices is smaller than the number of 
+distinct diagonal vector indices in the original matrix.
+Deﬁnition 2. For any 𝑛 ×𝑛square matrix, we represent its column in-
+dices, row indices, and diagonal vector indices using the additive group 
+(ℤ∕𝑛ℤ, +), where the indices of the diagonal vectors are deﬁned based 
+on the column indices of the elements in the ﬁrst row of the matrix.
+Deﬁnition 3. For an 𝑛 ×𝑛square matrix, the element located at row 
+𝑖and column 𝑗possesses a normal coordinate 𝑁(𝑖, 𝑗) ∈(ℤ∕𝑛ℤ)2, and a 
+diagonal coordinate𝐷(𝑘, 𝑙) ∈(ℤ∕𝑛ℤ)2. Thus, there exists a mapping 𝑓∶
+(ℤ∕𝑛ℤ)2 →(ℤ∕𝑛ℤ)2 that transforms a normal coordinate to a diagonal 
+coordinate:
+𝑓(𝑁(𝑖,𝑗))= 𝐷(𝑗−𝑖,𝑖),
+𝑓−1(𝐷(𝑘,𝑙))= 𝑁(𝑙,𝑘+𝑙).
+(4)
+We denote the symbol 𝐴𝑁(𝑖,𝑗) to represent the element of 𝐴located at 
+the normal coordinate 𝑁(𝑖, 𝑗), and 𝐴𝐷(𝑘,𝑙) to represent the element of 𝐴
+located at the diagonal coordinate 𝐷(𝑘, 𝑙).
+Theorem 1. Let 𝐴be a boolean matrix that can be decomposed into 𝐴 =
+𝐴2𝐴1, where 𝐴1 and 𝐴2 are both boolean matrices. For any 1 element 
+𝐴𝑁(𝑖,𝑗) in 𝐴, there exists a unique index 0 ≤𝑎 <𝑛in 𝐴1 and 𝐴2 such 
+that 𝐴1𝑁(𝑎,𝑗) and 𝐴2𝑁(𝑖,𝑎) are both 1. Furthermore, considering 𝐷(𝑘, 𝑖) =
+𝑓(𝑁(𝑖, 𝑗)), 𝐷(𝑘1, 𝑎) =𝑓(𝑁(𝑎, 𝑗)), and 𝐷(𝑘2, 𝑖) =𝑓(𝑁(𝑖, 𝑎)), we have 𝑘1 +
+𝑘2 =𝑘.
+Proof. Given 𝐴 = 𝐴2𝐴1, we have 𝐴𝑁(𝑖,𝑗) = ∑𝑛−1
+𝑎=0𝐴1𝑁(𝑎,𝑗) ⋅𝐴2𝑁(𝑖,𝑎). 
+Since 𝐴1 and 𝐴2 are Boolean matrices, the equation 𝐴𝑁(𝑖,𝑗) =1 holds 
+only when there exists a unique pair (𝐴1𝑁(𝑎,𝑗), 𝐴2𝑁(𝑖,𝑎)) that equals 
+(1, 1). According to Deﬁnition3, we have 𝑘1 +𝑘2 =(𝑗−𝑎) +(𝑎 −𝑖) =
+𝑘. □
+Deﬁnition 4. For a boolean matrix 𝐴, 𝐴1, and 𝐴2 of size 𝑛 ×𝑛, de-
+composing the 𝑘th diagonal of 𝐴onto the 𝑘1th diagonal of the right 
+matrix 𝐴1, and the 𝑘2th diagonal of the left matrix 𝐴2 refers to the 
+following process: For each 1 element 𝐴𝐷(𝑘,𝑙) in the 𝑘th diagonal, set 
+𝐴1𝐷(𝑘1,𝑘+𝑙−𝑘1 mod𝑛) to 1, which corresponds to the element on the 𝑘1th 
+diagonal with the same column index as 𝑘. Also, set 𝐴2𝐷(𝑘2,𝑙) to 1, which 
+corresponds to the element on the 𝑘2th diagonal with the same row in-
+dex as 𝑘. Here, 𝑘1 +𝑘2 =𝑘.
+Before we proceed with the diagonal convergence decomposition 
+of matrices 𝑍and 𝑇, let us establish some common ground. Let us 
+assume that the discussions henceforth are based on the 𝑛 ×𝑛matrix 
+multiplication scenario, meaning matrices 𝑍and 𝑇are always of size 
+𝑛2 ×𝑛2. Moreover, we deﬁne that if the maximum non-zero diagonal 
+index of a matrix is 𝑛′≤0, it is equivalent to stating that all non-zero 
+diagonal vectors of the resulting matrices belong to the set [−𝑛′, 𝑛′] ∩ℤ.
+Decomposition of linear transformation 𝑍 The value of the 𝓁-th com-
+ponent in the 𝑘-th non-zero diagonal vector 𝐳𝑘[𝓁]can be expressed as 
+(all operations below involving non-zero diagonal vector indices are as-
+sumed to be in the residual class (−𝑛2∕2, 𝑛2∕2]of (ℤ∕𝑛2ℤ, +)):
+𝐳𝑘[𝓁]=
+⎧
+⎪
+⎨
+⎪⎩
+1,
+if𝑘≥0 and 0 ≤ 𝓁−𝑛⋅𝑘<(𝑛−𝑘);
+1, if𝑘<0and −𝑘≤ 𝓁−(𝑛+𝑘) ⋅𝑛<𝑛;
+0, otherwise.
+(5)
+We observe that the 1 values of 𝑍are symmetrically distributed on both 
+sides of the 0th diagonal vector. They can be divided into 𝑛submatri-
+ces of size 𝑛 ×𝑛, each having the 0th diagonal vector of 𝑍as its own 
+0th diagonal vector. These submatrices do not overlap with each other. 
+Each submatrix contains 𝑛elements with a value of 1. If we denote 𝑆𝑖, 
+0 ≤𝑖 <𝑛, as the 𝑛submatrices of diagonals of 𝑍, then the 1 values in 
+𝑆𝑖always ﬁll the diagonals 𝑖and 𝑖 −𝑛. Considering these characteristic, 
+we design the diagonal convergence decomposition of 𝑍as follows:
+1. Set the expected maximum non-zero diagonal index as 𝑛′. Divide 
+𝑍into the format 𝑍=𝑍1 +𝑍2, where 𝑍1 is the matrix containing 
+all non-zero diagonal vectors of 𝑍with an index no smaller than 0 
+and 𝑍2 contains the rest of the non-zero diagonal vectors. This step 
+ensures that each submatrix of 𝑍1 and 𝑍2 has at most one non-zero 
+diagonal vector, and each unit with value 1 belongs to a submatrix.
+2. For both 𝑍1 and 𝑍2, perform the following decomposition (assum-
+ing 𝑍1 or 𝑍2 is denoted as 𝑍′):
+(a) For each non-zero diagonal with index 𝑘in 𝑍′, If the absolute 
+value of the index is greater than 𝑛′, decompose it onto the 
+𝑘 −sign(𝑘) ⋅𝑛′diagonal of the left matrix 𝑍′
+𝑙and the sign(𝑘) ⋅𝑛′
+diagonal of the right matrix 𝑍′
+𝑟. If the absolute value of the 
+index is no bigger than 𝑛′, decompose it onto the 𝑛′diagonal 
+of the 𝑍′
+𝑙and the 0diagonal of the 𝑍′
+𝑟.
+(b) After iterating over all non-zero diagonals, if 𝑍′
+𝑙still contains 
+non-zero diagonals greater than 𝑛′, replace 𝑍′with 𝑍′
+𝑙and re-
+peat the decomposition. If no such diagonals exist, return the 
+product of 𝑍′
+𝑙and all the right matrices obtained from the de-
+composition as the ﬁnal decomposition result of 𝑍′.
+Finally, we are able to decompose both 𝑍1 and 𝑍2 into the product 
+of ⌈𝑛−1
+𝑛′⌉matrix, respectively, as follows:
+𝑍=
+⌈𝑛−1
+𝑛′⌉
+∏
+𝑖=1
+𝑍1𝑖+
+⌈𝑛−1
+𝑛′⌉
+∏
+𝑖=1
+𝑍2𝑖. (6)
+The decomposed expressions of both products have the same charac-
+teristic: only the leftmost matrix has non-zero diagonal vectors with 
+indices in the interval [−𝑛′+1, 𝑛′−1 ] ∩ℤ, while the remaining ma-
+trices have only non-zero diagonal vectors with indices −𝑛′, 0(or 𝑛′, 0). 
+Therefore, the dominant complexity lies in the two leftmost linear trans-
+formations of the two matrix products. These two linear transformations 
+still possess the same arithmetic progression property as 𝑍, thus making 
+them suitable for beneﬁting from the double-hoisting BSGS algorithm.
+Decomposition of linear transformation 𝑇 Transformation 𝑇consists of 
+𝑛non-zero diagonal vectors, whose indices are {𝑘 ⋅𝑛|0 ≤𝑘 <𝑛}. For 
+the 𝑘 ⋅𝑛-th non-zero diagonal vector 𝐭𝑘𝑛of 𝑇, the value of its 𝓁-th 
+component 𝐭𝑘𝑛[𝓁] can be expressed as (all operations below involving 
+diagonal vector indices are assumed to be in the residual class [0, 𝑛2−1]
+of (ℤ∕𝑛2ℤ, +))):
+𝐭𝑘𝑛[𝓁]=
+{
+1, if 𝓁∈{𝑘+𝑛⋅𝑖|0 ≤𝑖<𝑛};
+0, otherwise.
+(7)
+Although the units with a value of 1 in 𝑇can not be divided into sub-
+matrices like 𝑍, the non-zero diagonals of 𝑇have a consistent spacing 
+between the units with a value of 1. Speciﬁcally, we observe that the 
+row indices of units with a value of 1 in the same non-zero diagonal 
+Computers & Security 138 (2024) 103658
+8
+X.Ma,C.Ma,Y.Jiangetal.
+Table 2
+Rotation Complexity and Minimal Rtks Number Comparison of LinTrans 𝑍, 𝑇among original double-hoisting 
+BSGS(dh-BSGS), dh-BSGS with Simple Key Substitution (SmpKeySub) and dh-BSGS with Diagonal Vector Conver-
+gence Decomposition (DCDmp). MaxDiagNo.denotes the maximum non-zero diagonal index in the lineartrans-
+formation(s), and MinRotKeys indicates the minimum number of keys required to perform the lineartransfor-
+mation(s).
+Scheme LT MaxDiagNo. MinRotKeys Complexity(Rotations)
+dh-BSGS 𝑍𝑛 −1 𝑛1 +2𝑛2 −2 ( 𝑛1 +2𝑛2) ⋅(𝑀𝑆+𝑃𝑚)+ (2𝑛2 +1) ⋅(𝐷𝑝+𝑀𝐷)
+SmpKeySub 𝑍𝑛 −1 𝑛′
+1 +2𝑛2 −2 ( 𝑛1 +2𝑛2) ⋅(𝑀𝑆+𝑃𝑚)+ (2𝑛2 +𝑛1∕𝑛′
+1 +1) ⋅(𝐷𝑝+𝑀𝐷)
+DCDmp 𝑍𝑛 ′=𝑛1 ⋅𝑛′
+2 𝑛1 +2𝑛′
+2 −1 2( 𝑛1 +𝑛′
+2 +𝑛∕𝑛′−1)⋅(𝑀𝑆+𝑃𝑚)+2( 𝑛′
+2 +𝑛∕𝑛′) ⋅(𝐷𝑝+𝑀𝐷)
+dh-BSGS 𝑇 (𝑛−1)⋅𝑛𝑛 1 +𝑛2 −2 ( 𝑛1 +𝑛2) ⋅(𝑀𝑆+𝑃𝑚)+(𝑛2 +1) ⋅(𝐷𝑝+𝑀𝐷)
+SmpKeySub 𝑇 (𝑛−1)⋅𝑛𝑛 ′
+1 +𝑛2 −2 ( 𝑛1 +𝑛2) ⋅(𝑀𝑆+𝑃𝑚)+(𝑛2 +𝑛1∕𝑛′
+1 +1) ⋅(𝐷𝑝+𝑀𝐷)
+DCDmp 𝑇𝑛 ′⋅𝑛=𝑛1 ⋅𝑛′
+2 ⋅𝑛𝑛1 +𝑛′
+2 −1 ( 𝑛1 +𝑛′
+2 +𝑛∕𝑛′−1)⋅(𝑀𝑆+𝑃𝑚)+( 𝑛′
+2 +𝑛∕𝑛′) ⋅(𝐷𝑝+𝑀𝐷)
+Algorithm 4 Diagonal Convergence Decompose for LinTrans Z (DCD-
+forZ).
+Input:
+𝑛: dimension parameter to create a 𝑍with size 𝑛2 ×𝑛2;
+𝑛′: the target maximum non-zero diagonal index.
+Output: {𝑍1𝑖, 𝑍2𝑖|𝑍=∏⌈𝑛−1
+𝑛′⌉
+𝑖=1 𝑍𝑖}: decomposed matrices.
+1: Assume all indices of diagonal vectors are in residual class (−𝑛2∕2, 𝑛2∕2].
+2: Set 𝑍1 as the matrix containing all non-zero diagonal vectors of 𝑍with an index no 
+smaller than 0, and set 𝑍2 as the matrix containing the rest of the non-zero diagonal 
+vectors of 𝑍.
+3: fort=1,2 do
+4: for𝑖 =1 to ⌈𝑛−1
+𝑛′ ⌉ −1 do
+5: Initialize  matrices 𝑍(𝑙)
+𝑡, 𝑍(𝑟)
+𝑡 as zero matrices.
+6: foreach non-zero diagonal vector with index |𝑘| ≥𝑛′in 𝑍𝑡do
+7: Decompose  the vector to the 𝑛′-th non-zero diagonal vector of the right ma-
+trix 𝑍(𝑟)
+𝑡 and the (𝑘 −sign(𝑘) ⋅𝑛′)-th diagonal of the left matrix 𝑍(𝑙)
+𝑡.
+8: end for
+9: foreach non-zero diagonal vector 𝑘 <𝑛′in 𝑍𝑡do
+10: Decompose  the vector to the 0-th non-zero diagonal vector of the right matrix 
+𝑍(𝑟)
+𝑡 and the 𝑘-th diagonal of the left matrix 𝑍(𝑙)
+𝑡.
+11: end for
+12: (At  this point, 𝑍𝑡=𝑍(𝑙)
+𝑡𝑍(𝑟)
+𝑡)
+13: if𝑖 ≠⌈𝑛−1
+𝑛′ ⌉ −1 then
+14: 𝑍𝑡(⌈𝑛−1
+𝑛′⌉−𝑖+1) ←𝑍(𝑟)
+𝑡 , 𝑍𝑡←𝑍(𝑙)
+𝑡
+15: else
+16: 𝑍𝑡(⌈𝑛−1
+𝑛′⌉−𝑖+1) ←𝑍(𝑟)
+𝑡 , 𝑍𝑡1 ←𝑍(𝑙)
+𝑡
+17: end if
+18: end for
+19: end for
+20: return {𝑍1𝑖, 𝑍2𝑖|𝑍=∏⌈𝑛−1
+𝑛′⌉
+𝑖=1 𝑍𝑖}
+vector are congruent modulo 𝑛. This implies that the row sequence of 
+1-valued units on the 𝑘𝑛-th non-zero diagonal of 𝑇forms a coset 𝑘 +⟨𝑛⟩
+of an 𝑛-order subgroup ⟨𝑛⟩in ℤ∕𝑛2ℤ. According to Deﬁnition3, their 
+column sequences also form the same coset. If we attempt to decom-
+pose any diagonal 𝑘𝑛in 𝑇onto a diagonal of index divisible by 𝑛in the 
+right matrix 𝑇1 and the left matrix 𝑇2, then the 1-valued units on these 
+two diagonals in the left and right matrices will inherit the property of 
+forming the coset 𝑘 +⟨𝑛⟩. Furthermore, if any two diagonals 𝑘𝑛and 𝑘′𝑛
+with the coset properties 𝑖 +⟨𝑛⟩and 𝑗+ ⟨𝑛⟩, respectively, are decom-
+posed onto the 𝑘1𝑛diagonal of the right matrix (or left matrix), then the 
+1-valued units in that diagonal will form a set (𝑖 +⟨𝑛⟩) ∪𝑗+⟨𝑛⟩). Based 
+on these observations, we can repeatedly decompose the diagonals in 𝑇
+that have indices greater than the expected maximum non-zero diago-
+nal index 𝑛 ⋅𝑛′into diagonals 𝑘 −𝑛 ⋅𝑛′and 𝑛 ⋅𝑛′, ultimately decomposing 
+𝑇into the product of ⌈𝑛−1
+𝑛′⌉matrices:
+𝑇=
+⌈𝑛−1
+𝑛′⌉
+∏
+𝑖=1
+𝑇𝑖. (8)
+Similar to the decomposition of Z, onlythe  leftmost matrix in the prod-
+uct contains non-zero diagonals with indices in {𝑘𝑛|𝑘 =0, 1, …  , 𝑛′}, 
+while all other right matrices have only non-zero diagonals with indices 
+𝑛′𝑛and 0. This implies that the complexity of the product is dominated 
+by the complexity of the leftmost linear transformation, whose diago-
+nal indices belong to a smaller range compared to the original approach. 
+The detailed decomposition process is provided in Algorithm5.
+Algorithm 5 Diagonal Convergence Decompose for LinTrans T (DCD-
+forT).
+Input:
+𝑛: the dimension parameter for creating a 𝑇with size 𝑛2 ×𝑛2;
+𝑛′⋅𝑛: the target maximum non-zero diagonal index.
+Output: {𝑇𝑖|𝑇=∏⌈𝑛−1
+𝑛′⌉
+𝑖=1 𝑇𝑖}decomposed matrices of linear transformation 𝑇.
+1: Assume that all indices of diagonal vectors are in residual class [0, 𝑛2 −1]
+2: for𝑖 =1 to ⌈𝑛−1
+𝑛′ ⌉ −1 do
+3: Initialize  𝑇(0) and 𝑇(1) as zero matrices.
+4: Traverse  the 𝑖 ⋅𝑛-th non-zero diagonal of 𝑇, where 0 ≤𝑖 ≤𝑛′, and decompose it 
+onto the 0th diagonal of the right matrix 𝑇(𝑟) and the 𝑖 ⋅𝑛-th diagonal of the left 
+matrix 𝑇(𝑙).
+5: Traverse  the 𝑖 ⋅𝑛-th non-zero diagonal of 𝑇, where 𝑛′<𝑖 ≤(𝑛 −1), and decompose 
+it onto the 𝑛′⋅𝑛-th diagonal of the right matrix 𝑇(𝑟) and the (𝑖 −𝑛′) ⋅𝑛-th diagonal 
+of the left matrix 𝑇(𝑙).
+6: (At  this point, 𝑇=𝑇(𝑙)𝑇(𝑟))
+7: if𝑖 ≠⌈𝑛−1
+𝑛′ ⌉ −1 then
+8: 𝑇⌈𝑛−1
+𝑛′⌉−𝑖+1 ←𝑇(𝑟), 𝑇←𝑇(𝑙)
+9: else
+10: 𝑇⌈𝑛−1
+𝑛′⌉−𝑖+1 ←𝑇(𝑟), 𝑇1 ←𝑇(𝑙)
+11: end if
+12: end for
+13: return {𝑇𝑖|𝑇=∏⌈𝑛−1
+𝑛′⌉
+𝑖=1 𝑇𝑖}
+After formulating the diagonal convergence decomposition for 𝑍
+and 𝑇, we proceed to analyze its impact on the number of rotation 
+keys and rotation complexity. Let 𝑛1 and 𝑛2 continue to represent the 
+inner loop and outer loop counts of the original double-hoisting BSGS 
+applied to 𝑍(or 𝑇). Since both the diagonal convergence decomposi-
+tions for 𝑍and 𝑇are able to reduce the non-zero diagonal vectors from 
+𝑛 −1to 𝑛′, for a ﬁxed 𝑛1, the decomposition shrinks the number of keys 
+required for the outer loop (of 𝑍and 𝑇) with a factor of 
+𝑛′
+2
+𝑛2−1, where 
+𝑛′
+2 =𝑛′∕𝑛1. As for the rotation complexity, the primary complexity for 𝑍
+and 𝑇after decomposition arises from the leftmost matrices in the ma-
+trix products, which require (𝑛1 +𝑛′
+2)(𝑀𝑆+𝑃𝑚) +(𝑛′
+2 +1)(𝐷𝑝 +𝑀𝐷). 
+The extra (𝑛∕𝑛′−1) ⋅(𝑀𝑆+𝑃𝑚 +𝐷𝑝 +𝑀𝐷)is attributed to the 𝑛∕𝑛′−1
+matrices on the right side. We compare the number of rotation keys 
+and computational complexity (in terms of internal rotation operations) 
+among the diagonal convergence decomposition, simple key substitu-
+tion method, and the dh-BSGS algorithm without any key simpliﬁcation 
+strategy for the 𝑍and 𝑇transformations, as shown in Table 2. More 
+detailed experimental data obtained from speciﬁc conﬁgurations will 
+be discussed in the implementation section. Additionally, we present 
+the complete process of ciphertext decomposition matrix multiplication 
+with diagonal convergence decomposition in Algorithm6, omitting in-
+ternal optimization details such as double-hoisting and hoisting, and 
+providing a high-level illustrative ﬂow.
+4.3. Security discussion
+Theorem 2. The homomorphic encryption scheme, enhanced with the ho-
+momorphic matrix multiplication with proposed hoisting optimization and 
+Computers & Security 138 (2024) 103658
+9
+X.Ma,C.Ma,Y.Jiangetal.
+Algorithm 6 Matrix Multiplication using Diagonal Convergence Decom-
+position (DMatrixMult).
+Input:
+ct(𝐴), ct(𝐵): ciphertexts encrypting matrices 𝐴and 𝐵with size 𝑛 ×𝑛;
+𝑛′
+𝑍: expected maximum non-zero diagonal index for 𝑍;
+𝑛 ⋅𝑛′
+𝑇: expected maximum non-zero diagonal index for 𝑇.
+Output: ;
+ct(𝐴𝐵): encrypted multiplication result between matrices 𝐴and 𝐵
+1: {𝑍1𝑖}, {𝑍2𝑖} ←DCDforZ(𝑛2, 𝑛′
+𝑍)
+2: {𝑇𝑖} ←DCDforT(𝑛2, 𝑛 ⋅𝑛′
+𝑇)
+3: 𝑐𝑡(𝐴1), 𝑐𝑡(𝐴2) ←𝑐𝑡(𝐴)
+4: 𝑐𝑡(𝐵(0)) ←𝑐𝑡(𝐵)
+5: for𝑍1𝑖in {𝑍1𝑖} do
+6: ct (𝐴1) ←LinTrans(ct(𝐴1), 𝑍1𝑖)
+7: end for
+8: for𝑍2𝑖in {𝑍2𝑖} do
+9: 𝑐𝑡(𝐴2) ←LinTrans(𝑐𝑡(𝐴2), 𝑍2𝑖)
+10: end for
+11: 𝑐𝑡(𝐴(0)) ←Add(𝑐𝑡(𝐴1), 𝑐𝑡(𝐴2))
+12: for𝑇𝑖in {𝑇𝑖} do
+13: ct (𝐵(0)) ←LinTrans(ct(𝐵(0)), 𝑇𝑖)
+14: end for
+15: ct(𝐴𝐵) ←Mul(ct(𝐴(0)), ct(𝐵(0)))
+16: for 1 ≤𝑘 <𝑛do
+17: ct (𝐴(𝑘)) ←LinTrans(ct(𝐴(0), 𝐶𝑘)
+18: ct (𝐵(𝑘)) ←LinTrans(ct(𝐵(0), 𝑅𝑘)
+19: ct (𝐴𝐵(𝑘)) ←Mul(ct(𝐴(𝑘)), ct(𝐵(𝑘)))
+20: ct (𝐴𝐵) ←Add(ct(𝐴𝐵(𝑘)), ct(𝐴𝐵))
+21: end for
+22: return ct(𝐴𝐵)
+rotation key reduction techniques, maintains an equivalent level of security 
+to the original scheme.
+Proof. Our aforementioned modiﬁcations on the homomorphic multi-
+plication exclusively manipulate existing ciphertexts and do not involve 
+any participation of private keys. This implies that our revisions are 
+independent of the security assumptions, encryption, and decryption 
+processes of the underlying homomorphic encryption scheme. □
+According to Theorem 2, the IND-CPA nature of the homomorphic 
+encryption scheme will not be aﬀected by our modiﬁed operations as 
+long as its ciphertexts are originally pseudorandom. Theoretically, any 
+entity that has access to corresponding public keys may perform these 
+operations on ciphertexts, but the entity’s knowledge of the plaintext 
+contained in the ciphertext remains unchanged before and after the 
+operations.
+5. Homomorphic covariance matrix computation for large 
+datasets
+In this section, We move on to present the method to pack large 
+datasets into ciphertexts which enables seamless execution of the ho-
+momorphic matrix multiplication (see Section5.1) and a homomorphic 
+circuit that eﬃciently computes the covariance matrix of the packed 
+and encrypted dataset, see Section5.2.
+5.1. Ciphertext packing
+For a given power of two, 𝑁, CKKS allows the encryption of a vector 
+in ℂ𝑁∕2, as a whole to obtain a ciphertext (please refer to AppendixA
+for more detail). Operations on the ciphertext may induce correspond-
+ing computations on the underlying plaintext. Therefore, how we parti-
+tion and package our dataset into ciphertexts signiﬁcantly impacts the 
+eﬃciency of privacy-preserving computations. Let 𝑋be an 𝑠 ×𝑡dataset, 
+where 𝑠represents the number of samples and 𝑡represents the number 
+of features. We partition 𝑋into square submatrices with size 𝑛 ×𝑛, 
+where 𝑛2 equals the CKKS scheme parameter 𝑁∕2. This allows us to 
+encode each submatrix into one ciphertext. Features of the dataset are 
+divided into 𝑘partitions, where 𝑘 = ⌈𝑡
+𝑛⌉. In this way, each ciphertext 
+will contain one partition of features from 𝑛samples/records. Note that 
+𝑡is not always divisible by 𝑛, so zero-padding is necessary. Two possible 
+methods for padding are as follows:
+1. The ﬁrst 𝑘 −1 columns of submatrices each contain 𝑛features, 
+while the last column of submatrices contains the last 𝑡 −𝑘 ⋅𝑛
+features and pads the rest of its space with zeros. This approach 
+expands the feature count from 𝑡to 𝑘 ⋅𝑛and treats each ciphertext 
+as an 𝑛 ×𝑛matrix representing 𝑛samples with 𝑛features.
+2. All columns of submatrices store only 𝑛 −𝑝valid features and pad 
+the rest of their space with zeros, where 𝑝 =⌊(𝑡 −𝑘 ⋅𝑛)∕𝑘⌋. This ap-
+proach allows each ciphertext to be viewed as an 𝑛 ×(𝑛 −𝑝)matrix, 
+taking advantage of some possible optimizations for rectangular 
+matrix multiplication while still enabling operations on square ma-
+trices.
+In summary, ⌈𝑠∕𝑛⌉ ⋅𝑘ciphertexts are required to pack the entire 
+dataset𝑋.
+5.2. Homomorphic covariance matrix computation for large datasets
+We present a method for computing the covariance matrix of an 
+encrypted dataset. Assume that we have partitioned 𝑋into ⌈𝑠∕𝑛⌉ ⋅𝑘
+ciphertexts, with each ciphertext representing an 𝑛 ×𝑛submatrix of 
+𝑋. We denote 𝑋𝑖as the 𝑖-th column submatrix of 𝑋, where 0 ≤𝑖 <𝑘. 
+We also denote 𝑋𝑖[𝓁]as the 𝓁-th submatrix of 𝑋𝑖and ct(𝑋𝑖[𝓁]as the 
+ciphertext of 𝑋𝑖[𝓁]. We need to calculate the mean ‘vector’ 𝜇of the 
+dataset if it is not centered. 𝜇is represented by 𝑘submatrices, where 
+each column contains 𝑛replication of one feature’s mean value. 0 ≤
+𝑖 <𝑘, denote 𝜇[𝑖] as the 𝑖-th submatrix of the mean vector. 𝜇can be 
+computed through the following equation:
+𝜇[𝑖]= Aggregate
+(
+∑
+0≤𝓁<⌈𝑠∕𝑛⌉
+𝑋𝑖[𝓁];0
+)
+, (9)
+where Aggregate(𝑋; axis), axis∈1,0represents aggregating a matrix 𝑋
+by columns (axis=1) or by rows (axis=0). Thisalgorithm  requires at 
+most 1 multiplication depth (see Algorithm7).
+Algorithm 7 Aggregate.
+Input:
+𝑐𝑡(𝑋): encrypted matrix 𝑋with size row×col;
+axis: aggregation axis.
+Output:
+𝑐𝑡(Aggregate(𝑋; axis))
+1: 𝑐𝑡(𝐴) ←𝑐𝑡(𝑋)
+2: ifaxis==0 then
+3: for𝑖 ←𝑐𝑜𝑙; 𝑖 <row ⋅col; 𝑖 =(𝑖 <<1) do
+4: 𝑐𝑡(𝐴) ←Add(Rot(𝑐𝑡(𝐴); 𝑖), 𝑐𝑡(𝐴))
+5: end for
+6: end if
+7: ifaxis==1 then
+8: for𝑖 ←1; 𝑖 <col; 𝑖 =(𝑖 <<1) do
+9: 𝑐𝑡(𝐴) ←Add(Rot(𝑐𝑡(𝐴); 𝑖), 𝑐𝑡(𝐴))
+10: end for
+11: 𝑐𝑡(𝐴) ←Mult(𝑐𝑡(𝐴), 𝑝𝑡(𝑀)), where 𝑀is a mask matrix with the same dimensions 
+as 𝑋, except for the ﬁrst column elements which are all 1 and other elements are 
+0
+12: for𝑖 ∶=−1; 𝑖 >−𝑐𝑜𝑙; 𝑖 =(𝑖 <<1) do
+13: 𝑐𝑡(𝐴) ←Add(Rot(𝑐𝑡(𝐴); 𝑖), 𝑐𝑡(𝐴))
+14: end for
+15: end if
+16: return ct(𝐴)
+Next, matrix 𝜇𝑇𝜇can be simply computed by transpositions and 
+coordinate-wise multiplications:
+𝜇𝑇𝜇𝑖[𝑗]= 𝜇[𝑗]𝑇⊙𝜇[𝑖]. (10)
+We then move on to compute each submatrix unit in 𝑋𝑇𝑋. For the 
+submatrix 𝑋𝑇𝑋𝑖[𝑗], we iterate through each submatrix in column 𝑋𝑖
+Computers & Security 138 (2024) 103658
+10
+X.Ma,C.Ma,Y.Jiangetal.
+and multiply it with the transposition of the corresponding submatrix 
+in column 𝑋𝑗:
+𝑋𝑇𝑋𝑖[𝑗]=
+∑
+0≤𝓁<⌈𝑠∕𝑛⌉
+𝑋𝑗[𝓁]𝑇𝑋𝑖[𝓁]. (11)
+Here, each matrix multiplication can be performed in ciphertext space 
+using our improved homomorphic matrix multiplication. If 𝑋is already 
+centered, then 𝑋𝑇𝑋represents the covariance matrix. Otherwise, 𝑋𝑇𝑋
+should be subtracted by 𝜇𝑇𝜇to become the covariance matrix. It is 
+worth noting that directly computing the covariance matrix homomor-
+phically using the equation above is not the most eﬃcient implementa-
+tion. We provide the following optimizations:
+1. Notice that for a given 0 ≤𝑗<𝑘, there is a one-to-many matrix mul-
+tiplication scenario between 𝑋𝑗[𝓁] and matrix set {𝑋𝑖[𝓁]|0 ≤𝑖 <
+𝑘}in the equation above. We can perform the inner product opera-
+tions of 𝑘 columns of submatrices in parallel:∑
+0≤𝓁<⌈𝑠∕𝑛⌉𝑋𝑗[𝓁]𝑇𝑋𝑖[𝓁], 0 ≤ 𝑖 <𝑘, and save time by storing 
+{𝐶𝑘𝑍ct(𝑋𝑗[𝓁]𝑇)|0 ≤ 𝓁<⌈𝑠∕𝑛⌉}.
+2. We can further cache all {𝑅𝑘𝑇𝑐𝑡(𝑋𝑖[𝓁])|0 ≤ 𝓁<⌈𝑠∕𝑛⌉, 0 ≤𝑗<𝑘}, 
+so that each 𝑋𝑖[𝓁]only needs to undergo one 𝑇transformation and 
+𝑛 −1row transformations throughout the entire covariance matrix 
+computation process.
+3. Based on the fact that the covariance matrix is a symmetric ma-
+trix, it suﬃces to calculate the results of one side of the diagonal 
+and transpose them to obtain the results for the other side, saving 
+nearly half of the covariance computation time.
+However, the ciphertexts required to be stored in Optimization 1 and 
+2 usually cannot be fully cached in memory due to space limitations. 
+Therefore, it is often necessary to split the dataset into suitable segments 
+by rows and apply Optimization 1 and 2 segment by segment.
+We present the computation of the entire encrypted covariance 
+matrix with the aforementioned Optimization 3 in Algorithm 8. Op-
+timization 1 and 2 are not explicitly shown in the algorithm since they 
+involve restructuring the internal computation order of the DMtrixMult 
+function. Theorem 3 provides the multiplication depth and computa-
+tion complexity of Algorithm 8, where the computation complexity is 
+measured at the granularity of matrix multiplications since matrix mul-
+tiplication can be implemented using diﬀerent methods with varying 
+complexities (such as whether to use Optimization 1 and 2).
+Theorem 3. The multiplication depth of Algorithm 8 is 2 +max(⌈(𝑛−1)
+𝑛𝑍
+⌉,
+⌈(𝑛−1)∗𝑛
+𝑛𝑇
+⌉) +2, and the time complexity is dominated by the number of ma-
+trix multiplications, which is 𝑂(⌈𝑘2
+2 ⌉ ⋅⌈𝑠∕𝑛⌉).
+Proof. We need 2 multiplication depths for matrix transpositions, 2 
+depths for column shiftings and ciphertext multiplications in the DMa-
+trixMult function, and 𝑘 =𝑚𝑎𝑥(𝑘1, 𝑘2) depths for the linear transfor-
+mations 𝑍and 𝑇, where 𝑘1 = ⌈(𝑛−1)
+𝑛𝑍
+⌉is the number of depth used for 
+decomposed 𝑍, and 𝑘2 =⌈(𝑛−1)⋅𝑛
+𝑛𝑇
+⌉is the number of depth used for de-
+composed 𝑇. □
+6. Privacy-preserving PCA using homomorphic PowerMethod
+We present the homomorphic evaluation circuit of the PowerMethod 
+algorithm in the ﬁrst subsection and demonstrate the process of per-
+forming privacy-preserving PCA utilizing our homomorphic Power-
+Method circuit in the second subsection. In the ﬁnal subsection, we pro-
+vide comprehensive security proof for our proposed privacy-preserving 
+PCA.
+Algorithm 8 Homomorphic Covariance Matrix Computation 
+(HCovMtrx).
+Input:
+{ct(𝑋𝑗[𝓁])|0 ≤𝑗<𝑘, 0 ≤ 𝓁<⌈𝑠∕𝑛⌉}: partitioned and encrypted dataset;
+𝑛𝑍: maximum diagonal index for transformation 𝑍;
+𝑛𝑇: maximum diagonal index 𝑛𝑇for transformation 𝑇;
+Output:
+{ct(Cov𝑖[𝑗])|0 ≤𝑖, 𝑗<𝑘}: partitioned and encrypted covariance matrix.
+1: for 0 ≤𝑗<𝑘do
+2: Take  ct(𝑋𝑗[𝓁]), 0 ≤ 𝓁<⌈𝑠∕𝑛⌉, ct(𝜇[𝑗]) ←∑
+0≤𝓁<⌈𝑠∕𝑛⌉𝑋𝑖[𝓁]
+3: for𝑛 ≤𝑡 <𝑛2 do
+4: 𝑐𝑡(𝜇[𝑗]) ←Add(ct(𝜇[𝑗]), Rot(ct(𝜇[𝑗]); 𝑡))
+5: 𝑡 ←𝑡 <<1
+6: end for
+7: ct (𝑋𝑗[𝓁]𝑇) ←LinTrans(ct(𝑋𝑗[𝓁]), G){perform transposition with permutation ma-
+trix 𝐺in parallel for 0 ≤ 𝓁<⌈𝑠∕𝑛⌉}
+8: for 0 ≤𝑖 <𝑗do
+9: ct (𝑋𝑗[𝓁]𝑇𝑋𝑖[𝓁]) ←DMtrxMul(ct(𝑋𝑗[𝓁]𝑇), ct(𝑋𝑖[𝓁]), 𝑛, 𝑛𝑍, 𝑛𝑇){compute in par-
+allel for 0 ≤ 𝓁<⌈𝑠∕𝑛⌉}
+10: ct (𝑋𝑇𝑋𝑖[𝑗]) ←∑
+0≤𝑖<𝑘ct(𝑋𝑗[𝓁]𝑇𝑋𝑖[𝓁]); {aggregate the parallel computation re-
+sults}
+11: end for
+12: end for
+13: for 0 ≤𝑗<𝑘do
+14: for𝑗≤𝑖 <𝑘do
+15: 𝑐𝑡(𝑋𝑇𝑋𝑖[𝑗]) ←LinTrans(𝑐𝑡(𝑋𝑇𝑋𝑗[𝑖]), G)
+16: end for
+17: end for
+18: for 0 ≤𝑗<𝑘do
+19: ct (𝜇[𝑗]𝑇) ←LinTrans(ct(𝜇[𝑗]), 𝑇)
+20: for 0 ≤𝑖 <𝑘do
+21: ct (𝜇𝑇𝜇𝑖[𝑗]) ←Mul(ct(𝜇[𝑗]𝑇), ct(𝜇[𝑖]))
+22: ct (Cov𝑖[𝑗]) ←Add(𝑐𝑡(𝑋𝑇𝑋𝑖[𝑗]), 𝑐𝑡(−𝜇𝑇𝜇𝑖[𝑗]))
+23: end for
+24: end for
+25: return {ct(Cov𝑖[𝑗])|0 ≤𝑖, 𝑗<𝑘}
+6.1. Homomorphic PowerMethod circuit
+We divide the demonstration of the homomorphic PowerMethod 
+into three pivotal components: (i) the continuous transformation of the 
+covariance matrix, (ii) the normalization of the approximate eigenvec-
+tor, and (iii) the computation of the eigenvalue corresponding to the 
+eigenvector.
+6.1.1. Covariance matrix transformation
+For a column vector (or row vector) with 𝑡components (𝑡is denoted 
+as the number of features in Section5.1), we replicate it into a column 
+(or row) of submatrices using the following approach:
+1. Divide the vector evenly into 𝑘segments where each segment con-
+tains 𝑛entries. The zero padding strategy is needed and should be 
+consistent with the one used in ciphertext packing when 𝑡is not 
+divisible by 𝑘.
+2. Horizontally (or vertically) replicate these 𝑘segments of column 
+vectors (or row vectors) 𝑛times to construct 𝑘submatrices.
+The continuous linear transformation will be alternately applied to the 
+horizontally replicated vector and the vertically replicated vector. Let 
+𝑉𝑡−1be a set of sub-matrices representing a replicated column vector 
+𝐯𝑡−1. For 0 ≤𝑖 <𝑘, the covariance matrix transformation 𝐯𝑡=Cov𝐯𝑡−1
+can be computed as:
+𝑉𝑡[𝑖]= Aggregate
+(
+∑
+0≤𝑗<𝑘
+(Cov𝑗[𝑖]⊙𝑉𝑡−1[𝑗]𝑇)𝑇;0
+)
+=Aggregate
+(
+∑
+0≤𝑗<𝑘
+Cov𝑗[𝑖]𝑇⊙𝑉𝑡−1[𝑗];0
+)
+.
+(12)
+Here, 𝑉𝑡={𝑉𝑡[𝑖]|0 ≤𝑖 <𝑘} represent the replicated row vector 𝑣𝑇
+𝑡. If 
+𝑉𝑡−1represents a replicated row vector 𝐯𝑇
+𝑡−1, then for 0 ≤𝑖 <𝑘, the: 
+covariance matrix transformation 𝐯𝑇
+𝑡= 𝐯𝑇
+𝑡−1Covcan  be computed as:
+Computers & Security 138 (2024) 103658
+11
+X.Ma,C.Ma,Y.Jiangetal.
+𝑉𝑡[𝑖]= Aggregate
+(
+∑
+0≤𝑗<𝑘
+𝑉𝑡−1[𝑗]⊙Cov𝑖[𝑗]𝑇;1
+)
+, (13)
+where 𝑉𝑡represents the replicated column vector 𝐯𝑡. This equation 
+holds because the covariance matrix Cov is symmetric, i.e., Cov𝑗[𝑖]𝑇=
+Cov𝑖[𝑗]. Now We can perform the covariance matrix transformation on 
+a vector continuously using these two equations alternately.
+The entire process of the continuous covariance matrix transforma-
+tion can be described as the following. At the onset of the PowerMethod 
+iteration, we initially select a row vector as the approximate eigenvec-
+tor, denoted as 𝑣0. We replicate it into a row of submatrices denoted as 
+𝑉0. The set of submatrices representing the approximate eigenvector in 
+the 𝑡-th iteration is computed as:
+𝑉𝑡[𝑖]=Aggregate
+(
+∑
+0≤𝑗<𝑘
+𝑉𝑡−1[𝑗]⊙Cov𝑗[𝑖];𝑡+1 mod 2
+)
+⋅(𝑡+1 mod 2)+
+Aggregate
+(
+∑
+0≤𝑗<𝑘
+𝑉𝑡−1[𝑗]⊙Cov𝑖[𝑗];𝑡mod 2
+)
+⋅(𝑡mod 2).
+(14)
+6.1.2. Vector normalization
+Vector normalization should be performed in each iteration of the 
+PowerMethod to the length of the eigenvectors from continually in-
+creasing or decreasing, which could lead to overﬂow. Normalizing a 
+vector 𝐯is done by applying a scaling factor of 1
+||𝐯||2
+to each component 
+of the vector. Speciﬁcally, the scaling factor is obtained by evaluating 
+the InvSRT function at the point ⟨𝐯, 𝐯⟩. We mentioned that we can only 
+use the iterative InvSRT algorithm to approximate the eﬀect of InvSRT 
+in the homomorphic encryption scenario (see Section3.7). We summa-
+rize the following factors that signiﬁcantly inﬂuence the accuracy of the 
+iterative InvSRT algorithm:
+1. Initial approximation: Given a ﬁxed number of iterations, a closer 
+initial approximation to the exact value yields more accurate re-
+sults from the iterative algorithm. Conversely, an initial estimate 
+that deviates signiﬁcantly from the exact value may prevent the 
+iterative algorithm from converging. Since the function 1√
+𝑥ex-
+hibits signiﬁcant changes in slope on both sides of 1, resembling 
+an “L” shape, determining an initial approximation that simulta-
+neously approximates the exact value on both sides of 1 using a 
+simple function (such as a low-degree polynomial) may be insuf-
+ﬁcient. However, constructing an initial approximation evaluation 
+method that closely approximates the exact value on both sides of 
+the evaluation interval can itself be a complex task. For example, 
+approaches such as the piecewise function used in Panda (2022)
+or the rational polynomial function discussed in Qu and Xu (2022)
+yield initial estimates that are closer to the exact value. However, 
+even these functions require an iterative approximation in the ho-
+momorphic setting.
+2. Number of iterations: The more iterations performed, the closer the 
+output of the iterative InvSqrt algorithm will be to the exact value.
+To set up a good iterative InvSRT algorithm for the vector normaliza-
+tion in the homomorphic PowerMethod, our ﬁrst step is to determine 
+the upper bound of the norm of the approximate eigenvectors in order 
+to establish the evaluation interval for the iterative InvSRT. Subse-
+quently, we propose a Lazy Normalization strategy for the approximate 
+eigenvector normalization in the PowerMethod. This strategy tolerates 
+imprecise outputs of the iterative InvSRT algorithm within the input in-
+terval (0,1] during some rounds of the PowerMethod. However, it aims 
+to achieve highly accurate outputs in the ﬁnal iteration to ensure that 
+the resulting eigenvectors are normalized.
+Estimating the upper bound of the norm After the dataset has undergone 
+normalization and centering, we assume that all of its units are bounded 
+within 𝑏 >0. For each element in the covariance matrix Cov, we have 
+the bound |Cov𝑖𝑗| = 1
+𝑛| ⟨𝐱𝑖, 𝐱𝑗
+⟩| ≤𝑏2, where 𝐱𝑖, 0 ≤𝑖 <𝑑represents the 
+vector composed of the 𝑖-th feature values of all samples in the dataset. 
+Therefore, the Euclidean norm of vector Cov𝑖is bounded by ||Cov𝑖||2 ≤√
+𝑏4 ⋅𝑑. With this information, we can estimate the upper bound of 
+the norm for an approximate eigenvector 𝐲produced by the covariance 
+matrix transformation 𝐲=Cov ⋅𝐯with the following inequality:
+||𝐲||2 =
+√√
+√√
+𝑑∑
+𝑖=1
+|𝑦𝑖|2
+=
+√√
+√√
+𝑑∑
+𝑖=1
+(Cov𝑖1𝑣1 +Cov𝑖2𝑣2 + ⋯ +Cov𝑖𝑑𝑣𝑑)2 ≤𝑏2 ⋅𝑐⋅𝑑, (15)
+where the Euclidean norm of the input approximate eigenvector 𝐯 is 
+bounded by 𝑐. In practical applications, diﬀerent feature columns 𝐱𝑖
+may have diﬀerent bounds 𝑏𝑖. If the cloud service provider has legal 
+access to these bounds, tighter upper bounds can be constructed. In this 
+case, we have Cov𝑖𝑗= 1
+𝑛| ⟨𝐱𝑖, 𝐱𝑗
+⟩| ≤𝑏𝑖𝑏𝑗, ||Cov𝑖||2 ≤
+√∑
+0≤𝑗<𝑑𝑏2
+𝑖𝑏2
+𝑗
+, 
+and the upper bound of the Euclidean norm of 𝐲can be expressed as:
+||𝐲||2 =
+√√
+√√
+𝑑∑
+𝑖=1
+(Cov𝑖1𝑣1 +Cov𝑖2𝑣2 + ⋯ +Cov𝑖𝑑𝑣𝑑)2
+≤
+√√
+√
+√√
+𝑑∑
+𝑖=1
+(
+𝑑∑
+𝑗=1
+𝑏2
+𝑖𝑏2
+𝑗
+) ⋅𝑐2). (16)
+Lazy normalization Based on the upper bound of the Euclidean norm, 
+we design a vector normalization method called Lazy Normalization
+to scale the eigenvectors. Let 𝐲 remain the approximate eigenvector 
+obtained from the covariance matrix transformation 𝐲 =Cov ⋅𝐯, and 
+denote the upper bound for its Euclidean norm as 𝐵. We then set 
+the evaluation interval for the iterative InvSRT algorithm as (0, 𝐵2]. 
+As previously mentioned in this section, a reasonably accurate initial 
+approximation within this interval should be identiﬁed to reduce the 
+number of rounds executed in the iterative InvSRT. To achieve this, 
+we conduct an odd-degree Taylor expansion 𝑇(𝑥) of 𝑓(𝑥) = 1√
+𝑥cen-
+tered at the midpoint 𝐵2∕2 +1. This expansion serves as the initial 
+approximation function for the iterative InvSRT (see Algorithm 9). It 
+has been empirically demonstrated that such a Taylor expansion en-
+ables the subsequent iterative InvSRT to converge within a relatively 
+modest number of iterations (Qu and Xu, 2022), as compared to alter-
+native approaches (Gizem et al., 2015), (Panda, 2021), (Panda, 2022). 
+The iterative InvSRT then takes the initial approximation 𝑇(⟨𝐲, 𝐲⟩) as 
+input and iterate 𝜏times to obtain a more accurate value of 1
+||𝐲||2
+. The 
+approximate eigenvector is then multiplied by the output of the itera-
+tive InvSRT to perform the normalization.
+For any 𝑥 ∈( 0, 𝑏4 ⋅𝑐2 ⋅𝑑2], it holds that 𝑇(𝑥) ≤ 1√
+𝑥(Qu and Xu, 
+2022). Furthermore, the iterative InvSRT output is no greater than the 
+ground truth of InvSRT (Theorem4). Hence, we can estimate that both 
+the Euclidean have an upper bound of 1 after the normalization. This 
+allows us to recompute the upper bound of the Euclidean norm for the 
+next approximate eigenvector 𝐲′=Cov ⋅𝐲. In particular, if the length of 
+𝐯is initially 1, then the upper bound of ||𝐲′||2 remains unchanged and 
+equal to the upper bound of ||𝐲||2.
+The degree of 𝑇(𝑥) is minimized to prevent generating extremely 
+small high-degree coeﬃcients that exceed the precision range of the 
+homomorphic encryption scheme. This may lead to a result that the 
+accuracy of 𝑇(𝑥)in the interval (0, 1)is lower compared to the interval 
+[1, 𝐵2], due to the signiﬁcant diﬀerence in slopes on both sides of 1for 
+1√
+𝑥. Subsequent iterative InvSRT inherits this disparity of accuracy. It 
+is impractical to achieve the same level of accuracy for the iterative 
+InvSRT across the evaluation interval (0, 1) as in the interval [1, 𝐵2], 
+Computers & Security 138 (2024) 103658
+12
+X.Ma,C.Ma,Y.Jiangetal.
+since a signiﬁcant number of iterations is required. The best we can 
+do is to make an assumption that the covariance matrix transformation 
+does not shrink the length of vectors by more than a factor of 𝑆. Based 
+on this assumption, we can attempt to ensure that (i) the length of the 
+eigenvector does not underﬂow during the PowerMethod iterations and 
+(ii) the length of the ﬁnal output eigenvector from the PowerMethod is 
+suﬃciently close to 1.
+Therefore, our strategy is as follows. Let 𝐵′be a precision bound, 𝑒
+be an error bound, and 𝑡be the expected number of PowerMethod iter-
+ations. Denote 𝑆as the contraction coeﬃcient of the covariance matrix 
+transformation, which means that any vector, when transformed by the 
+covariance matrix, is reduced in length by at most a factor of 𝑆. We then 
+simulate the PowerMethod iterations on a unit-length vector to obtain 
+the best-ﬁt number of iterative InvSRT iterations in each PowerMethod 
+iteration:
+1. We start with an initial length 𝑙of 1. In each PowerMethod itera-
+tion, we ﬁrst update 𝑙directly as 𝑙←𝑙⋅𝑆, without performing any 
+actual covariance matrix transformation.
+2. Subsequently, we evaluate 𝑇(𝑙2) and feed it into the iterative In-
+vSRT. The resulting output, denoted as 𝑆′, must satisfy the follow-
+ing two conditions: (i) (𝑙⋅𝑆′⋅𝑆)2 should not underﬂow beyond the 
+predetermined precision bound 𝐵′, and (ii) the value 1 −𝑙⋅𝑆′must 
+be smaller than 𝑒in the ﬁnal iteration of the PowerMethod.
+3. 𝑙is updated as 𝑙←𝑙⋅𝑆′in preparation for the subsequent round of 
+PowerMethod iteration.
+4. We maintain a record of the number of iterations employed by the 
+iterative InvSRT during each iteration of the PowerMethod. In the 
+actual homomorphic PowerMethod computation, we rely on these 
+recorded iteration counts to perform the iterative InvSRT.
+Up to this point, our Lazy Normalization strategy can be uniquely 
+characterized by its evaluation interval (0, 𝐵2], initial approximation 
+function 𝑇, precision bound 𝐵′, error bound 𝑒, number of Power-
+Method iterations 𝑡, and the number of iterative InvSRT iterations per 
+PowerMethod iteration. Consequently, we can conclude that the Lazy 
+Normalization strategy is capable of accommodating 𝑡PowerMethod 
+iterations that involve covariance matrix transformations with a con-
+traction coeﬃcient of 𝑆while maintaining an error bound 𝑒and a 
+precision bound𝐵′.
+Theorem 4. If Algorithm3 is given an input 𝑦0 ≤ 1√𝑥0
+, then in any itera-
+tion, if 𝑦𝑖−1≤ 1√𝑥0
+and 𝑦𝑖−1>0, it follows that 𝑦𝑖−1≤𝑦𝑖≤𝑥0.
+Proof. When 𝑦𝑖−1≤ 1√𝑥0
+and 𝑦𝑖−1>0, we have 0 <𝑥0𝑦2
+𝑖−1≤1. There-
+fore, 𝑦𝑖≥𝑦𝑖. On the other hand, set 𝑦𝑖−1=𝑥0 −𝜖where 0 ≤𝜖< 1√𝑥0
+. 
+We can express 𝑦𝑖as follows:
+𝑦𝑖= 1
+2( 1√𝑥0
+−𝜖)
+⎛
+⎜
+⎜⎝
+3−𝑥0 ⋅
+(
+1√𝑥0
+−𝜖
+)2⎞
+⎟
+⎟⎠
+= 1
+2( 1√𝑥0
+−𝜖)(2+2 √𝑥0𝜖−𝑥0𝜖2)
+= 1√𝑥0
+−
+√𝑥0𝜖2
+2 −√𝑥0𝜖2 + 𝑥0𝜖3
+2
+≤ 1√𝑥0
+.
+□ (17)
+6.1.3. Eigenvalue computation
+The process of computing the eigenvalue is similar to completing 
+another round of Power Method iterations. Let 𝐯be the eigenvector ob-
+Algorithm 9 TaylorInit.
+Input: 𝑐𝑡(𝑥): ciphertext encrypting value 𝑥; 𝐵: upper bound for the iterative InvSRT 
+evaluation interval; 𝑜: truncation order.
+Output: 𝑐𝑡(𝑥′), where 𝑥′=𝑇(𝑥), and 𝑇(𝑥)is the Taylor expansion polynomial of 1√
+𝑥at 
+point 𝐵∕2 +1 with truncated order 𝑜.
+Algorithm 10 IterativInvSRTbyNewton.
+Input: 𝑐𝑡(𝑥): ciphertext encrypting point; 𝑥𝑐𝑡(Guess): initial approximation of iterative 
+InvSRT at point 𝑥; 𝜏: number of iterations.
+Output: 𝑐𝑡(𝑥′), 𝑥′≈ 1√
+𝑥
+1: 𝑐𝑡(𝑥′) ←𝑐𝑡(Guess)
+2: fori range 0 to 𝜏−1 do
+3: 𝑐𝑡(Temp) ←Mult
+(
+Mult(𝑐𝑡(𝑥′),𝑐𝑡(𝑥′)),Mult(𝑐𝑡(𝑥′),𝑐𝑡(𝑥)))
+4: 𝑐𝑡(Temp) ←Sub(𝑐𝑡(Temp), PMult(𝑝𝑡(3), 𝑐𝑡(𝑥′)))
+5: 𝑐𝑡(Temp) ←PMult(𝑝𝑡(1∕2), 𝑐𝑡(Temp))
+6: 𝑐𝑡(𝑥′) ←𝑐𝑡(Temp)
+7: end for
+8: return 𝑐𝑡(𝑥′)
+tained after 𝑡iterations. The eigenvalue 𝜆is given by 𝜆 = ⟨Cov⋅𝐯,𝐯⟩
+⟨𝐯,𝐯⟩ . We 
+know that 𝐯 has been normalized after 𝑡iterations. Therefore, if we 
+are conﬁdent enough in the accuracy of the normalization process, the 
+eigenvalue computation can be simpliﬁed to 𝜆 = ⟨Cov ⋅𝐯, 𝐯⟩. The pro-
+cess of Cov ⋅𝐯 is exactly the same as the ﬁrst half of a new round of 
+Power Method iterations. However, Cov ⋅𝐯and 𝐯have diﬀerent orien-
+tations, i.e., if one is a column vector, the other is a row vector, and 
+vice versa. Therefore, when performing the dot product, we need to 
+ﬂip the orientation of 𝐯 to match that of Cov ⋅𝐯. The axis ﬂipping al-
+gorithm (AxisFlipping) is provided in Algorithm (11). Next, computing 
+⟨Cov ⋅𝐯, 𝐯⟩only requires 𝑘ciphertext multiplications and one aggre-
+gation operation. We can incorporate the eigenvalue computation into 
+the PowerMethod iteration, speciﬁcally in the last round of the Power 
+Method (total 𝑡 +1 rounds), where the iteration is used to compute the 
+eigenvalue instead of updating the eigenvector. Note that we need to 
+retain 𝐯𝑇to compute the covariance matrix after the eigenvalue trans-
+formation.
+Algorithm 11 AxisFlipping.
+Input:
+{𝑐𝑡(𝑉[𝑖])|0 ≤𝑖 <𝑘}: a set of encrypted matrices representing one replicated vector;
+axis: the axis of the vector.
+Output:
+{𝑐𝑡(𝑉[𝑖]𝑇)|0 ≤𝑖 <𝑘}
+1: Mask←𝐼
+2: fori range 0 to 𝑘 −1 do
+3: 𝑐𝑡(𝑉[𝑖]𝑇) ←PMult(Mask, 𝑐𝑡(𝑉[𝑖]))
+4: 𝑐𝑡(𝑉[𝑖]𝑇) ←Aggregate(𝑐𝑡(𝑉[𝑖]𝑇); axis+1 mod 2)
+5: end for
+6: return {𝑐𝑡(𝑉[𝑖]𝑇)|0 ≤𝑖 <𝑘}
+So far, we have discussed the three modules of the Power Method 
+algorithm, namely the linear transformation of the covariance matrix, 
+normalization of the eigenvectors, and computation of the eigenvalues. 
+These modules cover all the processing details of the Power Method, 
+and the complete process is provided in Algorithm 13, where the in-
+voked iterative InvSRT algorithm is implemented by Newton’s method 
+with a Taylor expansion as the initial approximation (see Algorithm9
+and 10). We analyze the multiplication depth and the computation com-
+plexity of Algorithm13in Theorem5.
+Theorem 5. The multiplication depth of Algorithm 13 is 𝑂(𝑙𝑃⋅(3 +
+log(order) +3  ⋅𝑙𝑁+1 ) +3 ), and the time complexity is dominated by 
+𝑂((𝑙𝑃+1)  ⋅(𝑘2 +𝑘 +𝑐+3  ⋅𝑙𝑁+1)  −3 ⋅𝑙𝑁−1)ciphertext multiplications 
+and 𝑂(3𝑘+3
+2 log𝑛 ⋅(𝑙𝑃+1)) ciphertext rotations, where 𝑐is the number of 
+ciphertext multiplications needed for the Taylor polynomial evaluation.
+Proof. In each round of the PowerMethod, a maximum of 3 multipli-
+cation depths, 𝑘2 +𝑘ciphertext multiplications, and (2𝑘 +1)  ⋅log𝑛(or 
+Computers & Security 138 (2024) 103658
+13
+X.Ma,C.Ma,Y.Jiangetal.
+Algorithm 12 Homomorphic EigenShift (HEigenShift).
+Input:
+𝑐𝑡(𝜆), {𝑐𝑡(𝑉[𝑖])|0 ≤𝑖 <𝑘}: the dominant eigenvalue and the corresponding eigenvec-
+tor;
+{𝑐𝑡(𝑉[𝑖]𝑇)|0 ≤𝑖 <𝑘}: the transposed eigenvector;
+{ct(Cov𝑖[𝑗])|0 ≤𝑖, 𝑗<𝑘}: the covariance matrix;
+Output:
+{ct(SCov𝑖[𝑗])|0 ≤𝑖, 𝑗<𝑘}: the 1-shifted version of Cov.
+1: for 0 ≤𝑗<𝑘do
+2: for 0 ≤𝑖 <𝑘do
+3: ct (𝜆 ⋅𝑉𝑇𝑉𝑖[𝑗]) ←Mul(𝑐𝑡(𝜆), Mul(ct(𝑉[𝑗]𝑇), ct(𝑉[𝑖])))
+4: ct (SCov𝑖[𝑗]) ←Sub(𝑐𝑡(Cov𝑖[𝑗]), 𝑐𝑡(𝜆 ⋅𝑉𝑇𝑉𝑖[𝑗]))
+5: end for
+6: end for
+7: return {ct(SCov𝑖[𝑗])|0 ≤𝑖, 𝑗<𝑘}
+(𝑘 +2 ) ⋅log𝑛) ciphertext rotations are required to accomplish the co-
+variance matrix transformation and one inner product. Subsequently, 
+log(𝑜𝑟𝑑𝑒𝑟) depths and 𝑐ciphertext multiplications are needed for the 
+Taylor Expansion. Once we enter Newton’s Method iterative algorithm, 
+each iteration necessitates 3 depths and 3 ciphertext multiplications. 
+Lastly, a single multiplication depth is required to perform the cipher-
+text multiplication for scaling the approximate eigenvector. After con-
+ducting 𝑙𝑃rounds of PowerMethod iterations, an additional covariance 
+matrix transformation and inner product are required to complete the 
+eigenvalue calculation. □
+6.2. Privacy-preserving PCA
+The ﬁnal step is to combine the Power Method with the EigenShift 
+algorithm to compute multiple dominant eigenvectors and their corre-
+sponding eigenvalues. After each execution of the Power Method, we 
+replace the covariance matrix with its 1shifted version, thereby ensur-
+ing that for 1 ≤𝑘, the 𝑘-th round of the Power Method yields the 𝑘-th 
+dominant eigenvector of the original covariance matrix of the dataset. 
+The implementation of the homomorphic 1-th EigenShift algorithm is 
+presented in Algorithm 12. It utilizes the dominant eigenvalue 𝜆and 
+the corresponding eigenvector and its transpose 𝐯, 𝐯𝑇obtained in the 
+previous Power Method iteration to update the covariance matrix as 
+Cov′=Cov −𝜆 ⋅𝐯𝑇𝐯. It can be proven that the 1-shifted covariance 
+matrix always has a smaller ampliﬁcation eﬀect on the vectors than 
+its non-shifted version (see AppendixBfor details). Thereby, we do not 
+need to recompute the upper bound for the norm of vectors transformed 
+by the shifted covariance matrix in each execution of PowerMethod. 
+The entire process of the privacy-preserving PCA algorithm is provided 
+in Algorithm14.
+One more important consideration is the need for modulus refreshes 
+when the multiplication depth of our algorithm exceeds the maximum 
+multiplication depth supported by the underlying CKKS scheme. It is 
+always necessary to carefully select appropriate positions in the algo-
+rithm to perform modulus refreshes in order to minimize the overall 
+number of refresh operations. We defer the discussion on the timing 
+of the modulus refresh operations in our privacy-preserving PCA algo-
+rithm to AppendixCfor further details.
+6.3. Security analysis
+Theorem 6. The proposed Privacy-Preserving PCA securely and correctly 
+computes the target approximate dominant eigenvectors and eigenvalues of 
+the private dataset in the semi-honest security model, provided that the un-
+derlying homomorphic encryption scheme is IND-CPA secure.
+Proof. Let the encryption and decryption routines of the underlying 
+homomorphic encryption scheme be the 𝐸𝑛𝑐and 𝐷𝑒𝑐functions in the 
+proposed system architecture (see Section 3.2). Given that the homo-
+morphic encryption is IND-CPA secure, the ciphertext 𝑐𝑡(𝑋) holding 
+Algorithm 13 Homomorphic PowerMethod (HPowerMethod).
+Input:
+{ct(Cov𝑖[𝑗])|0 ≤𝑖, 𝑗<𝑘}: the encrypted covariance matrix;
+𝑙𝑃: iterations for the PowerMethod;
+𝑙𝑁: iterations for the InvSRTByNewton;
+{𝑐𝑡(𝑉0[𝑖])|0 ≤𝑖 <𝑘}: encrypted submatrices representing the initial selection for the 
+approximated eigenvector;
+axis: the axis of the current approximate eigenvectors, where axis=0 represents row 
+vectors with all rows being equal and axis =1 represents column vectors with all 
+columns being equal;
+𝐵: upper bound for the iterative InvSRT evaluation interval;
+𝑜𝑟𝑑𝑒𝑟: truncation order for the Taylor initialization.
+Output:
+𝑐𝑡(𝜆), {𝑐𝑡(𝑉𝑙𝑃−1[𝑖]𝑇)|0 ≤𝑖 <𝑘}, {𝑐𝑡(𝑉𝑙𝑃−1[𝑖])|0 ≤𝑖 <𝑘}: Dominant eigenvalue of the 
+covariance matrix, the corresponding eigenvector, along with its transposition.
+1: for𝑡range 0 to 𝑙𝑃do
+2: fori range 0 to k-1 do
+3: 𝑐𝑡(Sum) ←𝑐𝑡(𝟎)
+4: for𝑗=0;  𝑗<𝑘; 𝑗++ do
+5: ifaxis==0 then
+6: 𝑐𝑡(Sum) ←Add(Mult(𝑐𝑡(Cov𝑗[𝑖]), 𝑐𝑡(𝑉𝑡[𝑖])), 𝑐𝑡(Sum))
+7: else if axis==1 then
+8: 𝑐𝑡(Sum) ←Add(Mult(𝑐𝑡(Cov𝑖[𝑗]), 𝑐𝑡(𝑉𝑡[𝑖])), 𝑐𝑡(Sum))
+9: end if
+10: end for
+11: 𝑐𝑡(𝑉𝑡+1[𝑖]) ←Aggregate(𝑐𝑡(Sum); axis+1 mod 2)
+12: end for
+13: axis ←axis+1 mod 2
+14: 𝑐𝑡(Sum) ←𝑐𝑡(𝟎)
+15: fori range 0 to k-1 do
+16: 𝑐𝑡(Sum) ←Add(Mult(𝑐𝑡(𝑉𝑡+1[𝑖]), 𝑐𝑡(𝑉𝑡+1[𝑖])), 𝑐𝑡(Sum))
+17: end for
+18: 𝑐𝑡(Sum) ←Aggregate(𝑐𝑡(Sum); axis+1 mod 2)
+19: if𝑛 <𝑙𝑃then
+20: 𝑐𝑡(Guess) ←TaylorInit(𝑐𝑡(Sum), 𝐵, 𝑜𝑟𝑑𝑒𝑟)
+21: 𝑐𝑡(Sum) ←IterativInvSRTbyNewton(𝑐𝑡(Guess), 𝑐𝑡Sum, 𝑙𝑁)
+22: fori range 0 to k-1 do
+23: 𝑐𝑡(𝑉𝑡+1[𝑖]) ←Mult(𝑐𝑡(𝑉𝑡+1[𝑖]), 𝑐𝑡(Sum))
+24: end for
+25: end if
+26: if𝑡 =𝑙𝑃then
+27: {𝑐𝑡(𝑉𝑡[𝑖]𝑇)|0 ≤𝑖 <𝑘} ←AxisFlipping({𝑐𝑡(𝑉𝑡[𝑖])|0 ≤𝑖 <𝑘}, axis+1 mod 2)
+28: 𝑐𝑡(Sum) ←𝑐𝑡(𝟎)
+29: fori range 0 to k-1 do
+30: 𝑐𝑡(Sum) ←Add(Mult(𝑐𝑡(𝑉𝑡+1[𝑖]), 𝑐𝑡(𝑉𝑡[𝑖])), 𝑐𝑡(Sum))
+31: end for
+32: 𝑐𝑡(𝜆) ←Aggregate(𝑐𝑡(Sum); axis+1 mod 2)
+33: end if
+34: end for
+35: return 𝑐𝑡(𝜆), {𝑐𝑡(𝑉𝑙𝑃−1[𝑖]𝑇)|0 ≤𝑖 <𝑘}, {𝑐𝑡(𝑉𝑙𝑃−1[𝑖])|0 ≤𝑖 <𝑘}
+Algorithm 14 Privacy-Preserving PCA.
+Input:
+{ct(𝑋𝑗[𝓁])|0 ≤𝑗<𝑘, 0 ≤ 𝓁<⌈𝑠∕𝑛⌉}: partitioned and encrypted dataset;
+𝑛𝑍: maximum diagonal index for transformation 𝑍;
+𝑛𝑇: maximum diagonal index 𝑛𝑇for transformation 𝑇;
+𝑙𝐸: expected number of eigenvectors or principal components. 𝑙𝑃: iterations for the 
+PowerMethod;
+𝑙𝑁: iterations for the InvSRTByNewton;
+𝐵: upper bound for the iterative InvSRT evaluation interval;
+𝑜𝑟𝑑𝑒𝑟: truncation order for the Taylor initialization.
+Output:
+{{𝑐𝑡(𝑉[𝑖])|0 ≤𝑖 <𝑘}𝑗|0 ≤𝑗<𝑙𝐸}, {𝑐𝑡(𝜆𝑗)|0 ≤𝑗<𝑙𝐸}: 𝑙𝐸dominant eigenvectors and 
+the corresponding eigenvalues.
+1: {𝑐𝑡(Cov𝑗[𝓁])} ←HCovMtrx(ct(𝑋𝑗[𝓁])|0 ≤𝑗<𝑘,0 ≤ 𝓁<⌈𝑠∕𝑛⌉, 𝑛𝑍, 𝑛𝑇)
+2: for𝑚 ∶=0; 𝑚 <𝑙𝐸; 𝑚 ++ do
+3: {𝑐𝑡(𝑉0[𝑖])|0 ≤𝑖 <𝑘} ←RandomlyGeneratewith 𝓁2 =1
+4: axis ←1
+5: 𝑐𝑡(𝜆𝑚), {𝑐𝑡(𝑉)}𝑚, {𝑐𝑡(𝑉𝑇)}𝑚, ← HPowerMethod({𝑐𝑡(Cov𝑗[𝓁])}, 𝑙𝑃, 𝑙𝑁, {𝑐𝑡(𝑉0[𝑖])},
+axis, 𝐵, order)
+6: {𝑐𝑡(Cov𝑗[𝓁])} ←HEigenShift(𝑐𝑡(𝜆𝑚), {𝑐𝑡(𝑉)}𝑚, {𝑐𝑡(𝑉𝑇)}𝑚, {𝑐𝑡(Cov𝑗[𝓁])})
+7: end for
+8: return {{𝑐𝑡(𝑉[𝑖])|0 ≤𝑖 <𝑘}𝑗|0 ≤𝑗<𝑙𝐸}, {𝑐𝑡(𝜆𝑗)|0 ≤𝑗<𝑙𝐸}
+the private dataset 𝑋from the user looks pseudorandom to the cloud. 
+At any point during the execution of the privacy-preserving PCA proto-
+col, the user only decrypts the received ciphertexts locally. So the cloud 
+Computers & Security 138 (2024) 103658
+14
+X.Ma,C.Ma,Y.Jiangetal.
+Table 3
+Run-time performance Comparison of LinTrans 𝑍, 𝑇between original double-
+hoisting BSGS(dh-BSGS) and our Diagonal Convergence Decomposed scheme 
+(DCDmp). Rtk(MB) represents the total space required for rotation keys, while
+Ct(MB) represents the total space required for caching hoisted ciphertexts during 
+linear transformations, both measured in MB (megabytes).
+Scheme Matrix 𝑛1 MaxDiagNo. Rtk(MB) Ct(MB) time(s) Depth
+dh-BSGS Z 8 127 1755 53 2.004 1
+DCDmp Z 8 64 1080 53 1.362 2
+DCDmp Z 8 32 720 53 1.249 4
+dh-BSGS Z 16 127 1395 113 1.286 1
+DCDmp Z 16 64 1080 113 1.094 2
+DCDmp Z 16 32 900 113 1.179 4
+dh-BSGS T 8 127 ⋅128 1035 53 1.049 1
+DCDmp T 8 64 ⋅128 720 53 0.701 2
+DCDmp T 8 32 ⋅128 540 53 0.652 4
+dh-BSGS T 16 127 ⋅128 1035 113 0.725 1
+DCDmp T 16 64 ⋅128 900 113 0.572 2
+DCDmp T 16 32 ⋅128 810 113 0.613 4
+only learns the parameters for initializing the protocol, and nothing 
+more. □
+7. Implementation
+We implement all the proposed algorithms described in the previous 
+sections using the Lattigo library V4.1.0 (Lattigo, 2022), which pro-
+vides an implementation of the full-RNS CKKS scheme in Golang. The 
+implementation of all the algorithms can be found in Ma (2023). Our ex-
+periments are conducted on a machine running Windows 10, equipped 
+with an AMD Ryzen 7 7735HS (3.19 GHz) processor and 32GB  of mem-
+ory.
+First, we present the performance results of the 𝑍and 𝑇linear trans-
+formations using our diagonal convergence decomposition technique 
+proposed in Section4. Then, we proceed to report the performance of 
+our privacy-preserving PCA and compare it with the state-of-art work 
+by Panda (Panda, 2021). Their work is the most relevant to our sce-
+nario, as it also focuses on designing privacy-preserving PCA based on 
+the CKKS scheme in a cloud computing service setting.
+It’s worth noting that the pioneering works by Rathee et al. and Lu 
+et al. are also relevant to the cloud computing scenario (Lu et al., 2016), 
+(Rathee et al., 2018). However, as explained in Related Work (see Sec-
+tion2.1), their adoption of a homomorphic encryption scheme that only 
+permits integer operations necessitates users to compute vector normal-
+ization on their own. This disparity makes a direct comparison between 
+our approach and theirs challenging, given our emphasis on minimizing 
+user computational load in the protocol, wherein users refrain from ex-
+ecuting any operations beyond protocol initialization, encryption, and 
+decryption.
+7.1. Performance of 𝑍and 𝑇using diagonal convergence decomposition
+We conduct tests on the space optimization eﬀect of our Diagonal 
+Convergence Decomposition on the 128 × 128double-hoisting matrix 
+multiplication. We evaluate the performance of the 𝑍and 𝑇transfor-
+mations decomposed at diﬀerent maximum expected diagonal indices 
+and compare them with the original double-hoisting ones with no de-
+composition applied (see Table 3). The evaluation is conducted on a 
+concrete CKKS instance that oﬀers a maximum available modulus level 
+of 14with parameters: log𝑁=15, log𝑏 =760, 𝜎=3.2(see AppendixA
+for detailed parameter explanation). A baseline level of 14 −4 =1 0is 
+set, and the initial modulus levels for all tested transformations are as-
+signed appropriately to ensure that all transformation results fall down 
+to the baseline level. From Table3, we can observe that for a ﬁxed in-
+ner loop count, a smaller expected maximum diagonal index leads to a 
+greater reduction in key space. In the decomposition with an expected 
+maximum diagonal index four times smaller than 128, we successfully 
+reduce the rotation key space of 𝑍by 58% for an inner loop of 8 and 
+by 35% for an inner loop of 16.
+Additionally, our decomposition improves thecomputation  speed of 
+𝑍and 𝑇. This is because, within the matrix transformation product 
+chain obtained after decomposition, the transformations that are ini-
+tially performed at high levels (the ones on the right-hand side of the 
+chain) require only a small amount of complexity, and the main com-
+plexity arises from the ﬁnal matrix transformation in the chain (the one 
+on the left-hand side), which is performed at the same level as the origi-
+nal scheme and has a smaller scale compared to the transformation that 
+was not decomposed. Therefore, our decomposition scheme provides an 
+optimized trade-oﬀ between space and speed, making the overall matrix 
+multiplication scheme more ﬂexible.
+7.2. Privacy-preserving PCA
+7.2.1. Accuracy measurement
+We provide a metric called 𝑅2(𝑉) to measure the accuracy of the 
+privacy-preserving PCA algorithm. It represents the R2 score between 
+the results computed by privacy-preserving PCA and the ground truth 
+principal components computed using the np.linalg.eigfunction from the 
+numpy package in Python. A higher value of 𝑅2(𝑉), closer to 1, indi-
+cates that the principal components obtained from privacy-preserving 
+PCA are more similar to the ones obtained using plaintext routines.
+7.2.2. Experimental setup
+Modulus refresh strategy selection The modulus refresh operation in 
+our privacy-preserving PCA algorithm can be theoretically achieved 
+through the following two approaches based on the cloud service sce-
+nario.
+1. The interactive strategy: the cloud service provider sends the ci-
+phertexts that have reached the maximum depth to the user. The 
+user then decrypts these ciphertexts, re-encrypts them on the max-
+imum modulus level, and sends them back to the cloud for further 
+homomorphic computation. This approach introduces communica-
+tion overhead and requires the user to listen to the cloud continu-
+ously.
+2. The non-interactive strategy: the cloud service provider performs 
+bootstrapping locally on the ciphertexts. While several bootstrap-
+ping methods designed for CKKS have been proposed in recent 
+years, their software implementations are still relatively time-
+consuming. Therefore, the number of modulus refreshes will be-
+come one of the dominant factors in the algorithm’s time complex-
+ity when using this strategy.
+We use the interactive modulus refresh strategy throughout our ex-
+periment since our algorithm consumes a large number of modulus 
+Computers & Security 138 (2024) 103658
+15
+X.Ma,C.Ma,Y.Jiangetal.
+Fig. 2. PowerMethod Simulations for Vector Normalization Parameterization. The ﬁgures presented on the left and right respectively illustrate the evolution of 
+vector lengths and the number of iterative InvSRT iterations per PowerMethod iteration in 4 and 14 rounds of simulations. The simulations are conducted with an 
+error bound of 𝑒 =1𝑒 −5and a precision bound of 𝑝 =1𝑒 −3.
+levels and does not yield satisfactory results when the bootstrapping 
+routine is utilized to achieve the non-iterative modulus refresh strat-
+egy. However, it is worth noting that there exist hardware-accelerated 
+solutions for bootstrapping that can signiﬁcantly reduce its computa-
+tional overhead. Our privacy-preserving PCA algorithm may become 
+truly practical under the non-interactive modulus refresh strategy with 
+such hardware optimizations.
+Parameterization for underlying homomorphic encryption scheme We set 
+up a concrete CKKS instance with parameters log𝑁=1 5, 𝑏 = 720, 𝜎=
+3.2, 𝛿=4 0as the underlying homomorphic encryption scheme of our 
+privacy-preserving PCA algorithm (see AppendixAfor the explanation 
+of parameters), ensuring 128-bit security. This instance provides 13 lev-
+els of 40-bit moduli and achieves 20 bits of precision.
+Dataset preprocessing We conduct our privacy-preserving PCA algo-
+rithm on the MNIST (Deng, 2012), Fashion-MNIST (Xiao et al., 2017), 
+and YALE (Belhumeur et al., 1997) datasets. The preprocessing of the 
+three datasets, including cropping, is performed exactly as described 
+in the work by Panda (Panda, 2021). The images in the MNIST and 
+Fashion-MNIST datasets are cropped to 16x16 pixels, and the Yale sam-
+ples are converted to grayscale and cropped from 195 x 231 pixels to 
+16x16 pixels. In the subsequent experiments, we will extract a spe-
+ciﬁc number of samples 𝑠from these datasets to construct new datasets 
+for testing our algorithm. All the datasets used in the experiments are 
+divided into submatrices of size 128 ×128 since our underlying homo-
+morphic encryption scheme oﬀers a plaintext space of ℂ14 where each 
+ciphertext can accommodate exactly one submatrix.
+Parameterization for covariance matrix computation Our covariance ma-
+trix computation is designed to harness the advantages of parallel 
+matrix multiplications. We employ a single thread to compute the co-
+variance matrix in cases where the dataset size is no larger than 2 ×2
+sub-matrices. As for dataset sizes surpassing this threshold, we allocate 
+seven threads to compute the corresponding covariance matrix. The 
+128 ×128 matrix multiplications within the covariance matrix computa-
+tion are implemented by our optimized matrix multiplication algorithm 
+equipped with the hoisting techniques and a Diagonal Convergence De-
+composition strategy with an expected maximum non-zero diagonal 
+index of 32. This conﬁguration reduces 35% and 20% in the requi-
+site number of rotation keys for the 𝑍and 𝑇transformations with an 
+inner loop count of 16, respectively. Such optimization mitigates the 
+risk of memory saturation, diminishes the communication overhead be-
+tween the user and the cloud, and decreases computational time. We 
+also implement all three covariance matrix computation optimizations 
+mentioned in Section 5.2. Speciﬁcally, we group every 1400 rows of 
+samples into one segment and apply optimizations 1 and 2 to each seg-
+ment when the dataset contains more than 1400 rows. The covariance 
+matrices computed from diﬀerent segments are aggregated to obtain 
+the ﬁnal result.
+Parameterization for vector normalization In section 6.1.2, we estimate 
+that performing a covariance matrix transformation on a vector of 
+length 𝑐results in a transformed vector with an upper bound length 
+of 𝑏2 ⋅𝑐⋅𝑑, where 𝑏is the upper bound of all elements in the covariance 
+matrix and 𝑑is the number of features in the dataset. Since the upper 
+bound length of the transformed vector will be used to set up the eval-
+uation interval of the iterative InvSRT function, we should not let this 
+upper bound be too big or it will be too expensive to evaluate the In-
+vSRT function across the interval. Thereby, we scale all samples in the 
+preprocessed datasets by a factor of 1/255, resulting in an upper bound 
+𝑏 =1 for all elements in their covariance matrices.
+Following the Lazy Normalization strategy, we set the evaluation in-
+terval of the iterative InvSRT function to [0.1−7, 𝑏2 ⋅𝑐⋅𝑑]and use a linear 
+Taylor expansion at point 216∕2 +1 to obtain the initial approximation 
+of the iterative InvSRT algorithm. We determine through experimen-
+tation that the iterative InvSRT requires a minimum of 𝑘 =1 2basic 
+iterations to achieve the desired accuracy within the evaluation inter-
+val [1, 216]. In order to make the Lazy Normalization strategy capable of 
+accommodating up to 𝑙𝑃PowerMethod iterations that involve covari-
+ance matrix transformations with a contraction coeﬃcient of 0.5while 
+maintaining an error bound 𝑒 =1𝑒 −5and a precision bound 𝑝 =1𝑒 −3, 
+PowerMethod simulations are conducted to select the number of iter-
+ative InvSRT iterations in each PowerMethod iteration, for 𝑙𝑃=4 and 
+𝑙𝑃=14 (see Fig.2). Consequently, we manage to employ an average of 
+14.5 iterative InvSRT iterations per PowerMethod iteration for 𝑙𝑃=4, 
+and an average of 13.8 iterative InvSRT iterations per PowerMethod 
+iteration for 𝑙𝑃=14.
+The vector normalization strategy in the work of Panda is ﬁxed with 
+an evaluation interval of [0.001, 750]and a linear initial approximation 
+function of 𝑦 =− 0.00019703𝑥 +0.14777278 for the iterative InvSRT. 
+Only 6 iterations of InvSRT are employed in each PowerMethod it-
+eration. If we evaluate the eﬀectiveness of their vector normalization 
+strategy using the PowerMethod Simulation we employ in Lazy Normal-
+ization, their strategy only accommodates 4PowerMethod iterations for 
+an error bound of 1𝑒 −2involving covariance matrix transformations 
+with a contraction coeﬃcient of 1. Note that the dataset pre-scaling in 
+the work by Panda is set diﬀerently based on the size of the samples 
+in the datasets in order to match the ﬁxed evaluation interval of vector 
+normalization. However, suchan  approach is impractical in real-world 
+Computers & Security 138 (2024) 103658
+16
+X.Ma,C.Ma,Y.Jiangetal.
+Table 4
+Performance Comparison between privacy-preserving PCA algorithms in Panda (2021)and  
+Ours under interactive modulus refresh strategy. 𝑙𝐸denotes the desired number of principal 
+components, 𝑙𝑃represents the number of iterations for the PowerMethod, 𝑙𝑁represents the 
+average number of iterative InvSRT, 𝐿𝑣𝑠∕𝑃𝑀represents the average modulus levels con-
+sumed per PowerMethod iteration, and 𝑡𝑖𝑚𝑒denotes the time for the entire computation, 
+where our approach’s time consists of two parts: the computation time of the covariance 
+matrix (left) and the computation of principal components, i.e., the PowerMethod and 
+EigenShift algorithms (right).
+Scheme DataSet 𝑠𝑙 𝐸 𝑙𝑃 𝑙𝑁 𝑡𝑖𝑚𝑒(min) 𝑅2(𝑉) Lvs/PM
+(Panda,2021) MNIST 200 446 5.21 0.047 77
+Ours MNIST 200 441 4 .5 0.56+2.16 0.174 61
+(Panda,2021) MNIST 200 41 4 6 18.42 0.392 77
+Ours MNIST 200 41 4 1 3 .8 0.58+8.41 0.388 54
+(Panda,2021) MNIST 60000 81 4 6 1628 0.445 77
+Ours MNIST 60000 81 4 1 3 .8 45+14 0.641 54
+(Panda,2021) F-MNIST 200 446 5.3 0.600 77
+Ours F-MNIST 200 441 4 .50 .58+2 .23 0.633 61
+(Panda,2021) F-MNIST 60000 81 4 6 1628 0.626 77
+Ours F-MNIST 60000 81 4 1 3 .84 5 + 1 4 0.911 54
+(Panda,2021) Yale 165 61 4 6 2 7 .50 .715 77
+Ours Yale 165 61 4 1 3 .80 .62+11 0.744 54
+scenarios where the user with little knowledge about the internal detail 
+of the algorithm may perform the pre-scaling inappropriately, posing a 
+high probability of overﬂow (or underﬂow).
+To make a fair comparison with our vector normalization approach, 
+we ﬁx the dataset scaling factor as 1∕255for the work by Panda in our 
+experiment instead of changing it across diﬀerent datasets. This choice 
+is close to the scaling factor used in their experiments on the Fashion 
+MNIST dataset with 200 samples.
+7.2.3. Performance comparison
+Based on the aforementioned experimental setup, we conduct our 
+privacy-preserving PCA algorithm and compare its performance with 
+the previous work of Panda. (Panda, 2021). Table 4 presents the per-
+formance of our privacy-preserving PCA algorithm and the algorithm 
+proposed in Panda (2021)., both using the interactive modulus refresh 
+strategy.
+Eﬃciency and scalability We can observe that for the same number 
+of principal components and PowerMethod iterations, our algorithm is 
+approximately 1.9 times faster in terms of the overall runtime. Specif-
+ically, our PowerMethod runs at a speed of approximately 8.2 seconds 
+per iteration, which is around 2.3 times faster than the 19.6 seconds 
+reported by Panda per iteration. This notable improvement can be at-
+tributed to a lower number of ciphertext rotations achieved by our 
+PowerMethod (see Theorem 5) compared to their reported complex-
+ity of 𝑂(𝑙𝑃⋅(2 log𝑑⋅𝑠⋅𝑑
+𝑁∕2+log 𝑁∕2
+𝑑))(where 𝑠remains the number of 
+samples and 𝑑the number of features). This advantage becomes more 
+apparent when dealing with larger sample sizes. As an example, we are 
+able to compute the top 8 eigenvectors of a dataset with 60,000 sam-
+ples in approximately 1 hour using 7 threads, which is estimated to be 
+roughly 25 times faster than the work by Panda using the same number 
+of threads. This underscores the scalability of our approach: When faced 
+with datasets containing a large number of samples, the complexity of 
+our solution primarily concentrates on homomorphic covariance ma-
+trix computation, a one-time operation. The existence of the covariance 
+matrix enables the subsequent PowerMethod execution time entirely in-
+dependent of the number of samples, which implies that the user may 
+apply more rounds of PowerMethod to the computed principal compo-
+nents at any time if he or she is unsatisﬁed with the precision of the 
+principal components. Furthermore, it is worth noting that if a user 
+wishes to augment the dataset with new samples and compute the prin-
+cipal components of the new dataset using privacy-preserving PCA, the 
+complexity of this operation is also independent of the original dataset 
+size. This is because, for any dataset 𝑋, we can easily generate the new 
+covariance matrix by aggregating the precomputed covariance matrix 
+of the original and the one generated by the new samples with equa-
+tion 𝐶𝑜𝑣′=1∕(|𝑋| +|𝑋′|) ⋅(𝑋𝑇𝑋+𝑋′𝑇𝑋′) −𝜇′𝜇′𝑇, where 𝑋′is the 
+set consists of all new samples and 𝜇′is the average vector of the whole 
+dataset.
+Accuracy Enhancements in 𝑅2(𝑉) accuracy are recorded in MNIST 
+and FMNIST datasets, each containing 60000 samples. This improve-
+ment is attributed to a speciﬁc factor: The approximate eigenvector in 
+each PowerMethod iteration has a higher probability of being precisely 
+normalized due to our larger evaluation interval for vector normal-
+ization (encompassing the maximum input value and a closer-to-zero 
+left boundary) and more rounds of iterative InvSRT, compared to the 
+approach employed by Panda. On the other hand, no discernible en-
+hancements in accuracy are observed in experiments on YALE (165 
+samples), Fashion-MNIST (200 samples), and MNIST (200 samples, 14 
+PowerMethod iterations), implying situations that the inputs of vector 
+normalization happen to fall into the intersection of the evaluation in-
+tervals prepared by both Panda and our scheme.
+From a diﬀerent perspective, the variations in accuracy among dif-
+ferent datasets mainly stem from the inherent distribution of eigenval-
+ues in each dataset (von Mises and Pollaczek-Geiringer, 1929). Specif-
+ically, the Fashion MNIST dataset exhibits higher accuracy due to the 
+relatively larger diﬀerences among its dominant eigenvalues. For ex-
+ample, its eight dominant eigenvalues are [6.50301, 4.06187, 1.39494, 
+1.13345, 0.93763, 0.81907, 0.49591, 0.45021] compared to those with 
+smaller diﬀerences in the MNIST dataset, namely [1.80816, 1.24723, 
+1.08723, 0.98732, 0.85060, 0.74359, 0.63526, 0.57545].
+Modulus utilization Additionally, our modulus utilization is higher than 
+the approach proposed by Panda. For a total of 4 PowerMethod itera-
+tions, our approach requires an average of 61 modulus levels for each 
+PowerMethod iteration with an average of 14.5 iterative InvSRT iter-
+ations, while their approach requires an average of 77 modulus levels 
+to complete one PowerMethod iteration with only 6 iterative InvSRT 
+iterations. This discrepancy arises due to two factors: (i) We compos-
+ite two iterative InvSRT iterations into one and employ more ciphertext 
+multiplications to save 1 modulus level per iterative InvSRT iteration. 
+(ii) their PowerMethod implementation has a multiplication depth that 
+is dependent on the dataset’s number of features. In contrast, our ap-
+proach’s multiplication depth is independent of the dataset’s features. 
+As a result, we have more ﬂexibility in performing additional rounds of 
+the iterative InvSRT algorithm to achieve a more accurate vector nor-
+malization.
+Computers & Security 138 (2024) 103658
+17
+X.Ma,C.Ma,Y.Jiangetal.
+8. Conclusion and further discussion
+In this paper, we have presented a novel and eﬃcient privacy-
+preserving PCA scheme using homomorphic in the context of cloud 
+computing, which has addressed several challenges presented in pre-
+vious approaches. Firstly, we have successfully tackled the obstacle of 
+homomorphically computing the covariance matrix, a limitation in pre-
+vious methods. This is achieved by designing an eﬃcient homomorphic 
+covariance calculation algorithm, leveraging our optimized matrix mul-
+tiplication as a core component, and utilizing parallel computations of 
+multiple matrix multiplication instances to enhance speed. Secondly, we 
+have introduced an eﬃcient homomorphic circuit for the PowerMethod 
+algorithm, which incorporates a universal vector normalization strategy 
+to address the issue of potential accuracy loss. The experimental results 
+demonstrate that our approach surpasses state-of-the-art methods, of-
+fering reduced runtime, improved accuracy, and enhanced scalability.
+There are several topics for further discussion, including but not 
+limited to:
+1. A signiﬁcant portion of the complexity in homomorphic matrix 
+multiplication comes from row and column transformations. Re-
+cent work by Jang et al. introduced optimizations for matrix mul-
+tiplication that eﬀectively reduce the complexity of these trans-
+formations (Jang et al., 2022). Their optimizations could be com-
+plementary to ours, and combining them may lead to even better 
+performance.
+2. The performance of PowerMethod depends on the characteristics 
+of the dataset itself, especially the distribution of eigenvalues. If 
+the eigenvalues of the covariance matrix are close to each other, 
+the accuracy of PowerMethod may be reduced (von Mises and 
+Pollaczek-Geiringer, 1929). It may be worth considering alterna-
+tive PCA algorithms to achieve more accurate results. Notably, our 
+homomorphic covariance matrix computation algorithm can serve 
+as a black box function for alternative privacy-preserving PCA al-
+gorithm design.
+3. Our proposed solution can serve as a candidate for multi-party 
+privacy-preserving PCA. Speciﬁcally, our approach can be migrated 
+to multi-party homomorphic encryption such as the work proposed 
+by Mouchet et al. (2021)a n d provide possible solutions for both 
+vertical and horizontal federated privacy-preserving PCA scenar-
+ios.
+Declaration of competing interest
+The authors declare that they have no known competing ﬁnancial 
+interests or personal relationships that could have appeared to inﬂuence 
+the work reported in this paper.
+Data availability
+Data will be made available on request.
+Acknowledgements
+This research is supported by the National Key Research and Devel-
+opment Program of China 2021YFF0704102, and the National Natural 
+Science Foundation of China (62076125).
+Appendix A. Detailed information of full-RNS CKKS scheme
+We use Φ𝑀(𝑋) to denote the 𝑀-th cyclotomic polynomial and 
+denote its 𝑁=𝜑(𝑀)roots as 𝜁1, 𝜁3, …  , 𝜁𝜑(𝑀), where 𝜁𝑖=𝜁𝑖
+1. The sym-
+bol 𝑅represents the cyclotomic polynomial ring ℤ[𝑋]∕Φ𝑀(𝑋). Let 
+𝑄𝐿=𝑞0 ×𝑞1 × ⋯  ×𝑞𝐿be the product of prime numbers 𝑞𝑖. The el-
+ements in ring 𝑅𝑄𝐿can be uniquely represented in the RNS ﬁeld as 
+𝑅𝑞0 ×𝑅𝑞1 × ⋯  ×𝑅𝑞𝐿≅𝑅𝑄𝐿. The introduction of full-RNS CKKS can be 
+divided into the following four modules.
+A.1. General module
+This module includes the parameterization for full-RNS CKKS, the 
+encoding method to convert a complex vector to a native plaintext form, 
+the encryption method to convert plaintext to ciphertext, as well as the 
+key switching technique to change the decryption key associated with 
+a speciﬁc ciphertext.
+Parameter GenerationSetparams(𝑁, 𝑏, 𝜎)sets 𝑀=2𝑁and selects the 
+𝑀-th cyclotomic polynomial Φ𝑀(𝑋) =𝑋𝑁+1. Two sets of prime num-
+bers {𝑞𝑖|𝑖 =0, …  , 𝐿}and {𝑝𝑖|𝑖 =0, …  , 𝛼−1}are chosen such that their 
+products are at most 𝑏bits. These primes satisfy 𝑞𝑖,𝑝𝑖≡1mod 2𝑁. Let 
+𝑄𝐿=∏𝐿
+𝑖=0𝑞𝑖and 𝑃=∏𝛼
+𝑖=0𝑝𝑖. The ring 𝑅𝑄𝐿= ℤ[𝑋]𝑄𝐿∕Φ𝑀(𝑋)is re-
+ferred to as the plaintext space of the CKKS scheme. The distribution 
+over 𝑅for generating the secret key is denoted as 𝑅 ←𝜒𝑠, and the error 
+distribution over 𝑅as 𝑅 ←𝜒𝑒, which is a truncated discrete Gaussian 
+distribution with standard deviation 𝜎.
+Encoding:Encode(𝐳, Δ, 𝑛, 𝓁)takes a message vector 𝐳∈ℂ𝑛, where 1 ≤
+𝑛 <𝑁and 𝑛divides 𝑁, and converts it to a plaintext polynomial 𝑚 ∈
+𝑅𝑄𝓁. To prevent a signiﬁcant precision loss in the conversion, a scaling 
+factor Δis applied to the message. For any plaintext in 𝑅𝑄𝓁, denote 𝓁
+as its modulus level.
+Decoding:Decode(𝑚, Δ, 𝑛, 𝓁)takes a plaintext polynomial 𝑚 ∈𝑅𝑄𝓁 as 
+input and converts it to a message vector 𝐳∈ℂ𝑛, where 1 ≤𝑛 <𝑁and 
+𝑛divides 𝑁. The decoding process is the inverse operation of encoding.
+Secret Key Generation:SecKeyGen(⋅)samples 𝑠 ←𝜒𝑠and outputs the 
+secret key 𝑠.
+Public Key Generation:PubKeyGen(𝑠)samples 𝑒 ←𝜒𝑒and 𝑎 ∈𝑢𝑅𝑄𝐿, 
+and outputs (−𝑎𝑠 +𝑒, 𝑎).
+Encryption: Enc(𝑚, 𝑝𝑘) takes a plaintext polynomial 𝑚 ∈𝑅𝑄𝓁 and 
+a public key 𝑝𝑘 ∈𝑅2
+𝑄𝐿
+as input. It samples 𝑎 ∈𝑅𝑄𝓁 and outputs 
+(𝑎 ⋅𝑝𝑘0, 𝑎 ⋅𝑝𝑘1) +(𝑚 +𝑒0, 𝑒1) ∈𝑅2
+𝑄𝓁
+as a ciphertext encrypting 𝑚. For 
+any ciphertext in 𝑅2
+𝑄
+𝓁
+, denote 𝓁as its own modulus level.
+Decryption: Dec(𝑐, 𝑠𝑘) takes a ciphertext 𝑐∈𝑅2
+𝑞and a secret key 𝑠𝑘
+as input and outputs a plaintext polynomial 𝑚′∈𝑅. It computes and 
+outputs 𝑚′=𝑐0 +𝑐1 ⋅𝑠𝑘 ∈𝑅𝑄𝓁.
+Switch Key Generation: SwitchKeyGen(𝑠, 𝑠′, 𝐛) for 𝐛 ∈ℤ𝛽a vector 
+representation of a certain integer decomposition basis, SwitchKeyGen
+takes in 𝑠, 𝑠′and outputs a vector as the switching key: 𝑠𝑤𝑘𝑠,𝑠′=
+(𝑠𝑤𝑘(0)
+𝑠,𝑠′, …  , 𝑠𝑤𝑘(𝛽−1)
+𝑠,𝑠′ )where 𝑠𝑤𝑘(𝑖)
+𝑠,𝑠′∈𝑅2
+𝑃𝑄𝐿
+.
+Key Switching: KeySwitch(𝑐, 𝑠𝑤𝑘𝑠,𝑠′) takes a polynomial 𝑐=(𝑎, 𝑏) ∈
+𝑅2
+𝑄𝓁
+and a switching key 𝑠𝑤𝑘𝑠,𝑠′as input. It ﬁrst decomposes 𝑎with 
+respect to the decomposition basis 𝐛 of 𝑠𝑤𝑘𝑠,𝑠′, i.e., 𝑎 =⟨𝐚, 𝐛⟩. Then, it 
+computes and returns (𝑎0, 𝑎1) =⌊𝑃−1⋅⟨𝐚,𝑠𝑤𝑘𝑠,𝑠′
+⟩⌉mod𝑄𝓁.
+A.2. Addition module
+This part introduces the function provided by full-RNS CKKS to 
+achieve homomorphic addition between ciphertexts, which induces the 
+underlying plaintexts to perform Hadamard addition.
+Plaintext Addition: PAdd(𝑐, 𝑚)takes a plaintext polynomial 𝑚 ∈𝑅𝑄𝓁
+and a ciphertext 𝑐∈𝑅2
+𝑄𝓁
+as input, both having the same scaling factor. 
+It outputs a ciphertext 𝑐′=𝑐+(𝑚, 0).
+Ciphertext Addition: Add(𝑐1, 𝑐2) takes two ciphertexts 𝑐1, 𝑐2 ∈𝑅2
+𝑄𝓁
+with the same scaling factor as input and outputs 𝑐1 +𝑐2.
+A.3. Multiplication module
+The multiplication module contains the functions to achieve ho-
+momorphic multiplication among ciphertexts and plaintexts, which in-
+duces the underlying plaintexts to perform the Hadamard product.
+Plaintext Multiplication: PMult(𝑐, 𝑚): Given a plaintext polynomial 
+𝑚 ∈𝑅𝑄𝓁 and a ciphertext 𝑐∈𝑅2
+𝑄𝓁
+with scaling factors Δand Δ′respec-
+tively, compute and return 𝑐′=(𝑐0 ⋅𝑚, 𝑐1 ⋅𝑚). The resulting ciphertext 
+𝑐′has a scaling factor of ΔΔ′.
+Computers & Security 138 (2024) 103658
+18
+X.Ma,C.Ma,Y.Jiangetal.
+Fig. 3. FlowchartofthemodulusrefreshstrategyinhomomorphicPowerMethod.
+Ciphertext Multiplication: Mult(𝑐1, 𝑐2): For ciphertexts 𝑐and 𝑐′with 
+scaling factors Δand Δ′respectively, compute (𝑑0, 𝑑1, 𝑑2) =(𝑐0𝑐′
+0, 𝑐0𝑐′
+1+
+𝑐1𝑐′
+0, 𝑐1𝑐′
+1)and return 𝑑=(𝑑0, 𝑑1) +SwitchKey(𝑑2, rlk) ∈𝑅2
+𝑄𝓁
+as the re-
+sulting ciphertext, where rlk is a switching key 𝑠𝑤𝑘𝑠,𝑠2. The resulting 
+ciphertext 𝑑has a scaling factor of ΔΔ′.
+A rescale operation is commonly used to transfer a ciphertext from 
+a ring with a large modulus to a ring with a smaller modulus, reducing 
+the expansive scaling factor in the ciphertext and limiting the error 
+introduced by multiplications.
+Rescaling: Rescale(𝑐): For a ciphertext 𝑐∈𝑅2
+𝑄𝓁
+with scaling factor Δ, 
+return ⌊𝑞−1
+𝓁 ⋅𝑐⌉. The resulting ciphertext has a scaling factor of Δ∕𝑞𝓁.
+Bootstrapping: Bootstrap(𝑐): Bring a ciphertext 𝑐∈𝑅2
+𝑄𝓁
+back to 
+𝑅2
+𝑄
+𝐿−𝑘
+, where 𝑘is the multiplication depth of the bootstrapping cir-
+cuit.
+A.4. Rotation module
+The rotation module includes the functions to achieve homomorphic 
+position shifting in a ciphertext. Speciﬁcally, full-RNS CKKS allows us 
+to homomorphically rotate the position of the components of the un-
+derlying plain complex vector in a ciphertext.
+Rotation: Rot(𝑐1, 𝑘): Given a ciphertext 𝑐∈𝑅2
+𝑄𝓁
+and a rotation key 
+rtk𝑘, compute and output (𝑐5𝑘
+0 , 0) +SwitchKey(𝑐5𝑘
+1 , rot𝑘), where rotis  a 
+switching key 𝑠𝑤𝑘𝑠,𝑠5𝑘. This ciphertext represents the result of rotating 
+all components of the message vector 𝐳∈ℂ𝑁∕2encrypted by 𝑐to the 
+left by 𝑖steps (or positions), denoted as 𝐳′=𝜌(𝐳; 𝑖).
+Appendix B. Proofs for the vector normalization strategy
+B.1. Ampliﬁcation upper bound of the shifted covariance
+Theorem 7. For the 1-shifted covariance variance matrix Σ′=Σ −𝜆𝐯𝐯𝑇
+of the covariance matrix Σ, where 𝐯is the normalized approximate domi-
+nant eigenvector of Σobtained using the PowerMethod, and 𝜆 = ⟨Σ𝐯,𝐯⟩
+⟨𝐯,𝐯⟩, the 
+matrices Σ′and Σhave the same scaling upper bound. In other words, the 
+ampliﬁcation eﬀect of the transformation Σ′on a vector does not exceed the 
+ampliﬁcation eﬀect of the transformation Σon the same vector.
+Proof. Let the covariance matrix have 𝑛eigenvectors: 𝑥1, 𝑥2, …  , 𝑥𝑛, 
+corresponding to eigenvalues 𝜆1, 𝜆2, …  , 𝜆𝑛. We only need to prove that 
+𝜆 ≤𝜆1. When 𝐯is equal to 𝐱1, the inequality is obviously true. When 𝐯
+is not equal to 𝐱1, it can be represented as 𝐯 =𝑐1𝐱1 +𝑐2𝐱2 + ⋯  +𝑐𝑛𝐱𝑛, 
+where 𝑐2
+1 +𝑐2
+2 + ⋯  +𝑐2
+𝑛=1. In this case, ⟨Σ𝐯, 𝐯⟩=𝜆1𝑐2
+1 +𝜆2𝑐2
+2 + ⋯  +
+𝜆𝑛𝑐2
+𝑛≤𝜆1(𝑐2
+1 + ⋯  +𝑐2
+𝑛) =𝜆1, while ⟨𝐯, 𝐯⟩is always equal to 1. Therefore, 
+𝜆 ≤𝜆1 holds true. □
+B.2. Proof of eﬀectiveness for the PowerMethod simulation
+Theorem 8. If a speciﬁc instance of the Lazy Normalization strategy can 
+maintain an error bound of 𝑒under a PowerMethod simulation with a Con-
+traction Coeﬃcient of 𝑆for 𝑡iterations, then for any covariance matrix with 
+eigenvalues all greater than 𝑆, this instance guarantees that the length of the 
+output approximate eigenvector within 𝑡PowerMethod iterations is close to 
+1with an error no bigger than 𝑒.
+Proof. We need to prove that the scaling eﬀect of the covariance matrix 
+transformation on any vector 𝐯with a length of 1 is not smaller than its 
+minimum eigenvalue 𝜆𝑛. Let 𝜆1, 𝜆2, …  , 𝜆𝑛represent the eigenvalues of 
+Σarranged in descending order, and 𝐱1, …  , 𝐱𝑛be their corresponding 
+eigenvectors. It is known that 𝐯can be expressed as: 𝐯 =𝑐1𝐱1 +𝑐2𝐱2 +
+⋯  +𝑐𝑛𝐱𝑛, where 𝑐2
+1 +𝑐2
+2 + ⋯  +𝑐2
+𝑛=1. Then ||Σ𝐯||2
+2 =𝜆2
+1𝑐2
+1 + ⋯  +𝜆2
+𝑛𝑐2
+𝑛≥
+𝜆2
+𝑛(𝑐2
+1 + ⋯  +𝑐2
+𝑛) =𝜆𝑛. □
+Appendix C. Modulus refresh timing in the privacy-preserving 
+PCA algorithm
+No modulus refresh operations are necessary during the computa-
+tion of the covariance matrix, as its multiplication depth can be handled 
+easily within concrete CKKS schemes. Regarding the PowerMethod, 
+the timing of modulus refresh operations is illustrated in Flowchart 
+in Fig. 3. As depicted in the ﬂowchart, we avoid performing modulus 
+refresh during the covariance matrix transformation because doing so 
+would increase the frequency of modulus refreshes proportional to the 
+size of the covariance matrix. Instead, we only refresh some interme-
+diate values or the approximate eigenvector. Speciﬁcally, we manage 
+to perform modulus refresh only once when refreshing the approxi-
+mate eigenvector. This is achieved by extracting the components of 
+Computers & Security 138 (2024) 103658
+19
+X.Ma,C.Ma,Y.Jiangetal.
+the approximate eigenvector distributed across diﬀerent ciphertexts and 
+encoding them into a single ciphertext. After the refresh, the com-
+ponents can be re-distributed into diﬀerent ciphertexts. This strategy 
+eﬀectively decouples the number of modulus refreshes from the num-
+ber of vector components. In addition, it is worth noting that the cloud 
+users in our scheme are not involved in any aspect of the privacy-
+preserving PCA algorithm, apart from encryption and decryption op-
+erations. Unlike previous approaches that require user participation in 
+the privacy-preserving algorithmic process (Rathee et al., 2018), (Lu 
+et al., 2016), our scheme not only safeguards the algorithm privacy of 
+the cloud service provider but also minimizes the coupling between the 
+privacy-preserving PCA algorithm and the design of the communication 
+protocol between the cloud and the user.
+References
+Arnold, David, Saniie, Jafar, 2023. Evaluation of homomorphic encryption for privacy 
+in principal component analysis. In: 2023 IEEE International Conference on Electro 
+Information Technology (eIT). IEEE, pp.284–288.
+Belhumeur, Peter N., Hespanha, Joao P., Kriegman, David J., 1997. Eigenfaces vs. ﬁsh-
+erfaces: recognition using class speciﬁc linear projection. IEEE Trans. Pattern Anal. 
+Mach. Intell.19  (7), 711–720.
+Bossuat, Jean-Philippe, Mouchet, Christian, Troncoso-Pastoriza, Juan, Hubaux, Jean-
+Pierre, 2021. Eﬃcient bootstrapping for approximate homomorphic encryption with 
+non-sparse keys. In: Advances in Cryptology–EUROCRYPT 2021: 40th Annual Inter-
+national Conference on the Theory and Applications of Cryptographic Techniques. 
+Zagreb, Croatia, October 17–21, 2021. In: Proceedings, Part I. Springer, pp.587–617.
+Brakerski, Zvika, Gentry, Craig, Vaikuntanathan, Vinod, 2014. (leveled) fully homomor-
+phic encryption without bootstrapping. ACM Trans. Comput. Theory6  (3), 1–36.
+Cheon, Jung Hee, Kim, Andrey, Kim, Miran, Song, Yongsoo, 2017. Homomorphic encryp-
+tion for arithmetic of approximate numbers. In: Advances in Cryptology–ASIACRYPT 
+2017: 23rd International Conference on the Theory and Applications of Cryptology 
+and Information Security. Hong Kong, China, December 3–7, 2017. In: Proceedings, 
+Part I, vol.23.  Springer, pp.409–437.
+Cheon, Jung Hee, Han, Kyoohyung, Kim, Andrey, Kim, Miran, Song, Yongsoo, 2019. 
+A full rns variant of approximate homomorphic encryption. In: Selected Areas in 
+Cryptography–SAC 2018: 25th International Conference. Calgary, AB, Canada, Au-
+gust 15–17, 2018. In: Revised Selected Papers, vol.25.  Springer, pp.347–368.
+Deng, Li, 2012. The mnist database of handwritten digit images for machine learning 
+research. IEEE Signal Process. Mag.29  (6), 141–142.
+Duong, Dung Hoang, Kumar Mishra, Pradeep, Yasuda, Masaya, 2016. Eﬃcient secure ma-
+trix multiplication over lwe-based homomorphic encryption. Tatra Mt. Math. Publ.67  
+(1), 69–83.
+Fan, Junfeng, Vercauteren, Frederik, 2012. Somewhat practical fully homomorphic en-
+cryption. Cryptology ePrint Archive.
+Froelicher, David, Cho, Hyunghoon, Edupalli, Manaswitha, Sa Sousa, Joao, Bossuat, Jean-
+Philippe, Pyrgelis, Apostolos, Troncoso-Pastoriza, Juan R., Berger, Bonnie, Hubaux, 
+Jean-Pierre, 2023. Scalable and privacy-preserving federated principal component 
+analysis. arXiv preprint, arXiv :2304 .00129.
+Gizem, S. Cetin, Doroz, Yarkin, Sunar, Berk, Martin, William J., 2015. Arithmetic using 
+word-wise homomorphic encryption. Cryptology ePrint Archive.
+Halevi, Shai, Shoup, Victor, 2014. Algorithms in helib. In: Advances in Cryptology–
+CRYPTO 2014: 34th Annual Cryptology Conference. Santa Barbara, CA, USA, August 
+17–21, 2014. In: Proceedings, Part I, vol.34.  Springer, pp.554–571.
+Halevi, Shai, Shoup, Victor, 2018. Faster homomorphic linear transformations in helib. 
+In: Advances in Cryptology–CRYPTO 2018: 38th Annual International Cryptology 
+Conference. Santa Barbara, CA, USA, August 19–23, 2018. In: Proceedings, Part I, 
+vol.38.  Springer, pp.93–120.
+Hotelling, Harold, 1933. Analysis of a complex of statistical variables into principal com-
+ponents. J. Educ. Psychol.24  (6), 417.
+Jang, Jaehee, Lee, Younho, Kim, Andrey, Na, Byunggook, Yhee, Donggeon, Lee, Byoung-
+han, Hee Cheon, Jung, Yoon, Sungroh, 2022. Privacy-preserving deep sequential 
+model with matrix homomorphic encryption. In: Proceedings of the 2022 ACM on 
+Asia Conference on Computer and Communications Security, pp.377–391.
+Jiang, Xiaoqian, Kim, Miran, Lauter, Kristin, Song, Yongsoo, 2018. Secure out-
+sourced matrix computation and application to neural networks. In: Proceedings 
+of the 2018 ACM SIGSAC Conference on Computer and Communications Security, 
+pp.1209–1222.
+Lattigo v4, Online: https://github .com /tuneinsight /lattigo. EPFL-LDS, Tune Insight SA.
+Liu, Yingting, Chen, Chaochao, Zheng, Longfei, Wang, Li, Zhou, Jun, Liu, Guiquan, Yang, 
+Shuang, 2020. Privacy preserving pca for multiparty modeling. arXiv preprint. arXiv :
+2002 .02091.
+Lu, Wen-jie, Kawasaki, Shohei, Sakuma, Jun, 2016. Using fully homomorphic encryption 
+for statistical analysis of categorical, ordinal and numerical data. Cryptology ePrint 
+Archive.
+Lyubashevsky, Vadim, Peikert, Chris, Regev, Oded, 2010. On ideal lattices and learning 
+with errors over rings. In: Advances in Cryptology–EUROCRYPT 2010: 29th Annual 
+International Conference on the Theory and Applications of Cryptographic Tech-
+niques. French Riviera, May 30–June 3, 2010. In: Proceedings, vol. 29. Springer, 
+pp.1–23.
+Ma, Xirong, 2023. Buﬀaloheextension. https://github .com /lilBuﬀaloEric /BuﬀaloHE _
+extension.
+Mishra, Pradeep Kumar, Rathee, Deevashwer, Hoang Duong, Dung, Yasuda, Masaya, 
+2021. Fast secure matrix multiplications over ring-based homomorphic encryption. 
+Inf. Secur. J. Glob. Perspect.30  (4), 219–234.
+Mouchet, Christian, Troncoso-Pastoriza, Juan, Bossuat, Jean-Philippe, Hubaux, Jean-
+Pierre, 2021. Multiparty homomorphic encryption from ring-learning-with-errors. In: 
+Proceedings on Privacy Enhancing Technologies. 2021(CONF), pp.291–311.
+Panda, Samanvaya, 2021. Principal component analysis using ckks homomorphic scheme. 
+In: Cyber Security Cryptography and Machine Learning: 5th International Sympo-
+sium. CSCML 2021, Be’er Sheva, Israel, July 8–9, 2021. In: Proceedings, vol. 5. 
+Springer, pp.52–70.
+Panda, Samanvaya, 2022. Polynomial approximation of inverse sqrt function for fhe. 
+In: Cyber Security, Cryptology, and Machine Learning: 6th International Sympo-
+sium, Proceedings. CSCML 2022, Be’er Sheva, Israel, June 30–July 1, 2022. Springer, 
+pp.366–376.
+Pearson, Karl, 1901. Liii. on lines and planes of closest ﬁt to systems of points in space. 
+Lond. Edinb. Dublin Philos. Mag. J. Sci.2  (11), 559–572.
+Qu, Hongyuan, Xu, Guangwu. Improvements of homomorphic evaluation of inverse 
+square root. Available at SSRN 4258571.
+Rathee, Deevashwer, Kumar Mishra, Pradeep, Yasuda, Masaya, 2018. Faster pca and lin-
+ear regression through hypercubes in helib. In: Proceedings of the 2018 Workshop on 
+Privacy in the Electronic Society, pp.42–53.
+von Mises, Richard, Pollaczek-Geiringer, Hilda, 1929. Praktische verfahren der gle-
+ichungsauﬂösung. Z. Angew. Math. Mech.9,  152–164.
+Wang, Shufang, Huang, Hai, 2019. Secure outsourced computation of multiple matrix 
+multiplication based on fully homomorphic encryption. KSII Trans. Int. Inf. Syst. 13 
+(11), 5616–5630.
+Xiao, Han, Rasul, Kashif, Vollgraf, Roland, 2017. Fashion-mnist: a novel image dataset for 
+benchmarking machine learning algorithms. arXiv preprint. arXiv :1708 .07747.
+Xirong Ma is currently pursuing his bachelor’s degree at the School of Software 
+Engineering, Shandong University, starting from 2020. His research interests include 
+privacy-preserving computation, homomorphic encryption, and machine learning.
+Chuan Mareceived the B.S. degree from the Beijing University of Posts and Telecom-
+munications, Beijing, China, in 2013 and Ph.D. degree from the University of Sydney, 
+Australia, in 2018. From 2018 to 2022, he worked as a lecturer in the Nanjing University 
+of Science and Technology, and now he is a principal investigator at Zhejiang Lab. He has 
+published more than 40 journal and conference papers, including a best paper in WCNC 
+2018, and a best paper award in IEEE Signal Processing Society 2022. His research in-
+terests include stochastic geometry, wireless caching networks and distributed machine 
+learning, and now focuses on the big data analysis and privacy-preserving.
+Yali Jiang is currently a Lecturer in the School of Software, Shandong University. 
+She received her B.Sc., M.Sc., and Ph.D. degrees from Shandong University in 1999, 2002, 
+and 2011, respectively. She is engaged in research in the ﬁeld of information security and 
+cryptography. Her main research areas focus on privacy-preserving technologies based 
+on cryptography, including Fully Homomorphic Encryption (FHE), Secure Multi-Party 
+Computation (MPC), Zero-Knowledge Proofs (ZKP), and more. She has participated in 
+the National Key R&D Programs of China, the Shandong Provincial Key Research and 
+Development Programs, the Shandong Provincial Natural Science Foundation, and joint 
+research projects with enterprises.
+Chunpeng Geis currently a full professor at the School of Software, Shandong Uni-
+versity. His current research interests include information security and privacy-preserving 
+for cloud computing, blockchain, security and privacy of AI systems. He has published 
+more than 60 papers in prestigious journal and conferences. He served as the editor of 
+the journal of CSI and program committee for more than 30 international conferences.

@@ -58,6 +58,8 @@ public:
 
     // 已中心化的数据矩阵（仅在 generateLowRankDataset / generateFromBinaryFile 后有效）
     const Eigen::MatrixXd& centeredData() const { return X_centered_; }
+    // 中心化时减去的样本均值 (1×d)，用来反中心化做重建可视化
+    const Eigen::RowVectorXd& sampleMean() const { return sample_mean_; }
     bool hasData() const { return X_centered_.rows() > 0; }
 
     std::vector<lbcrypto::Ciphertext<lbcrypto::DCRTPoly>> encryptCovMatrix() const;
@@ -158,6 +160,19 @@ public:
         bool enable_fro,
         int fro_skip_first) const;
 
+    // 与 plaintextHeMirrorLanczos 相同的明文逐操作镜像，但归一化阶段不用
+    // std::sqrt，而是复现 HE 端 Newton 1/sqrt(x) 的初值与迭代次数。
+    // 用于把误差拆成：sqrt mirror（Krylov 极限）→ Newton mirror（归一化近似）
+    // → HE（CKKS/bootstrap 噪声 + Newton）。
+    LanczosPROResult plaintextHeNewtonMirrorLanczos(
+        const Eigen::VectorXd& v0,
+        int m_iter,
+        bool enable_fro,
+        int fro_skip_first,
+        double eigenvalue_guess,
+        const std::vector<double>& per_iter_eigenvalue_guesses,
+        int newton_iters) const;
+
     std::vector<double> plaintextMirrorResidualNormSqGuesses(
         const Eigen::VectorXd& v0,
         int m_iter) const;
@@ -214,6 +229,7 @@ private:
 
     Eigen::MatrixXd C_;
     Eigen::MatrixXd X_centered_;
+    Eigen::RowVectorXd sample_mean_;
 
     void setupCryptoContext(bool enable_bootstrap, uint32_t levels_after_bootstrap);
 };

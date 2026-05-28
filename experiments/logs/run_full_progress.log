@@ -1,0 +1,5 @@
+[2026-05-23 19:35:03] START MNIST-train 60k
+[2026-05-23 19:41:48] DONE MNIST-train 60k exit=0
+[2026-05-23 19:41:48] START Fashion-train 60k
+[2026-05-23 19:48:16] DONE Fashion-train 60k exit=0
+[2026-05-23 19:48:16] ALL DONE

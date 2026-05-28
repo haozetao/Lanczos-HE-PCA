@@ -212,6 +212,7 @@ void Client::generateLowRankDataset(int N, int true_rank, double noise_sigma)
 
     Eigen::RowVectorXd mean = X.colwise().mean();
     X_centered_ = X.rowwise() - mean;
+    sample_mean_ = mean;
 
     C_ = (X_centered_.transpose() * X_centered_) / static_cast<double>(N - 1);
 }
@@ -268,6 +269,7 @@ void Client::generateFromBinaryFile(const std::string& path,
 
     Eigen::RowVectorXd mean = X.colwise().mean();
     X_centered_ = X.rowwise() - mean;
+    sample_mean_ = mean;
     C_ = (X_centered_.transpose() * X_centered_) / static_cast<double>(N - 1);
 
     std::cout << "  [dataset] 加载二进制 " << path
@@ -718,6 +720,107 @@ Client::LanczosPROResult Client::plaintextHeMirrorLanczos(
         V_prev = V;
         V = Wnew / norm;
         beta_prev = norm;
+    }
+
+    Eigen::MatrixXd T = Eigen::MatrixXd::Zero(actual_m, actual_m);
+    for (int i = 0; i < actual_m; ++i) {
+        T(i, i) = alphas[static_cast<size_t>(i)];
+        if (i < actual_m - 1 && static_cast<size_t>(i) < betas.size()) {
+            const double b = betas[static_cast<size_t>(i)];
+            T(i, i + 1) = b;
+            T(i + 1, i) = b;
+        }
+    }
+
+    LanczosPROResult result;
+    result.T = T;
+    result.V_total = V_total.leftCols(actual_m);
+    result.actual_m = actual_m;
+    return result;
+}
+
+Client::LanczosPROResult Client::plaintextHeNewtonMirrorLanczos(
+    const Eigen::VectorXd& v0,
+    int m_iter,
+    bool enable_fro,
+    int fro_skip_first,
+    double eigenvalue_guess,
+    const std::vector<double>& per_iter_eigenvalue_guesses,
+    int newton_iters) const
+{
+    if (v0.size() != d_) {
+        throw std::invalid_argument(
+            "plaintextHeNewtonMirrorLanczos: v0 维度与 d 不一致");
+    }
+    if (m_iter < 1) {
+        throw std::invalid_argument(
+            "plaintextHeNewtonMirrorLanczos: m_iter 至少为 1");
+    }
+    if (newton_iters < 1) {
+        throw std::invalid_argument(
+            "plaintextHeNewtonMirrorLanczos: newton_iters 至少为 1");
+    }
+
+    const int fro_skip = std::max(0, fro_skip_first);
+    const double fallback_guess = std::max(eigenvalue_guess, 1e-18);
+
+    Eigen::MatrixXd V_total(d_, m_iter);
+    std::vector<double> alphas;
+    std::vector<double> betas;
+    alphas.reserve(static_cast<size_t>(m_iter));
+    betas.reserve(static_cast<size_t>(std::max(0, m_iter - 1)));
+
+    Eigen::VectorXd V = v0.normalized();
+    Eigen::VectorXd V_prev = Eigen::VectorXd::Zero(d_);
+    double beta_prev = 0.0;
+    int actual_m = 0;
+
+    for (int iter = 0; iter < m_iter; ++iter) {
+        V_total.col(iter) = V;
+        actual_m = iter + 1;
+
+        Eigen::VectorXd W = C_ * V;
+        if (iter > 0) {
+            W -= beta_prev * V_prev;
+        }
+
+        const double alpha = V.dot(W);
+        alphas.push_back(alpha);
+
+        if (iter == m_iter - 1) {
+            break;
+        }
+
+        Eigen::VectorXd Wnew = W - alpha * V;
+
+        if (enable_fro && iter >= fro_skip) {
+            for (int k = 0; k < iter; ++k) {
+                const Eigen::VectorXd& Vk = V_total.col(k);
+                const double proj = Vk.dot(Wnew);
+                Wnew -= proj * Vk;
+            }
+        }
+
+        const double norm_sq = std::max(Wnew.squaredNorm(), 1e-18);
+        const double iter_guess =
+            (static_cast<size_t>(iter) < per_iter_eigenvalue_guesses.size())
+                ? per_iter_eigenvalue_guesses[static_cast<size_t>(iter)]
+                : fallback_guess;
+
+        double inv_sqrt = 1.0 / std::sqrt(std::max(iter_guess, 1e-18));
+        for (int it = 0; it < newton_iters; ++it) {
+            inv_sqrt = 0.5 * inv_sqrt * (3.0 - norm_sq * inv_sqrt * inv_sqrt);
+        }
+
+        const double beta = norm_sq * inv_sqrt;
+        if (!std::isfinite(beta) || !std::isfinite(inv_sqrt) || std::abs(beta) < 1e-14) {
+            break;
+        }
+        betas.push_back(beta);
+
+        V_prev = V;
+        V = Wnew * inv_sqrt;
+        beta_prev = beta;
     }
 
     Eigen::MatrixXd T = Eigen::MatrixXd::Zero(actual_m, actual_m);
