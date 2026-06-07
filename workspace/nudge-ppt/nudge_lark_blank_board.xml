@@ -1,0 +1,8 @@
+<callout emoji="📌" background-color="light-blue" border-color="blue" text-color="blue">
+  <p><b>Nudge 论文可视化画板</b>：下方画板把论文《Nudge: A Private Recommendations Engine》的系统架构、核心算法、3PC 优化点和实验结论组织成一个流程图，便于后续讨论和汇报复用。</p>
+</callout>
+<h1>Nudge: A Private Recommendations Engine 可视化梳理</h1>
+<p>主题：三方 MPC 下的大规模私有推荐系统。核心思想不是使用更复杂的推荐模型，而是把矩阵分解改写成适合安全计算的 matrix-vector program。</p>
+<whiteboard type="blank"></whiteboard>
+<hr/>
+<p>后续可按需要继续拆成多张画板：系统架构图、Power Iteration 算法流程图、Nudge vs prior systems 对比图、实验指标图。</p>

@@ -1,0 +1,56 @@
+<callout emoji="📌" background-color="light-blue" border-color="blue" text-color="blue">
+  <p><b>Nudge 论文可视化画板</b>：下方画板把论文《Nudge: A Private Recommendations Engine》的系统架构、核心算法、3PC 优化点和实验结论组织成一个流程图，便于后续讨论和汇报复用。</p>
+</callout>
+<h1>Nudge: A Private Recommendations Engine 可视化梳理</h1>
+<p>主题：三方 MPC 下的大规模私有推荐系统。核心思想不是使用更复杂的推荐模型，而是把矩阵分解改写成适合安全计算的 matrix-vector program。</p>
+<whiteboard type="mermaid"><![CDATA[
+flowchart LR
+  U["用户<br/>评分向量 u(i)"] -- "secret-share" --> S["三台非串谋服务器<br/>S0 / S1 / S2"]
+  S --> C1["Private data collection<br/>收集 secret-shared ratings"]
+  C1 --> M["Private matrix factorization<br/>Power Iteration on U^T U"]
+  M --> B["公开聚合模型 B<br/>item embeddings"]
+  M --> A["secret-shared A<br/>user embeddings"]
+  A --> R["推荐分数 shares<br/>a(i) · B"]
+  R --> Client["用户本地重构<br/>top-k recommendations"]
+
+  subgraph Alg["核心算法步骤"]
+    P1["1. 初始化随机向量 v"]
+    P2["2. SetOrthogonal(v,B)<br/>移除已求方向"]
+    P3["3. v ← U^T(Uv)"]
+    P4["4. Truncate + Normalize"]
+    P5["5. 写入 B 的第 i 行"]
+    P1 --> P2 --> P3 --> P4 --> P5
+  end
+
+  M --> Alg
+
+  subgraph MPC["3PC / FSS 优化点"]
+    O1["线性大块：矩阵-向量乘法<br/>replicated secret sharing 非交互"]
+    O2["非线性小块：截断与归一化<br/>FSS + Newton-Raphson"]
+    O3["通信复杂度 O(m+n)<br/>计算复杂度 O(mn)"]
+    O1 --> O2 --> O3
+  end
+
+  M --> MPC
+
+  subgraph Eval["实验结论"]
+    E1["Netflix: 463K users / 17K items / 56M ratings"]
+    E2["私有训练：50 min / 40 GB server-to-server"]
+    E3["nDCG@20 = 0.29<br/>接近明文矩阵分解"]
+    E4["局限：需要 3 个非串谋服务器<br/>不防 2 台及以上串谋"]
+    E1 --> E2 --> E3 --> E4
+  end
+
+  S --> Eval
+
+  classDef blue fill:#edf4ff,stroke:#0f2f68,color:#0f172a
+  classDef red fill:#fff1f1,stroke:#c00000,color:#0f172a
+  classDef green fill:#eefbf1,stroke:#2e7d50,color:#0f172a
+  classDef dark fill:#111827,stroke:#111827,color:#ffffff
+  class U,Client,B blue
+  class S,M dark
+  class P1,P2,P3,P4,P5,O1,O2,O3 green
+  class E1,E2,E3,E4 red
+]]></whiteboard>
+<hr/>
+<p>后续可按需要继续拆成多张画板：系统架构图、Power Iteration 算法流程图、Nudge vs prior systems 对比图、实验指标图。</p>

@@ -1,0 +1,73 @@
+{
+  "title": "Nudge: A Private Recommendations Engine",
+  "style": "minimal-swiss / editorial academic",
+  "style_guidelines": {
+    "color_palette": "Warm paper background, dark ink text, muted blue and terracotta accents",
+    "typography": "Clean sans-serif Chinese/English hierarchy; large titles, restrained body copy",
+    "imagery": "Paper figures cropped from the PDF, hand-redrawn architecture and metric diagrams",
+    "layout": "Editorial academic briefing, strong whitespace, 1–2 focal elements per slide"
+  },
+  "aspect_ratio": "16:9",
+  "slides": [
+    {
+      "slide_number": 1,
+      "type": "title",
+      "title": "Nudge: A Private Recommendations Engine"
+    },
+    {
+      "slide_number": 2,
+      "type": "motivation",
+      "title": "为什么需要 Nudge？"
+    },
+    {
+      "slide_number": 3,
+      "type": "architecture",
+      "title": "系统总览：三服务器拆分信任"
+    },
+    {
+      "slide_number": 4,
+      "type": "security",
+      "title": "威胁模型：强隐私，但不是万能"
+    },
+    {
+      "slide_number": 5,
+      "type": "concept",
+      "title": "矩阵分解直觉：把评分矩阵压成低秩表示"
+    },
+    {
+      "slide_number": 6,
+      "type": "algorithm",
+      "title": "算法步骤：Power Iteration 做私有矩阵分解"
+    },
+    {
+      "slide_number": 7,
+      "type": "algorithm",
+      "title": "为什么这个算法适合 3PC？"
+    },
+    {
+      "slide_number": 8,
+      "type": "analysis",
+      "title": "复杂度叙事：通信从跟评分数走变成跟用户+物品走"
+    },
+    {
+      "slide_number": 9,
+      "type": "experiment",
+      "title": "推荐质量：接近明文矩阵分解"
+    },
+    {
+      "slide_number": 10,
+      "type": "experiment",
+      "title": "性能：私有矩阵分解从天/小时压到秒/分钟"
+    },
+    {
+      "slide_number": 11,
+      "type": "experiment",
+      "title": "端到端与横向扩展：训练重，服务轻"
+    },
+    {
+      "slide_number": 12,
+      "type": "conclusion",
+      "title": "局限、扩展与汇报结论"
+    }
+  ]
+}

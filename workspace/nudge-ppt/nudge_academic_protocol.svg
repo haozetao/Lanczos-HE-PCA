@@ -1,0 +1,354 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1920" height="1080" viewBox="0 0 1920 1080">
+<defs>
+  <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
+    <path d="M0,0 L0,6 L8,3 z" fill="#7F7F7F"/>
+  </marker>
+  <marker id="arrowBlue" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
+    <path d="M0,0 L0,6 L8,3 z" fill="#002060"/>
+  </marker>
+  <marker id="arrowRed" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
+    <path d="M0,0 L0,6 L8,3 z" fill="#C00000"/>
+  </marker>
+  <style>
+    .small { font-family: Arial, PingFang SC, Helvetica, sans-serif; }
+  </style>
+</defs>
+<rect x="0" y="0" width="1920" height="1080" fill="#FFFFFF"/>
+
+<text x="760" y="48" text-anchor="middle" font-family="Arial, PingFang SC, Helvetica, sans-serif" font-size="27" font-weight="700" fill="#002060">
+<tspan x="760" dy="0">Nudge: A Private Recommendations Engine</tspan>
+</text>
+<text x="960" y="79" text-anchor="middle" font-family="Arial, PingFang SC, Helvetica, sans-serif" font-size="14" font-weight="400" fill="#7F7F7F">
+<tspan x="960" dy="0">Three-Party Secure Matrix Factorization via Power Iteration · Henzinger et al.</tspan>
+</text>
+<rect x="1280" y="18" width="595" height="92" rx="14" fill="#ffffff" stroke="#D9D9D9" stroke-width="1.5"/>
+<text x="1302" y="43" text-anchor="start" font-family="Arial, PingFang SC, Helvetica, sans-serif" font-size="14" font-weight="700" fill="#002060">
+<tspan x="1302" dy="0">图例</tspan>
+</text>
+<rect x="1298" y="56" width="18" height="18" rx="4" fill="#ffffff" stroke="#548235" stroke-width="3"/>
+<text x="1324" y="70" text-anchor="start" font-family="Arial, PingFang SC, Helvetica, sans-serif" font-size="12" font-weight="400" fill="#333333">
+<tspan x="1324" dy="0">用户</tspan>
+</text>
+<rect x="1410" y="56" width="18" height="18" rx="4" fill="#ffffff" stroke="#002060" stroke-width="3"/>
+<text x="1436" y="70" text-anchor="start" font-family="Arial, PingFang SC, Helvetica, sans-serif" font-size="12" font-weight="400" fill="#333333">
+<tspan x="1436" dy="0">三台服务器</tspan>
+</text>
+<rect x="1522" y="56" width="18" height="18" rx="4" fill="#ffffff" stroke="#C00000" stroke-width="3"/>
+<text x="1548" y="70" text-anchor="start" font-family="Arial, PingFang SC, Helvetica, sans-serif" font-size="12" font-weight="400" fill="#333333">
+<tspan x="1548" dy="0">三方计算核心</tspan>
+</text>
+<rect x="1634" y="56" width="18" height="18" rx="4" fill="#ffffff" stroke="#7F7F7F" stroke-width="3"/>
+<text x="1660" y="70" text-anchor="start" font-family="Arial, PingFang SC, Helvetica, sans-serif" font-size="12" font-weight="400" fill="#333333">
+<tspan x="1660" dy="0">密码学原语</tspan>
+</text>
+<rect x="1746" y="56" width="18" height="18" rx="4" fill="#ffffff" stroke="#ED7D31" stroke-width="3"/>
+<text x="1772" y="70" text-anchor="start" font-family="Arial, PingFang SC, Helvetica, sans-serif" font-size="12" font-weight="400" fill="#333333">
+<tspan x="1772" dy="0">推荐输出</tspan>
+</text>
+<text x="1300" y="98" text-anchor="start" font-family="Arial, PingFang SC, Helvetica, sans-serif" font-size="11" font-weight="400" fill="#666666">
+<tspan x="1300" dy="0">实线=数据/秘密份额流   虚线=迭代/调用   ⟦·⟧=秘密共享态   B=明文/公开模型</tspan>
+</text>
+<rect x="28" y="125" width="1864" height="215" rx="18" fill="#FAFAFA" stroke="#E3E3E3" stroke-width="1.5"/>
+<text x="52" y="152" text-anchor="start" font-family="Arial, PingFang SC, Helvetica, sans-serif" font-size="18" font-weight="700" fill="#002060">
+<tspan x="52" dy="0">阶段 ①  Private Data Collection  私有数据收集</tspan>
+</text>
+<rect x="28" y="360" width="1864" height="470" rx="18" fill="#FAFAFA" stroke="#E3E3E3" stroke-width="1.5"/>
+<text x="52" y="387" text-anchor="start" font-family="Arial, PingFang SC, Helvetica, sans-serif" font-size="18" font-weight="700" fill="#C00000">
+<tspan x="52" dy="0">阶段 ②  Private Matrix Factorization  私有矩阵分解</tspan>
+</text>
+<rect x="28" y="850" width="1864" height="120" rx="18" fill="#FAFAFA" stroke="#E3E3E3" stroke-width="1.5"/>
+<text x="52" y="877" text-anchor="start" font-family="Arial, PingFang SC, Helvetica, sans-serif" font-size="18" font-weight="700" fill="#002060">
+<tspan x="52" dy="0">阶段 ③  Private Recommendation Serving  隐私推荐分发</tspan>
+</text>
+<rect x="405" y="155" width="285" height="805" rx="18" fill="#F3F6FA" stroke="#BFC7D5" stroke-width="1.5"/>
+<rect x="423" y="167" width="42" height="58" rx="5" fill="#ffffff" stroke="#002060" stroke-width="2"/>
+<line x1="432" y1="182" x2="456" y2="182" stroke="#002060" stroke-width="2"/>
+<line x1="432" y1="197" x2="456" y2="197" stroke="#002060" stroke-width="2"/>
+<circle cx="437" cy="212" r="3" fill="#002060"/>
+<text x="444" y="247" text-anchor="middle" font-family="Arial, PingFang SC, Helvetica, sans-serif" font-size="14" font-weight="700" fill="#002060">
+<tspan x="444" dy="0">Server 1</tspan>
+</text>
+<text x="572.5" y="183" text-anchor="middle" font-family="Arial, PingFang SC, Helvetica, sans-serif" font-size="17" font-weight="700" fill="#002060">
+<tspan x="572.5" dy="0">Server 1 泳道</tspan>
+</text>
+<text x="572.5" y="205" text-anchor="middle" font-family="Arial, PingFang SC, Helvetica, sans-serif" font-size="12" font-weight="400" fill="#7F7F7F">
+<tspan x="572.5" dy="0">non-colluding party</tspan>
+</text>
+<rect x="720" y="155" width="285" height="805" rx="18" fill="#F3F6FA" stroke="#BFC7D5" stroke-width="1.5"/>
+<rect x="738" y="167" width="42" height="58" rx="5" fill="#ffffff" stroke="#002060" stroke-width="2"/>
+<line x1="747" y1="182" x2="771" y2="182" stroke="#002060" stroke-width="2"/>
+<line x1="747" y1="197" x2="771" y2="197" stroke="#002060" stroke-width="2"/>
+<circle cx="752" cy="212" r="3" fill="#002060"/>
+<text x="759" y="247" text-anchor="middle" font-family="Arial, PingFang SC, Helvetica, sans-serif" font-size="14" font-weight="700" fill="#002060">
+<tspan x="759" dy="0">Server 2</tspan>
+</text>
+<text x="887.5" y="183" text-anchor="middle" font-family="Arial, PingFang SC, Helvetica, sans-serif" font-size="17" font-weight="700" fill="#002060">
+<tspan x="887.5" dy="0">Server 2 泳道</tspan>
+</text>
+<text x="887.5" y="205" text-anchor="middle" font-family="Arial, PingFang SC, Helvetica, sans-serif" font-size="12" font-weight="400" fill="#7F7F7F">
+<tspan x="887.5" dy="0">non-colluding party</tspan>
+</text>
+<rect x="1035" y="155" width="285" height="805" rx="18" fill="#F3F6FA" stroke="#BFC7D5" stroke-width="1.5"/>
+<rect x="1053" y="167" width="42" height="58" rx="5" fill="#ffffff" stroke="#002060" stroke-width="2"/>
+<line x1="1062" y1="182" x2="1086" y2="182" stroke="#002060" stroke-width="2"/>
+<line x1="1062" y1="197" x2="1086" y2="197" stroke="#002060" stroke-width="2"/>
+<circle cx="1067" cy="212" r="3" fill="#002060"/>
+<text x="1074" y="247" text-anchor="middle" font-family="Arial, PingFang SC, Helvetica, sans-serif" font-size="14" font-weight="700" fill="#002060">
+<tspan x="1074" dy="0">Server 3</tspan>
+</text>
+<text x="1202.5" y="183" text-anchor="middle" font-family="Arial, PingFang SC, Helvetica, sans-serif" font-size="17" font-weight="700" fill="#002060">
+<tspan x="1202.5" dy="0">Server 3 泳道</tspan>
+</text>
+<text x="1202.5" y="205" text-anchor="middle" font-family="Arial, PingFang SC, Helvetica, sans-serif" font-size="12" font-weight="400" fill="#7F7F7F">
+<tspan x="1202.5" dy="0">non-colluding party</tspan>
+</text>
+<circle cx="130" cy="185" r="9.84" fill="#ffffff" stroke="#548235" stroke-width="2"/>
+<path d="M 111.96000000000001 213.7 Q 130 193.2 148.04 213.7" fill="none" stroke="#548235" stroke-width="3" stroke-linecap="round"/>
+<rect x="83" y="223" width="94" height="38" rx="8" ry="8" fill="#FFFFFF" stroke="#548235" stroke-width="2"/>
+<text x="130.0" y="245.33333333333334" text-anchor="middle" font-family="Arial, PingFang SC, Helvetica, sans-serif" font-size="10" font-weight="700" fill="#548235">
+<tspan x="130.0" dy="0">u^(1) ∈ R^n</tspan>
+<tspan x="130.0" dy="12">评分向量</tspan>
+</text>
+<circle cx="130" cy="235" r="9.84" fill="#ffffff" stroke="#548235" stroke-width="2"/>
+<path d="M 111.96000000000001 263.7 Q 130 243.2 148.04 263.7" fill="none" stroke="#548235" stroke-width="3" stroke-linecap="round"/>
+<rect x="83" y="273" width="94" height="38" rx="8" ry="8" fill="#FFFFFF" stroke="#548235" stroke-width="2"/>
+<text x="130.0" y="295.3333333333333" text-anchor="middle" font-family="Arial, PingFang SC, Helvetica, sans-serif" font-size="10" font-weight="700" fill="#548235">
+<tspan x="130.0" dy="0">u^(2) ∈ R^n</tspan>
+<tspan x="130.0" dy="12">评分向量</tspan>
+</text>
+<circle cx="130" cy="285" r="9.84" fill="#ffffff" stroke="#548235" stroke-width="2"/>
+<path d="M 111.96000000000001 313.7 Q 130 293.2 148.04 313.7" fill="none" stroke="#548235" stroke-width="3" stroke-linecap="round"/>
+<rect x="83" y="323" width="94" height="38" rx="8" ry="8" fill="#FFFFFF" stroke="#548235" stroke-width="2"/>
+<text x="130.0" y="345.3333333333333" text-anchor="middle" font-family="Arial, PingFang SC, Helvetica, sans-serif" font-size="10" font-weight="700" fill="#548235">
+<tspan x="130.0" dy="0">u^(3) ∈ R^n</tspan>
+<tspan x="130.0" dy="12">评分向量</tspan>
+</text>
+<circle cx="260" cy="210" r="9.84" fill="#ffffff" stroke="#548235" stroke-width="2"/>
+<path d="M 241.96 238.7 Q 260 218.2 278.04 238.7" fill="none" stroke="#548235" stroke-width="3" stroke-linecap="round"/>
+<rect x="213" y="248" width="94" height="38" rx="8" ry="8" fill="#FFFFFF" stroke="#548235" stroke-width="2"/>
+<text x="260.0" y="270.3333333333333" text-anchor="middle" font-family="Arial, PingFang SC, Helvetica, sans-serif" font-size="10" font-weight="700" fill="#548235">
+<tspan x="260.0" dy="0">u^(4) ∈ R^n</tspan>
+<tspan x="260.0" dy="12">评分向量</tspan>
+</text>
+<circle cx="260" cy="265" r="9.84" fill="#ffffff" stroke="#548235" stroke-width="2"/>
+<path d="M 241.96 293.7 Q 260 273.2 278.04 293.7" fill="none" stroke="#548235" stroke-width="3" stroke-linecap="round"/>
+<rect x="213" y="303" width="94" height="38" rx="8" ry="8" fill="#FFFFFF" stroke="#548235" stroke-width="2"/>
+<text x="260.0" y="325.3333333333333" text-anchor="middle" font-family="Arial, PingFang SC, Helvetica, sans-serif" font-size="10" font-weight="700" fill="#548235">
+<tspan x="260.0" dy="0">u^(5) ∈ R^n</tspan>
+<tspan x="260.0" dy="12">评分向量</tspan>
+</text>
+<rect x="437" y="240" width="220" height="70" rx="14" ry="14" fill="#ffffff" stroke="#002060" stroke-width="2"/>
+<text x="547.0" y="268" text-anchor="middle" font-family="Arial, PingFang SC, Helvetica, sans-serif" font-size="15" font-weight="700" fill="#002060">
+<tspan x="547.0" dy="0">Server 1 持有</tspan>
+</text>
+<text x="547.0" y="296" text-anchor="middle" font-family="Arial, PingFang SC, Helvetica, sans-serif" font-size="14" font-weight="400" fill="#333333">
+<tspan x="547.0" dy="0">⟦U⟧_1</tspan>
+<tspan x="547.0" dy="17">U ∈ R^(m×n)</tspan>
+</text>
+<rect x="752" y="240" width="220" height="70" rx="14" ry="14" fill="#ffffff" stroke="#002060" stroke-width="2"/>
+<text x="862.0" y="268" text-anchor="middle" font-family="Arial, PingFang SC, Helvetica, sans-serif" font-size="15" font-weight="700" fill="#002060">
+<tspan x="862.0" dy="0">Server 2 持有</tspan>
+</text>
+<text x="862.0" y="296" text-anchor="middle" font-family="Arial, PingFang SC, Helvetica, sans-serif" font-size="14" font-weight="400" fill="#333333">
+<tspan x="862.0" dy="0">⟦U⟧_2</tspan>
+<tspan x="862.0" dy="17">U ∈ R^(m×n)</tspan>
+</text>
+<rect x="1067" y="240" width="220" height="70" rx="14" ry="14" fill="#ffffff" stroke="#002060" stroke-width="2"/>
+<text x="1177.0" y="268" text-anchor="middle" font-family="Arial, PingFang SC, Helvetica, sans-serif" font-size="15" font-weight="700" fill="#002060">
+<tspan x="1177.0" dy="0">Server 3 持有</tspan>
+</text>
+<text x="1177.0" y="296" text-anchor="middle" font-family="Arial, PingFang SC, Helvetica, sans-serif" font-size="14" font-weight="400" fill="#333333">
+<tspan x="1177.0" dy="0">⟦U⟧_3</tspan>
+<tspan x="1177.0" dy="17">U ∈ R^(m×n)</tspan>
+</text>
+<rect x="250" y="216" width="120" height="82" rx="10" ry="10" fill="#FFFFFF" stroke="#548235" stroke-width="2"/>
+<text x="310" y="250" text-anchor="middle" font-family="Arial, PingFang SC, Helvetica, sans-serif" font-size="12" font-weight="700" fill="#548235">
+<tspan x="310" dy="0">share bundle</tspan>
+</text>
+<line x1="220" y1="240" x2="240" y2="240" stroke="#548235" stroke-width="2" marker-end="url(#arrow)" fill="none"/>
+<polyline points="390,235 437,235" stroke="#002060" stroke-width="2.0" marker-end="url(#arrowBlue)" fill="none"/>
+<polyline points="390,253 752,253" stroke="#5B9BD5" stroke-width="2.0" marker-end="url(#arrowBlue)" fill="none"/>
+<polyline points="390,271 1067,271" stroke="#9DC3E6" stroke-width="2.0" marker-end="url(#arrowBlue)" fill="none"/>
+<rect x="408" y="324" width="215" height="28" rx="8" ry="8" fill="#FFFFFF" stroke="#7F7F7F" stroke-width="2"/>
+<text x="515.5" y="342.0" text-anchor="middle" font-family="Arial, PingFang SC, Helvetica, sans-serif" font-size="12" font-weight="700" fill="#333333">
+<tspan x="515.5" dy="0">Replicated Secret Sharing</tspan>
+</text>
+<rect x="1405" y="230" width="400" height="82" rx="14" ry="14" fill="#ffffff" stroke="#7F7F7F" stroke-width="2"/>
+<text x="1605.0" y="258" text-anchor="middle" font-family="Arial, PingFang SC, Helvetica, sans-serif" font-size="16" font-weight="700" fill="#7F7F7F">
+<tspan x="1605.0" dy="0">(可选) Input Validation</tspan>
+</text>
+<text x="1605.0" y="286" text-anchor="middle" font-family="Arial, PingFang SC, Helvetica, sans-serif" font-size="14" font-weight="400" fill="#333333">
+<tspan x="1605.0" dy="0">轻量一次性合法性校验</tspan>
+<tspan x="1605.0" dy="17">几乎零开销</tspan>
+</text>
+<rect x="390" y="390" width="960" height="410" rx="22" fill="#FFFFFF" stroke="#C00000" stroke-width="3"/>
+<text x="870.0" y="416" text-anchor="middle" font-family="Arial, PingFang SC, Helvetica, sans-serif" font-size="17" font-weight="700" fill="#C00000">
+<tspan x="870.0" dy="0">Three-Party Power Iteration</tspan>
+<tspan x="870.0" dy="21">算法 ApproxFactor</tspan>
+</text>
+<rect x="1005" y="438" width="325" height="52" rx="10" ry="10" fill="#FFF7F7" stroke="#C00000" stroke-width="2"/>
+<text x="1167.5" y="468.0" text-anchor="middle" font-family="Arial, PingFang SC, Helvetica, sans-serif" font-size="12" font-weight="700" fill="#333333">
+<tspan x="1167.5" dy="0">安全模型: honest-but-curious · honest majority</tspan>
+<tspan x="1167.5" dy="15">限制: 不防 malicious / 2 台合谋 / metadata</tspan>
+</text>
+<rect x="425" y="462" width="270" height="105" rx="14" ry="14" fill="#ffffff" stroke="#C00000" stroke-width="2"/>
+<text x="560.0" y="490" text-anchor="middle" font-family="Arial, PingFang SC, Helvetica, sans-serif" font-size="17" font-weight="700" fill="#C00000">
+<tspan x="560.0" dy="0">2.1 初始化</tspan>
+</text>
+<text x="560.0" y="518" text-anchor="middle" font-family="Arial, PingFang SC, Helvetica, sans-serif" font-size="13" font-weight="400" fill="#333333">
+<tspan x="560.0" dy="0">for i = 1 → d</tspan>
+<tspan x="560.0" dy="16">⟦v⟧ ∈ R^n</tspan>
+<tspan x="560.0" dy="16">v := Normalize(SetOrthogonal(v,B))</tspan>
+<tspan x="560.0" dy="16">B ∈ R^(d×n) 初始为 0</tspan>
+</text>
+<rect x="720" y="505" width="585" height="185" rx="18" fill="#FFFDFD" stroke="#C00000" stroke-width="2.5" stroke-dasharray="10 7"/>
+<text x="740" y="533" text-anchor="start" font-family="Arial, PingFang SC, Helvetica, sans-serif" font-size="17" font-weight="700" fill="#C00000">
+<tspan x="740" dy="0">2.2 幂迭代主循环</tspan>
+</text>
+<rect x="1100" y="518" width="185" height="30" rx="10" ry="10" fill="#FFFFFF" stroke="#C00000" stroke-width="2"/>
+<text x="1192.5" y="537.0" text-anchor="middle" font-family="Arial, PingFang SC, Helvetica, sans-serif" font-size="12" font-weight="700" fill="#C00000">
+<tspan x="1192.5" dy="0">ℓ 轮迭代, O(log(n/ε)/ω)</tspan>
+</text>
+<rect x="750" y="563" width="250" height="48" rx="10" ry="10" fill="#ffffff" stroke="#C00000" stroke-width="1.8"/>
+<text x="875.0" y="591" text-anchor="middle" font-family="Arial, PingFang SC, Helvetica, sans-serif" font-size="12" font-weight="700" fill="#C00000">
+<tspan x="875.0" dy="0">a. ⟦t⟧ := Mul(U, ⟦v⟧)</tspan>
+</text>
+<text x="875.0" y="619" text-anchor="middle" font-family="Arial, PingFang SC, Helvetica, sans-serif" font-size="10" font-weight="400" fill="#333333">
+<tspan x="875.0" dy="0">step a: 线性乘法, 非交互</tspan>
+</text>
+<rect x="1025" y="563" width="250" height="48" rx="10" ry="10" fill="#ffffff" stroke="#C00000" stroke-width="1.8"/>
+<text x="1150.0" y="591" text-anchor="middle" font-family="Arial, PingFang SC, Helvetica, sans-serif" font-size="12" font-weight="700" fill="#C00000">
+<tspan x="1150.0" dy="0">b. ⟦v⟧ := Mul(U^T, ⟦t⟧)</tspan>
+</text>
+<text x="1150.0" y="619" text-anchor="middle" font-family="Arial, PingFang SC, Helvetica, sans-serif" font-size="10" font-weight="400" fill="#333333">
+<tspan x="1150.0" dy="0">矩阵-向量乘 ×2</tspan>
+</text>
+<rect x="750" y="625" width="250" height="48" rx="10" ry="10" fill="#ffffff" stroke="#C00000" stroke-width="1.8"/>
+<text x="875.0" y="653" text-anchor="middle" font-family="Arial, PingFang SC, Helvetica, sans-serif" font-size="12" font-weight="700" fill="#C00000">
+<tspan x="875.0" dy="0">c. ⟦v⟧ := SetOrthogonal(⟦v⟧, B)</tspan>
+</text>
+<text x="875.0" y="681" text-anchor="middle" font-family="Arial, PingFang SC, Helvetica, sans-serif" font-size="10" font-weight="400" fill="#333333">
+<tspan x="875.0" dy="0">Gram-Schmidt 正交化</tspan>
+</text>
+<rect x="1025" y="625" width="250" height="48" rx="10" ry="10" fill="#ffffff" stroke="#C00000" stroke-width="1.8"/>
+<text x="1150.0" y="653" text-anchor="middle" font-family="Arial, PingFang SC, Helvetica, sans-serif" font-size="12" font-weight="700" fill="#C00000">
+<tspan x="1150.0" dy="0">d. ⟦v⟧ := Normalize(⟦v⟧)</tspan>
+</text>
+<text x="1150.0" y="681" text-anchor="middle" font-family="Arial, PingFang SC, Helvetica, sans-serif" font-size="10" font-weight="400" fill="#333333">
+<tspan x="1150.0" dy="0">交互非线性函数, L2 归一化</tspan>
+</text>
+<polyline points="1020,673 1020,710 755,710 755,583" stroke="#C00000" stroke-width="2" stroke-dasharray="9 7" marker-end="url(#arrowRed)" fill="none"/>
+<rect x="425" y="600" width="270" height="92" rx="14" ry="14" fill="#ffffff" stroke="#C00000" stroke-width="2"/>
+<text x="560.0" y="628" text-anchor="middle" font-family="Arial, PingFang SC, Helvetica, sans-serif" font-size="17" font-weight="700" fill="#C00000">
+<tspan x="560.0" dy="0">2.3 收敛输出</tspan>
+</text>
+<text x="560.0" y="656" text-anchor="middle" font-family="Arial, PingFang SC, Helvetica, sans-serif" font-size="13" font-weight="400" fill="#333333">
+<tspan x="560.0" dy="0">B_i := v</tspan>
+<tspan x="560.0" dy="16">循环至 i = d</tspan>
+<tspan x="560.0" dy="16">明文 B 由三方共同持有</tspan>
+</text>
+<rect x="425" y="715" width="410" height="66" rx="14" ry="14" fill="#ffffff" stroke="#C00000" stroke-width="2"/>
+<text x="630.0" y="743" text-anchor="middle" font-family="Arial, PingFang SC, Helvetica, sans-serif" font-size="17" font-weight="700" fill="#C00000">
+<tspan x="630.0" dy="0">2.4 计算用户嵌入</tspan>
+</text>
+<text x="630.0" y="771" text-anchor="middle" font-family="Arial, PingFang SC, Helvetica, sans-serif" font-size="13" font-weight="400" fill="#333333">
+<tspan x="630.0" dy="0">⟦A⟧ := ⟦U⟧ · B^T,  A ∈ R^(m×d) 仍为秘密共享</tspan>
+</text>
+<rect x="865" y="730" width="425" height="36" rx="10" ry="10" fill="#FFFFFF" stroke="#C00000" stroke-width="2"/>
+<text x="1077.5" y="752.3333333333334" text-anchor="middle" font-family="Arial, PingFang SC, Helvetica, sans-serif" font-size="13" font-weight="700" fill="#C00000">
+<tspan x="1077.5" dy="0">Goal — argmin ||U − A·B||_F；等价于求 U^T U 的 top-d 特征向量</tspan>
+</text>
+<rect x="1395" y="390" width="445" height="410" rx="18" fill="#F7F7F7" stroke="#7F7F7F" stroke-width="2"/>
+<text x="1617.5" y="423" text-anchor="middle" font-family="Arial, PingFang SC, Helvetica, sans-serif" font-size="20" font-weight="700" fill="#7F7F7F">
+<tspan x="1617.5" dy="0">Cryptographic Primitives</tspan>
+</text>
+<rect x="1425" y="448" width="385" height="68" rx="14" ry="14" fill="#ffffff" stroke="#7F7F7F" stroke-width="1.8"/>
+<text x="1617.5" y="476" text-anchor="middle" font-family="Arial, PingFang SC, Helvetica, sans-serif" font-size="15" font-weight="700" fill="#7F7F7F">
+<tspan x="1617.5" dy="0">Replicated Secret Sharing</tspan>
+</text>
+<text x="1617.5" y="504" text-anchor="middle" font-family="Arial, PingFang SC, Helvetica, sans-serif" font-size="11" font-weight="400" fill="#333333">
+<tspan x="1617.5" dy="0">Araki et al.</tspan>
+</text>
+<rect x="1425" y="531" width="385" height="68" rx="14" ry="14" fill="#ffffff" stroke="#7F7F7F" stroke-width="1.8"/>
+<text x="1617.5" y="559" text-anchor="middle" font-family="Arial, PingFang SC, Helvetica, sans-serif" font-size="15" font-weight="700" fill="#7F7F7F">
+<tspan x="1617.5" dy="0">Function Secret Sharing</tspan>
+</text>
+<text x="1617.5" y="587" text-anchor="middle" font-family="Arial, PingFang SC, Helvetica, sans-serif" font-size="11" font-weight="400" fill="#333333">
+<tspan x="1617.5" dy="0">Boyle et al.</tspan>
+</text>
+<rect x="1425" y="614" width="385" height="68" rx="14" ry="14" fill="#ffffff" stroke="#7F7F7F" stroke-width="1.8"/>
+<text x="1617.5" y="642" text-anchor="middle" font-family="Arial, PingFang SC, Helvetica, sans-serif" font-size="15" font-weight="700" fill="#7F7F7F">
+<tspan x="1617.5" dy="0">Truncate-c bits</tspan>
+</text>
+<text x="1617.5" y="670" text-anchor="middle" font-family="Arial, PingFang SC, Helvetica, sans-serif" font-size="11" font-weight="400" fill="#333333">
+<tspan x="1617.5" dy="0">3 轮 3PC, 通信 2λc(λ+4)+10λβ</tspan>
+<tspan x="1617.5" dy="14">比 SOTA 节省 6×</tspan>
+</text>
+<rect x="1425" y="697" width="385" height="68" rx="14" ry="14" fill="#ffffff" stroke="#7F7F7F" stroke-width="1.8"/>
+<text x="1617.5" y="725" text-anchor="middle" font-family="Arial, PingFang SC, Helvetica, sans-serif" font-size="15" font-weight="700" fill="#7F7F7F">
+<tspan x="1617.5" dy="0">Approx. Normalize</tspan>
+</text>
+<text x="1617.5" y="753" text-anchor="middle" font-family="Arial, PingFang SC, Helvetica, sans-serif" font-size="11" font-weight="400" fill="#333333">
+<tspan x="1617.5" dy="0">1 轮启动 + Newton-Raphson</tspan>
+<tspan x="1617.5" dy="14">无额外泄漏</tspan>
+</text>
+<text x="1423" y="780" text-anchor="start" font-family="Arial, PingFang SC, Helvetica, sans-serif" font-size="12" font-weight="700" fill="#7F7F7F">
+<tspan x="1423" dy="0">支撑阶段②的线性与非线性安全计算</tspan>
+</text>
+<line x1="890" y1="340" x2="890" y2="390" stroke="#C00000" stroke-width="5" marker-end="url(#arrowRed)" fill="none"/>
+<line x1="890" y1="800" x2="890" y2="850" stroke="#ED7D31" stroke-width="5" marker-end="url(#arrow)" fill="none"/>
+<rect x="1035" y="874" width="510" height="74" rx="14" ry="14" fill="#ffffff" stroke="#ED7D31" stroke-width="2.5"/>
+<text x="1290.0" y="902" text-anchor="middle" font-family="Arial, PingFang SC, Helvetica, sans-serif" font-size="17" font-weight="700" fill="#ED7D31">
+<tspan x="1290.0" dy="0">Serve recommendations to User i</tspan>
+</text>
+<text x="1290.0" y="930" text-anchor="middle" font-family="Arial, PingFang SC, Helvetica, sans-serif" font-size="13" font-weight="400" fill="#333333">
+<tspan x="1290.0" dy="0">三台服务器计算 ⟦scores⟧ = ⟦a^(i)⟧ · B；份额回传；User i 本地重构 Top-k</tspan>
+</text>
+<circle cx="1635" cy="910" r="12.0" fill="#ffffff" stroke="#548235" stroke-width="2"/>
+<path d="M 1613.0 945.0 Q 1635 920.0 1657.0 945.0" fill="none" stroke="#548235" stroke-width="3" stroke-linecap="round"/>
+<rect x="1582" y="950" width="106" height="38" rx="8" ry="8" fill="#FFFFFF" stroke="#548235" stroke-width="2"/>
+<text x="1635.0" y="972.6666666666666" text-anchor="middle" font-family="Arial, PingFang SC, Helvetica, sans-serif" font-size="11" font-weight="700" fill="#548235">
+<tspan x="1635.0" dy="0">User i</tspan>
+<tspan x="1635.0" dy="14">Top-k 推荐</tspan>
+</text>
+<line x1="870.0" y1="800" x2="1115" y2="874" stroke="#ED7D31" stroke-width="4" marker-end="url(#arrow)" fill="none"/>
+<line x1="1545" y1="906" x2="1608" y2="906" stroke="#002060" stroke-width="1.6" marker-end="url(#arrowBlue)" fill="none"/>
+<line x1="1545" y1="915" x2="1608" y2="915" stroke="#5B9BD5" stroke-width="1.6" marker-end="url(#arrowBlue)" fill="none"/>
+<line x1="1545" y1="924" x2="1608" y2="924" stroke="#9DC3E6" stroke-width="1.6" marker-end="url(#arrowBlue)" fill="none"/>
+<rect x="28" y="970" width="1864" height="84" rx="14" fill="#F2F2F2" stroke="#D9D9D9" stroke-width="1.5"/>
+<rect x="54" y="978" width="415" height="68" rx="10" ry="10" fill="#FFFFFF" stroke="#7F7F7F" stroke-width="1.3"/>
+<text x="261.5" y="1006" text-anchor="middle" font-family="Arial, PingFang SC, Helvetica, sans-serif" font-size="12" font-weight="700" fill="#002060">
+<tspan x="261.5" dy="0">Netflix</tspan>
+</text>
+<text x="261.5" y="1034" text-anchor="middle" font-family="Arial, PingFang SC, Helvetica, sans-serif" font-size="10" font-weight="400" fill="#333333">
+<tspan x="261.5" dy="0">500K users × 10K items</tspan>
+<tspan x="261.5" dy="12">50 min, 40 GB, nDCG@20=0.29</tspan>
+</text>
+<rect x="509" y="978" width="415" height="68" rx="10" ry="10" fill="#FFFFFF" stroke="#7F7F7F" stroke-width="1.3"/>
+<text x="716.5" y="1006" text-anchor="middle" font-family="Arial, PingFang SC, Helvetica, sans-serif" font-size="12" font-weight="700" fill="#002060">
+<tspan x="716.5" dy="0">Criteo</tspan>
+</text>
+<text x="716.5" y="1034" text-anchor="middle" font-family="Arial, PingFang SC, Helvetica, sans-serif" font-size="10" font-weight="400" fill="#333333">
+<tspan x="716.5" dy="0">millions users × hundreds campaigns</tspan>
+<tspan x="716.5" dy="12">1.5 h, 124 GB</tspan>
+</text>
+<rect x="964" y="978" width="415" height="68" rx="10" ry="10" fill="#FFFFFF" stroke="#7F7F7F" stroke-width="1.3"/>
+<text x="1171.5" y="1006" text-anchor="middle" font-family="Arial, PingFang SC, Helvetica, sans-serif" font-size="12" font-weight="700" fill="#002060">
+<tspan x="1171.5" dy="0">Yelp</tspan>
+</text>
+<text x="1171.5" y="1034" text-anchor="middle" font-family="Arial, PingFang SC, Helvetica, sans-serif" font-size="10" font-weight="400" fill="#333333">
+<tspan x="1171.5" dy="0">100K+ × 100K+</tspan>
+<tspan x="1171.5" dy="12">8 h, 250 GB</tspan>
+</text>
+<rect x="1419" y="978" width="415" height="68" rx="10" ry="10" fill="#FFFFFF" stroke="#7F7F7F" stroke-width="1.3"/>
+<text x="1626.5" y="1006" text-anchor="middle" font-family="Arial, PingFang SC, Helvetica, sans-serif" font-size="12" font-weight="700" fill="#002060">
+<tspan x="1626.5" dy="0">Speedup</tspan>
+</text>
+<text x="1626.5" y="1034" text-anchor="middle" font-family="Arial, PingFang SC, Helvetica, sans-serif" font-size="10" font-weight="400" fill="#333333">
+<tspan x="1626.5" dy="0">比 2PC 乱码电路快 4 个数量级</tspan>
+<tspan x="1626.5" dy="12">比 4PC 通信少 8×</tspan>
+</text>
+<text x="960" y="1070" text-anchor="middle" font-family="Arial, PingFang SC, Helvetica, sans-serif" font-size="10" font-weight="400" fill="#7F7F7F">
+<tspan x="960" dy="0">Source: Henzinger, Dauterman, Corrigan-Gibbs, Boneh. Nudge: A Private Recommendations Engine.</tspan>
+</text>
+</svg>

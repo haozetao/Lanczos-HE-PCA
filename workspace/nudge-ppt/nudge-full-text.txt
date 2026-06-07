@@ -1,0 +1,2155 @@
+--- Page 1 ---
+Nudge: A Private Recommendations Engine
+Alexandra Henzinger
+MIT
+Emma Dauterman
+MIT and Stanford
+Henry Corrigan-Gibbs
+MIT
+Dan Boneh
+Stanford
+Abstract
+Nudge is a recommender system with cryptographic privacy.
+A Nudge deployment consists of three infrastructure servers
+and many users, who retrieve/rate items from a large data
+set (e.g., videos, posts, businesses). Periodically, the Nudge
+servers collect ratings from users in secret-shared form, then
+run a three-party computation to train a lightweight recom-
+mender model on users’ private ratings. Finally, the servers
+deliver personalized recommendations to each user. At every
+step, Nudge reveals nothing to the servers about any user’s
+preferences beyond the aggregate model itself. User privacy
+holds against an adversary that compromises the entire secret
+state of one server. The technical core of Nudge is a new,
+three-party protocol for matrix factorization. On the Netflix
+data set with half a million users and ten thousand items,
+Nudge (running on three 192-core servers on a local-area
+network) privately learns a recommender model in 50 mins
+with 40 GB of server-to-server communication. On a standard
+quality benchmark (nDCG@20), Nudge scores 0.29 out of
+1.0, on par with non-private matrix factorization and just shy
+of non-private neural recommenders, which score 0.31.
+1
+Introduction
+Personalized recommendations are ubiquitous, powering ev-
+erything from social-media feeds to video-streaming apps.
+The data that fuels these recommender algorithms betrays
+our every move—our clicks, likes, views, and browsing
+behaviors—as well as those of millions of other users. Given
+the scale and scope of this data collection, content recommen-
+dation services have become focal points of privacy failure:
+user data is resold to third parties [15, 151], exploited for
+profit [40,49,151], and stolen in data breaches [131].
+To protect against such abuses, techniques for privately
+fetching content (via anonymizing proxies [18,57] or crypto-
+graphic protocols [21,48]) have advanced and seen deploy-
+ment, but systems for private recommendation lag behind.
+Anonymity-based schemes extended with persistent identi-
+fiers to link queries and allow for recommendation break in
+the face of de-anonymization attacks [34, 71, 129]. Recom-
+menders built on federated learning leak individual users’
+data [39,78,112,167] or intermediate model versions [26,119,
+120, 143]; others built on trusted hardware [13, 56] are vul-
+nerable to side-channel attacks [46,127]. Cryptographically
+private recommenders [102,130,133,157] run into a problem
+of scale: they operate on at most thousands of users fetching
+thousands of items. In sum, existing recommender methods
+fall short of offering strong privacy protection at large scale.
+This paper presents Nudge, a privacy-protecting recom-
+mender system that operates on millions of users or items.
+Nudge splits trust across three servers run by independent par-
+ties. These servers collect secret-shared logs that encode many
+users’ interactions with items from a large data set. In a secure
+three-party computation, the Nudge servers then aggregate this
+data to synthesize and infer retrieval patterns across queries
+and across users: in short, they learn a recommender model.
+Finally, the servers send secret-shared yet personalized rec-
+ommendations back to each user. All along, Nudge provides
+a precise form of cryptographic privacy: even if an adversary
+compromises the state of one Nudge server (i.e., semi-honest
+security), no party—not the servers, not the users—learns
+anything about which user interacted with which item, be-
+yond (a) what the aggregate recommender model reveals and
+(b) how many interactions each user submitted.
+Inspired by non-private [104,145] and private [102,130,133,
+157] recommender systems, Nudge generates recommenda-
+tions using matrix factorization. Nudge’s core is a co-design of
+a matrix-factorization algorithm with multi-party computation
+techniques. Whereas prior cryptographic recommender proto-
+cols use general-purpose gradient descent [102,130,133,157],
+Nudge instead implements the classic power-iteration algo-
+rithm [123] that extracts the top eigenvectors of a matrix in a
+sequence of algebraic steps. Using this new three-party pro-
+tocol, Nudge factors matrices with tens of billions of entries
+(e.g., a Yelp data set) in hours of wall-clock time.
+Our techniques. We show that power iteration fits into a class
+of algorithms efficiently computable in a three-party setting.
+
+--- Page 2 ---
+This is because it alternates between two steps: (a) applying a
+secret-shared matrix to a secret-shared vector and (b) evaluat-
+ing simple, non-linear functions on the intermediate results.
+Replicated secret sharing [20,125] lets three parties execute
+step (a) non-interactively and at high speed, while function
+secret sharing [32,33] makes it possible to run step (b) with
+low communication costs. By casting matrix factorization in
+this high-level framework, we ensure that the communication
+between servers scales linearly with the number of users and
+items—unlike prior cryptographic recommender protocols
+with up to three parties [102,130,133].
+Along the way, we contribute special-purpose three-party
+protocols for the non-linear functions that Nudge relies on:
+truncation and normalization. Building on a rich literature in
+privacy-preserving machine learning [31,38,96,141,154,158,
+160], we improve the efficiency of these protocols in Nudge’s
+three-party setting: e.g., reducing the communication by 6×
+over state-of-the-art truncation [96].
+Evaluation. We implement Nudge in Go and C. Nudge runs
+faster than prior recommender systems with cryptographic
+privacy: it outperforms two-party approaches based on gar-
+bled circuits by four orders of magnitude in communication
+and compute [130,133], and runs faster than a bespoke four-
+party computation while using 8× less communication and
+one fewer non-colluding party [157].
+We evaluate both Nudge’s performance and quality on the
+Netflix prize data set with half a million users and tens of thou-
+sands of items [7]. Running on three 192-core machines on
+a local-area network, Nudge privately learns a recommender
+model in 50 min and 40 GB of server-to-server communica-
+tion. After learning the recommendation model, each Nudge
+server can serve secret-shared recommendations to a user in
+hundreds of kilobytes of communication (298 KB on Netflix)
+and seconds of latency (0.38 s on Netflix). Nudge’s resulting
+recommendations match those of cleartext matrix factoriza-
+tion in recall and rank-based metrics: on a standard qual-
+ity benchmark (nDCG@20), Nudge and non-private matrix-
+factorization systems both score 0.29 out of 1.0, just shy of
+non-private deep neural recommenders, which score 0.31.
+Moreover, Nudge can scale larger yet: on a Criteo data
+set with millions of users and hundreds of ad campaigns [6],
+Nudge’s private matrix factorization takes 1.5 h and 124 GB
+of server-to-server communication. On a Yelp data set with
+hundreds of thousands of users and hundreds of thousands of
+businesses [8], Nudge takes 8 h and 250 GB.
+Extensions. Finally, we propose a number of extensions that
+enhance Nudge’s performance, security guarantees, and func-
+tionality. To scale larger yet, we show how to compose Nudge
+with classic dimensionality-reduction techniques [97, 136].
+To complement its privacy protections, Nudge integrates with
+well-studied mechanisms that make the model and the rec-
+ommendations that it outputs differentially private [60,122].
+To defend against disruptions by malicious users, the Nudge
+servers run a lightweight, one-time well-formedness check
+on all user submissions, in a way that is almost free in our
+three-party setting [10,51].
+Lastly, while we present Nudge as a recommender system,
+algorithms for computing the top eigenvectors of a matrix
+form the backbone of a wide array of unsupervised learn-
+ing and data-mining tasks [88].
+Our new private power-
+iteration routine can extend to these same applications: prin-
+cipal component analysis [75], learning low-dimensional em-
+beddings [30,55,136], link analysis using PageRank [82,135],
+graph analysis and spectral clustering [111], and data compres-
+sion [94,99]. Nudge shows the possibility of performing these
+tasks on large secret-shared matrices, data sets, or graphs—
+without letting any party see the underlying data.
+Limitations. Nudge comes with three main limitations. First,
+Nudge requires three servers and tolerates the semi-honest
+compromise of one. Second, Nudge’s goal is to map user
+ratings into personalized recommendations; it relies on other
+means (e.g., Apple’s private relay [18], Tor [57], or crypto-
+graphic private information retrieval [48]) to let users fetch
+data items in a private way.
+Finally, Nudge’s privacy property guarantees that no party
+learns anything more about users’ behaviors than the final,
+aggregate recommender model encodes. As is inherent in any
+collaborative-filtering system, where users’ inputs influence
+other users’ outputs, the recommender model produced by
+Nudge reveals some information about user behaviors in a
+way that we precisely define in Section 3. As a standard (if
+imperfect) mitigation, we show how to make Nudge’s rec-
+ommender model and recommendations differentially private
+with respect to any user’s data [60,122].
+2
+Background: Matrix factorization
+The goal of a recommender system is to give users recommen-
+dations for items. On a content-delivery website, items could
+be content to fetch; on a social network, items could be posts;
+on a restaurant-review app, items could be restaurants.
+At the start of the recommendation process, each user holds
+ratings for a subset of the items. The interpretation of these
+ratings depends on the application: e.g., on a news site, a
+user’s rating for item 푖could be “1” if the user has viewed
+article 푖, and “0” otherwise. For a restaurant-review app, the
+rating could be the user’s 1–5 “star” rating for each restaurant.
+A recommender system has two steps: training and serving
+recommendations. Training executes periodically; some fast-
+moving applications (e.g., Facebook ads [90]) retrain daily,
+while others (e.g., Spotify [62], VertexAI’s recommenders for
+commerce [9]) retrain weekly. The resulting recommenda-
+tions may be pushed to users’ devices once training completes.
+Matrix factorization. The algorithm at the core of our private
+recommender system is matrix factorization, which has been
+a key part of recommendation engines used at Netflix [104],
+
+--- Page 3 ---
+Yelp [25], Twitter [4], Spotify [3], and YouTube [52]. At the
+highest level, the matrix-factorization technique aims to ex-
+plain users’ ratings on a large collection of items by extracting
+a small number of latent “factors” that model each user and
+each item and capture the relationships between them [83].
+The version of matrix factorization that we use is closely re-
+lated to truncated singular value decomposition.
+Even as neural-network-based recommenders grow popu-
+lar [52,89,161], in many settings well-tuned matrix factoriza-
+tion techniques can still provide comparable quality and are ap-
+pealingly simple, robust, and cheap to deploy [16,68,144,145].
+Training input: A matrix-factorization-based recommender
+system takes as input a user-item-interaction matrix U ∈R푚×푛,
+where 푚is the number of users, 푛is the number of items, and
+the entry at position (푖, 푗) holds user 푖’s rating for item 푗. (The
+entry is zero if user 푖did not rate item 푗.) The algorithm is
+parameterized by an embedding dimension 푑≪min(푚,푛).
+Training output: Matrix factorization computes a low-rank
+approximation of the matrix U. More precisely, it outputs a
+matrix of 푑-dimensional user embeddings A ∈R푚×푑and a
+matrix of 푑-dimensional item embeddings B ∈R푑×푛such that
+U ≈A·B. The algorithm finds matrices A and B that minimize
+the Frobenius norm ∥U−A·B∥퐹(i.e., the sum of the squared
+entries of matrix U−A·B). This can be computed in two steps:
+first compute a suitable matrix B that is row-orthonormal, then
+derive the associated matrix A as A := U·B⊤.
+This output has a simple interpretation: the 푑-dimensional
+user and item embeddings model each user’s preferences and
+each item’s characteristics in terms of 푑shared latent factors.
+Serving recommendations: To generate recommendations
+for user 푖, the system outputs the items that it estimates the
+user would rate the highest using its low-rank approximation
+U ≈A · B, and that user 푖has not already seen. In partic-
+ular, denoting the rows of the user-embedding matrix A as
+a(1),...,a(푚) ∈R1×푑, the recommender outputs the items
+corresponding to the largest entries of a(푖) ·B to user 푖.
+When the matrix B is orthonormal (as described above),
+the matrix A is equal to U·B⊤and so this output is equivalent
+to finding the largest entries of u(푖) ·B⊤B, where u(푖) ∈R1×푛
+is the 푖th row of the original matrix U. This view has two
+appealing properties: first, the recommendations provided to
+user 푖depend only on its own ratings (i.e., vector u(푖)) and on
+the learned item embeddings B—that is, user 푖learns no more
+information about other users’ ratings than is encoded in the
+item embeddings B [122]. Second, to generate recommenda-
+tions for users who join after training completed (or who have
+since rated new items), it suffices to gather their ratings and
+use the already-computed item embeddings B.
+3
+System design
+A Nudge deployment consists of three infrastructure providers
+and many users and items. We refer to the infrastructure
+providers as “servers,” though each provider might run on
+many physical machines. Much as in recent deployments of
+private telemetry [17,63], we envision that, in practice, these
+Nudge servers could be run by one or multiple companies
+together with non-profit or governmental entities. A real-
+world example is the Prio deployment of exposure notification:
+CDC and ISRG were the non-colluding entities [2,51].
+3.1
+Goals and threat model
+The Nudge users and servers interact to aggregate all users’
+ratings with two goals: (1) training a recommender model
+that produces useful item recommendations for each user and
+(2) protecting the users’ privacy—i.e., hiding which items each
+user rated and what its ratings are from the Nudge servers and
+from other users, in a cryptographic sense.
+A Nudge deployment with 푚users and 푛items is parameter-
+ized by an integer 푑≪min(푚,푛), representing the dimension
+of embeddings output by the training process. The Nudge
+servers then jointly implement the following functionality in
+a secure multiparty computation:
+1. From each user 푖∈[푚], receive a rating vector u(푖) ∈R푛.
+Assemble the 푚rating vectors into a matrix U ∈R푚×푛.
+2. Set (A ∈R푚×푑,B ∈R푑×푛) ←ApproxFactor(U), where
+ApproxFactor is an approximate matrix-factorization al-
+gorithm (described in Section 5).
+3. Outputs: Send the item embeddings B (i.e., the learned
+“model”) to each of the three Nudge servers. Send the
+recommendation vector u(푖) ·B⊤B to user 푖.
+4. Additional leakage: For each user 푖∈[푚], send each of
+the Nudge servers the number of non-zero entries (but
+not their location or values) in user 푖’s rating vector u(푖).
+As we discuss in Section 5, in reality, our multiparty compu-
+tation represents real numbers with fixed-precision values.
+Security goal: Protect user privacy against one honest-but-
+curious server colluding with malicious users. Against one
+honest-but-curious server and any number of malicious clients,
+Nudge should reveal nothing about the secret matrix U of users’
+ratings, apart from (1) what the learned item embeddings B
+reveal, and (2) how many items each user rated. (We could
+eliminate the latter leakage by requiring all users to submit
+a constant number of ratings.) Intuitively, this reveals the
+characterization of items in terms of 푑latent factors.
+In some settings, when combined with sufficient side in-
+formation, these recommendations themselves can be too re-
+vealing [35]. As a standard mitigation against such attacks,
+we show in Section 9 how to augment Nudge to provide dif-
+ferential privacy to protect each users’ ratings vector—that
+is, the learned item embeddings B are differentially private
+with respect to any user’s ratings vector—at modest cost in
+recommendation quality [60,122].
+
+--- Page 4 ---
+Figure 1:
+The three
+Nudge
+servers
+first
+collect
+secret-shared
+ratings
+from
+users,
+then run matrix factor-
+ization in a three-party
+computation to pro-
+duce user and item
+embeddings,
+and
+finally
+serve
+secret-
+shared,
+personalized
+recommendations.
+In addition, we show in the full version of this paper that the
+learned item embeddings B satisfy another desirable property:
+they are “anonymous” [51, Definition 2], in the sense that each
+Nudge server’s view remains identical when any two users
+(with the same number of ratings) shuffle their rating vectors.
+Security extension: Input validation. In some applications,
+the servers may want to enforce application-defined validity
+checks on the user-submitted rating vectors to ensure that no
+user can have an outsize influence on the computed recom-
+mendations (e.g., checking that each user rates at most 푘items,
+with ratings in a pre-determined range). These checks again
+protect client privacy against one honest-but-curious server.
+Non-goals. Nudge does not protect against a malicious server
+who deviates from the prescribed protocol; such a server could
+disrupt the correctness of Nudge’s outputs, the privacy of
+Nudge’s users, or the availability of Nudge’s service. Nudge
+also does not protect against two or more servers who collude.
+Finally, Nudge does not hide metadata: the servers learn when
+each user sends its messages.
+Remark 3.1 (Differences to federated learning). Nudge dif-
+fers from federated learning [121] in two ways: first, Nudge
+does not leak intermediate model versions to users or servers.
+Second, the Nudge servers train the recommendation model
+without involving users: users only need to submit their ratings
+and, later on, fetch their recommendations. At the same time,
+Nudge splits trust across three servers, while some federated-
+learning systems only require one or two [26,120,143].
+3.2
+Protocol flow
+The Nudge protocol (Figure 1) takes place in three steps.
+Step 1: Private data collection. Each user 푖succinctly secret
+shares their rating vector u(푖) ∈R푛and sends one share to
+each server. As we discuss in Section 3.1, the Nudge servers
+can run checks between the three of them to verify that all
+client submissions are well-formed.
+Step 2: Private matrix factorization. Once the servers all
+hold a secret share of the matrix U ∈R푚×푛, they run the three-
+Figure 2: A matrix-vector program with functions 푓1,..., 푓ℓ,
+evaluated on input matrices M1,...,Mℓ, and input vector v.
+party matrix-factorization protocol, described in Section 5, to
+factor U into a secret-shared matrix A ∈R푚×푑of user embed-
+dings and a cleartext matrix B ∈R푑×푛of item embeddings.
+Step 3: Privately fetching recommendations. The recom-
+mendation scores for user 푖are just the values a(푖) ·B, where
+a(푖) is the 푖th user embedding, stored in the 푖th row of A. For
+each client, the Nudge servers can compute secret shares of
+user 푖’s recommendation scores and forward these shares to
+the user, who reconstructs the scores in plaintext.
+Security analysis. Security of the overall system relies on the
+security of our new three-party matrix-factorization protocol,
+which we prove in Theorem 5.1.
+4
+Secure computation primitives
+In this section, we introduce the specific multi-party compu-
+tation protocols Nudge uses.
+Our protocols work in the three-party honest-majority set-
+ting with an honest-but-curious adversary. That is, each party
+correctly executes the protocol, and we protect against an ad-
+versary that can compromise the state of a single party. We
+define security of a multiparty protocol using the standard
+real/ideal paradigm [113]. We assume that all parties have
+access to a cryptographic pseudorandom function (PRF) and
+that each pair of parties holds pairwise shared secret keys [20].
+We refer to this setting as the “3PC with PRF” model.
+Notation: 2-out-of-3 replicated secret sharing. A secret-
+sharing scheme makes it possible to split a value 푥∈R into
+shares, where each share individually hides 푥but together the
+shares encode 푥. A replicated sharing of 푥is a tuple of pairs
+((푥1,푥2), (푥0,푥2), (푥0,푥1)), where 푥0 +푥1 +푥2 = 푥and party 푖
+holds the 푖th pair. We denote a replicated sharing of 푥as ⟦푥⟧.
+We say that a function 푓: R푑→R푑, on ring R and integer
+dimension 푑≥1, has a 3PC protocol if three parties holding
+replicated shares ⟦v⟧of a vector v ∈R푑can compute repli-
+cated shares ⟦푓(v)⟧, without learning anything about v. The
+full version gives precise correctness and security definitions.
+To measure computation costs over a ring R, we count R
+operations and PRF invocations, each mapping a 휆-bit seed to
+an element in R, as having unit cost. For efficiency, we work
+with rings R of the form Z2푏with integer bit length 푏≥1.
+
+--- Page 5 ---
+Function
+Communication
+Computation Rounds
+Any degree-two func.
+3푑푏
+푂(푚푑)
+1
+with 푚monomials
+SIMD operation on each entry of the vector
+Zero-test [32]
+2푑푏· (휆+2)
+e
+푂(푑푏)
+1
+Integer compare [32]
+2푑푏· (휆+2푏+2)
+e
+푂(푑푏)
+1
+Truncate 푡bits (§4.3)
+2푑푡· (휆+4) +10푑푏
+e
+푂(푑푏)
+3
+Normalize vector to have unit 퐿2-norm
+Approx. (§4.3)
+푂(푑푏휆+휆푏2 + 푏3)
+푂(푑푏+ 푏2)
+푂(1)
+Table 3: Functions with constant-round 3PC protocols, map-
+ping vectors in R푑to vectors in R푑on ring R = Z2푏with
+bit length 푏, dimension 푑≥1, and PRF-seed length 휆. We
+hide logarithmic factors (in 푏and 휆) in the notation e
+푂(·). We
+highlight the new protocols from Section 4.3 in yellow.
+4.1
+Matrix-vector programs
+We first define matrix-vector programs, which capture a class
+of computations that are particularly amenable to execution
+in a three-party computation (illustrated in Figure 2). We do
+not claim this model as a top-level contribution—our goal
+is to give a clean abstraction in which we can express our
+matrix-factorization algorithm.
+Definition 4.1 (Matrix-vector program). A matrix-vector pro-
+gram P is defined with respect to a ring R and a function class
+F, that consists of a set of functions 푓1,..., 푓ℓ∈F mapping
+vectors in R to vectors in R. The program P takes as input a
+vector v ∈R푑and a set of matrices M1,...,Mℓover R. We
+define the program’s output to be the vector, whose dimension
+is defined implicitly by the 푓s and Ms, computed as:
+P(v,M1,...,Mℓ) := 푓ℓ(Mℓ· ... · 푓2 (M2 · 푓1 (M1v))) .
+Looking ahead, in Section 5 we will cast iterative algorithms
+for approximate matrix decomposition [83] as matrix-vector
+programs. This matrix-vector-program abstraction may be
+useful in secure computation settings beyond the scope of this
+work; for example, evaluating a secret-shared neural network
+on secret-shared inputs (e.g., in private model fine-tuning);
+training a secret-shared network using gradient descent; com-
+puting the steady-state of a private Markov chain; or running
+belief propagation algorithms on secret-shared graphs.
+4.2
+Synthesizing prior work: Three-party com-
+putation of matrix-vector programs
+The following theorem synthesizes multiple ideas in related
+work [20,33,125] for evaluating matrix-vector programs in a
+3PC with concrete efficiency. It shows that, if a matrix-vector
+program is defined with respect to a set F of 3PC-friendly
+functions, it is possible to evaluate the program in a 3PC with
+communication sublinear in the input size. In particular, the
+parties’ communication scales only with the largest size of an
+intermediate vector, not with the size of the input matrices.
+The number of rounds of interaction scales with the number
+of input matrices. When the matrices are large enough that
+the matrix-vector products dominate the overall compute, the
+per-party work in the 3PC protocol is only 3× larger than
+evaluating cleartext matrix-vector products of the same size.
+Theorem 4.2 (3PC for matrix-vector programs). Let F be the
+class of functions that have a constant-round 3PC protocol in
+the 3PC with PRF model. Let P be a matrix-vector program
+over function class F and ring R = Z2푏with bit length 푏≥1,
+consisting of functions 푓1,..., 푓ℓ∈F where each 푓푗: R푑푗→
+R푑푗. Moreover, let the 3PC for computing 푓푗use 푠푗∈N bits
+of communication and 푤푗∈N computation.
+Then, three parties holding replicated shares of the inputs
+to P can securely compute replicated shares of the output
+of P in the 3PC with PRF model, using 푂(ℓ) rounds of in-
+teraction, Íℓ
+푖=1 (6푏푑푖+ 푠푖) total bits of communication, and
+Íℓ
+푖=1 (6푑푖−1푑푖+8푑푖+ 푤푖) total operations on each party.
+Proof idea. We prove Theorem 4.2 in the full version. The
+idea, used heavily in prior work [20, 125], is that three par-
+ties can non-interactively evaluate matrix-vector products on
+secret-shared data using properties of replicated sharing.
+□
+In Table 3, we list the 3PC-friendly non-linear functions that
+we will need for our matrix-factorization algorithm, includ-
+ing new protocols that we describe next. Our new protocols
+build on function secret sharing [32, 33], which leverages
+PRFs to evaluate zero-test and comparison gates on secret-
+shared inputs with a single round of interaction (see Table 3).
+There are many other 3PC-friendly non-linear functions in
+the literature [12,31,79–81,96,147,149,154,158,164].
+4.3
+3PC protocols for non-linear functions
+We now describe new protocols in the 3PC-with-PRF model
+for fixed-point truncation and vector normalization.
+The need for these particular functions stems from a mis-
+match between 3PC techniques, which operate over a ring
+R = Z2푏, and data mining, statistics, and machine-learning
+computations, which operate over the reals. Standard practice
+bridges this gap using fixed-point arithmetic [38, 73, 134]:
+given a number of fractional bits of precision 푡< 푏, represent
+the real value 푣as the ring element ⌊푣·2푡⌋∈R. As long as the
+data values never grow too large (i.e., do not “wrap around”
+the modulus 2푏), adding two real values is just addition in R.
+Multiplying two real values requires a multiplication in R,
+then a truncation by 푡bits to return to the correct data format.
+As a result, the efficiency of two non-linear operations on
+secret-shared data is paramount: truncation, which follows
+every multiplication gate, and normalization, which prevents
+the represented data values from growing too large.
+
+--- Page 6 ---
+Truncating a secret-shared value. A long line of work in-
+vestigates truncation on secret-shared data [31,38,65,86,125,
+126,160,166,168] with various functionalities and, in some
+cases, leakage [109]. We perform deterministic truncation
+with sign extensions and no leakage [31], assuming one bit of
+slack [54,65]: that is, on input 푣∈[−2푏−2,2푏−2), we evaluate
+the arithmetic-right-shift function Trunc푡(푣) := (푣≫푡).
+Our technique builds on the three-round, three-party ap-
+proach of Jawalkar et al. [96, Theorem 6]. At a high level, we
+implement truncation by dividing the share ⟦푣⟧by 2푡, then
+1. using an integer comparison, shown in Table 3, to handle
+any erroneous carries in the lowest-order bits [31] and
+2. using the one bit of slack to prevent any erroneous carries
+the highest-order bits [65].
+Under the hood in step (1), our protocol performs a degree-
+two computation, that in turn allows the integer comparison
+to output as few bits as possible. As a result, when truncating
+by 푡< 푏bits, our communication scales as 2푡(휆+ 4) + 10푏,
+i.e., dominated by the term 휆푡, while prior state-of-the-art
+truncation scales as 2푏· (휆+ 6) −6푡, i.e., dominated by the
+term 휆푏[96]. In Nudge where 휆= 푏= 128 and 푡= 20, this is
+a ≈푏/푡= 6× improvement in communication. We give our
+full protocol in this paper’s full version, showing:
+Lemma 4.3 (3PC for truncation). In the 3PC-with-PRF model
+over ring R = Z2푏, with 푡∈[0,푏−1] bits to truncate and 휆-bit
+PRF seeds, there exists a secure 3PC protocol for the function
+Trunc푡: R푑→R푑using three rounds, 2푑푡· (휆+ 4) + 10푑푏
+bits of communication, and 푂(푑푏log푡) total operations.
+Normalizing a secret-shared vector. L2-Normalization in
+a 3PC requires mapping shares of a vector ⟦v⟧to shares of
+the normalized vector ⟦v/∥v∥⟧, which points in the same
+direction but has unit norm. To this end, the three parties
+must compute the scaling factor ⟦1/∥v∥⟧. Three parties can
+compute the squared norm ⟦∥v∥2⟧via a degree-two function,
+but computing its “inverse-square-root” is challenging.
+Prior works take one of two routes: the first uses exact
+lookup tables [157,158] or more granular piecewise approx-
+imations [31, 81, 154] in a way that is constant-round, but
+where the compute grows exponentially with the precision
+required—i.e., it is 2푂(푏) on bit length 푏. These approaches
+have only been used on bit length 푏∈{16,64} [81,154]. In
+contrast, to run with many users, Nudge uses 푏= 128. The
+second route resorts to iterative numerical methods that guar-
+antee any desired level of accuracy [105], but must be seeded
+with a reasonable starting point [38, 47, 103, 118, 141, 160].
+Finding this starting point is tricky: prior works use 푂(푏)
+rounds [22], large look-up tables [141], or leaky protocols
+that reveal the bit length of ∥v∥2 (or a blinded version of it to
+achieve statistical security) [47,160].
+We show a simple way to handle the starting-point issue
+in the 3PC setting that is single-round, has low communica-
+tion, and has no extra leakage: using function secret shar-
+ing to compute the “most significant non-zero bit” [31, The-
+orem 14] of ⟦∥v∥2⟧.
+(Under the hood, this just invokes
+푏+1 simultaneous integer comparisons, shown in Table 3.)
+A linear combination then gives shares of the approxima-
+tion ⟦푥⟧= ⟦2−
+
+log ∥v∥2
+/2⟧≈⟦1/∥v∥⟧, which we refine, as
+in prior works, with the standard Newton-Raphson itera-
+tion [38,47,103,160]. This method evaluates a degree-three
+polynomial that doubles the number of correct digits in ⟦푥⟧
+each time; it can be run for a constant number of steps (as done
+by Nudge) for approximate results, or for 푂(log푏) steps for
+full accuracy [105]. We define the function ApproxNormalize
+and detail a 3PC protocol for it in the full version, proving:
+Lemma 4.4 (3PC for approximate normalization). In the
+3PC with PRF model over a ring R = Z2푏with 휆-bit PRF
+seeds, there exists a secure 3PC protocol for the function
+ApproxNormalize : R푑→R푑in 푂(1) rounds, 푂(푑푏휆+휆푏2+
+푏3) bits of communication, and 푂(푑푏+ 푏2) operations.
+5
+Private matrix factorization
+Next, we apply the three-party computation framework of
+Section 4 to design a protocol for private matrix factorization.
+Recall from Section 2 that a matrix-factorization algorithm
+takes in a matrix U ∈R푚×푛and a dimension 푑≤min(푚,푛)
+and then outputs a pair of matrices A ∈R푚×푑and B ∈R푑×푛
+that factor U ≈A·B. In Section 5.1, we describe how to use
+power iteration to factor a matrix. In Section 5.2, we show how
+to run this algorithm with repeated invocations of a matrix-
+vector program, letting us instantiate it in the 3PC framework.
+The proof sketch in Section 5.2 then gives:
+Theorem 5.1 (3PC for matrix factorization). In the 3PC
+with PRF model, on seed length 휆∈N, ring R = Z2푏with
+bit length 푏≥1, and public parameter ℓ∈N denoting the
+number of iterations of the power-iteration algorithm, for
+any 푚,푛∈N and 푑≤min(푚,푛), three parties that hold se-
+cret shares of a matrix ⟦U⟧∈R푚×푛can securely evaluate
+the power-iteration algorithm to compute a secret-shared
+matrix ⟦A⟧∈R푚×푑and a cleartext matrix B ∈R푑×푛in
+푂(푑ℓ) rounds, 푂 휆푑ℓ푏· (푚+푛) +휆푑ℓ푏2 + 푑ℓ푏3 communi-
+cation, and 푂 푑ℓ푚푛+ 푑ℓ푏· (푚+푛) + 푑ℓ푏2 operations.
+5.1
+Background: power iteration
+We compute matrix factorizations using a classic algorithm
+from the 1920s: power iteration, also known as “vector iter-
+ation” or the “power method” [74,123,152]. We give pseu-
+docode for our repeated application of power iteration in Fig-
+ure 4. At its core, this algorithm leverages the linear-algebra
+fact that, to find a pair of matrices A ∈R푚×푑and B ∈R푑×푛
+
+--- Page 7 ---
+Algorithm: Matrix factorization via power iteration.
+Parameterized by ℓ≥1 iterations and dimension 푑≥1.
+// Compute A,B to be a rank-푑approximation of U
+ApproxFactor(U ∈R푚×푛) →A ∈R푚×푑,B ∈R푑×푛
+• Initialize B to be the all-zeros matrix in R푑×푛.
+• For 푖from 1 to 푑:
+– Initialize v ∈R푛to a random vector.
+Run v := Normalize(SetOrthogonal(v,B)).
+– For 푗from 1 to ℓ:
+∗Update v := Mul(U⊤,Mul(U,v)).
+∗Update v := SetOrthogonal(v,B).
+∗Update v := Normalize(v).
+– Set the 푖th row of B equal to v.
+• Compute A := U·B⊤. Output A, B.
+// Set v orthogonal to all rows in B (Gram-Schmidt)
+SetOrthogonal(v ∈R푛,B ∈R푑×푛) →v′ ∈R푛
+• For 푖from 1 to 푑:
+– Let b ∈R푛be the 푖th row of B.
+– Set v := v−⟨v,b⟩·b.
+• Output v.
+Figure 4: Matrix factorization via power iteration [123].
+that minimize the Frobenius norm ∥U−A·B∥퐹, it suffices to
+set the rows of B to be the top-푑eigenvectors with the largest
+eigenvalues of the square matrix U⊤U. After this, finding the
+associated A is a linear operation: A := U·B⊤.
+Finding dominant eigenvectors. To find the eigenvectors
+with the largest eigenvalues, the algorithm in Figure 4 extracts
+eigenvectors one at a time, in order of decreasing eigenvalue.
+To do so, the algorithm applies the square matrix M := U⊤U
+to itself many times. The eigenvector with the largest eigen-
+value of M is its “direction of maximum stretch”. For a large
+enough power ℓ≥1 and a random vector v, computing the
+vector v′ := Mℓ·v stretches v the most in the direction of the
+dominant eigenvector, until v′ essentially equals matrix M’s
+dominant eigenvector. (During this computation, we normal-
+ize the vector at each step to avoid overflow/underflow.)
+After finding an eigenvector, the algorithm starts with a
+vector orthogonal to the eigenvector(s) previously recovered.
+It then repeats the powering step to extract the next eigenvector.
+Powering a random vector v, that is orthogonal to all already-
+computed eigenvectors, ensures that v will not get stretched
+in the direction of the already-computed vectors—so, this
+recovers the eigenvector with the next largest eigenvalue.¹
+When using fixed-point arithmetic, we re-orthogonalize the
+vectors at every step.
+Remark 5.2 (Why power iteration?). Power iteration has a
+number of appealing properties: it has few hyperparameters
+to tune; it is relatively numerically stable [83]; it is robust
+to (even adversarially generated) noise [84]; it can be made
+differentially private [60,122], as we discuss in Section 9; and
+there are theoretical guarantees on its convergence [148]. For
+example, letting 훾be the ratio between the matrix M’s largest
+and second-largest eigenvalues, power iteration converges to
+a vector that is within 퐿2-distance 휖from the top eigenvector
+in ℓ= 푂(log(푛/휖)/훾) iterations [128].
+5.2
+Power iteration as a matrix-vector program
+Proof sketch of Theorem 5.1. We securely evaluate power
+iteration across three parties that hold shares of the matrix ⟦U⟧
+to be factored. At the end of the protocol, each party learns
+secret shares of the matrix ⟦A⟧and the cleartext matrix B.
+To do so, we cast the powering step in Figure 4 as a matrix-
+vector program (Definition 4.1) over the ring R = Z2푏and the
+function class F containing three functions:
+• normalize(v): 퐿2-normalize the vector v,
+• truncate푡(v): perform an arithmetic right shift (i.e., with
+sign extension) by 푡bits on each element of v, and
+• orthogonalizeB(v): compute the component of v that is
+orthogonal to all vectors in B.
+At the end of each powering step, our parties reveal and learn
+the computed row of matrix B in the clear. This design lever-
+ages power iteration’s structure: it iteratively computes a por-
+tion of the matrix B at each step. (In contrast, gradient descent
+iteratively refines the entire recommender model at each step.)
+So, the three parties can learn B in cleartext as it is computed:
+aiding the computation while incurring no additional leakage.
+To complete our protocol and apply Theorem 4.2, we must
+specify three things: (1) how to embed the real numbers into
+the finite ring Z2푏, (2) how to write the inner loop of Figure 4
+as a matrix-vector program, and (3) how to implement the
+functions in F in a concretely-efficient 3PC.
+1. Embedding the reals in Z2푏. We use the standard fixed-
+point techniques [125] described in Section 4.3. As in prior
+work [19,101], we perform the truncations needed after each
+multiplication lazily: we replace any occurrences of “truncate-
+then-add” by “add-then-truncate”. If the bit length 푏has
+sufficient space, we instead truncate by 2푡bits after every
+¹This process achieves the same functionality as “blocked power iteration” or
+“subspace iteration” [148, Section 5.1], but we unroll the blocks here to take
+advantage of the fact that, when we will run in a 3PC, each successive row
+of the matrix B will be revealed in cleartext.
+
+--- Page 8 ---
+two multiplications. With these optimizations, running power
+iteration only requires truncating vectors—never matrices.
+2. Inner loop as a matrix-vector program. The inner loop
+of power iteration (Figure 4) has precisely the structure of a
+matrix-vector program: it alternates between (a) applying the
+matrices U⊤and U to a vector v, and (b) truncating, orthog-
+onalizing, and normalizing the intermediate vectors. In our
+3PC, the honest-but-curious parties jointly sample a cleartext
+initial vector v, from which they can locally derive ⟦v⟧.
+3. Implementing non-linear layers in F. Beyond vector
+normalization and fixed-point truncation (described in Sec-
+tion 4.3), the only remaining operation is orthogonalization.
+Orthogonalization is a linear function of the shares of vector
+⟦v⟧since each party knows the matrix B in cleartext; as such,
+it can be performed locally, without any communication.
+6
+Implementation
+Our Nudge prototype consists of 7,296 lines of Go code, us-
+ing C to implement the matrix-multiplication core, along
+with 2,736 lines to implement the function-secret-sharing
+tools (as per Section 4.3).
+Nudge uses AES as a cryp-
+tographic PRF. We open-source our implementation at
+https://github.com/NudgeArtifact/private-recs.
+Collecting ratings from users. Each user secret shares each
+of its ratings using a distributed point function that outputs
+replicated shares [11,32]. (Using distributed point functions
+here reveals to the servers how many items each user rated.)
+The Nudge servers then run checks to verify that all submis-
+sions are well-formed. In theory, Nudge could check arbitrary
+predicates on users’ submissions using zero-knowledge proofs
+on secret-shared data [29,51]. As detailed in the full version of
+this paper, we instead implement a simple check that ensures
+that all secret-shared ratings lie in {0,1}. This check follows
+prior work [10] and is almost free in our three-party setting:
+the Nudge servers check all submissions at once by exchang-
+ing 푂(휆) bits, on security parameter 휆. If the check fails, the
+servers can binary search to identify malformed submissions.
+Concrete parameters. Nudge takes the bit length of the ring
+푏= 128, the number of fractional bits 푡= 20, and the seed
+length to a cryptographic PRF 휆= 128. During normaliza-
+tion, Nudge increases the precision to 40 fractional bits and
+performs 5 iterations of Newton-Raphson approximation.
+Picking hyperparameters for power iteration. The embed-
+ding dimension 푑should be set using application-dependent
+context. Following common practice on the data sets we eval-
+uate on, we run Nudge with 푑in the range 8–50 [68]. The
+larger 푑, the more accurate the recommendations, but also the
+more user information they encode. The number of power
+iterations ℓ(Section 5.1) is a fixed constant that trades off
+between quality and cost: the larger ℓ, the more accurate the
+matrix factorization, but the more expensive it is to compute.
+By default, Nudge takes ℓ= 10. (In our evaluation, we experi-
+ment with various choices of ℓon the validation set and see
+that ℓin the range 5–100 perform comparably.)
+7
+Evaluation
+In our evaluation, we answer the following questions:
+• Section 7.1: How good are Nudge’s recommendations,
+compared to non-private recommendation algorithms?
+• Section 7.2: What is the cost of Nudge’s private matrix
+factorization, compared to prior private approaches?
+• Section 7.3: How do Nudge’s costs scale to large collec-
+tions of items and users?
+• Section 7.4: What is the end-to-end performance of serv-
+ing private recommendations in Nudge?
+Experimental setup. We run each Nudge server on a memory-
+optimized r7a.48xlarge AWS instance with 192 cores and
+1,536 GB of RAM (costing $14.6064 per hour). We run
+on these large-RAM machines because of the computation’s
+memory demands: the secret-shared matrix is over 200 GB
+on the Netflix dataset and over 1.3 TB on the Yelp dataset.
+On the smaller MovieLens data sets, we instead run each
+server on a r7a.large instance (2 cores, 16 GB of RAM)
+or a r7a.4xlarge instance (16 cores, 128 GB of RAM).
+Between the Nudge servers, we simulate two network settings:
+a local area network (LAN), with 50 GBps of bandwidth and
+a 0.25 ms RTT, and a wide area network (WAN), with 5 GBps
+of bandwidth and a 10 ms RTT. We count the cost of AWS
+data transfer as $0.01 per GB. Finally, we run a user on a
+r7a.medium instance (1 core, 8 GB of RAM). To measure
+throughput, we run many users on a r7a.4xlarge instance
+(16 cores, 128 GiB of RAM). We simulate the link between a
+user and the Nudge servers as 100 Mbps with a 50 ms RTT.
+We measure Nudge’s quality and performance on the Netflix
+data set [7], released as part of the Netflix prize competition
+(2006–2009). Following the recommendations literature [68,
+110], we preprocess the data set to keep users that rated at
+least 5 items and to binarize the ratings (i.e., ratings on a
+scale of 1–5 are mapped to “1” if they are four or larger, and
+“0” otherwise). To compare to prior work, we also measure
+Nudge’s costs on the smaller MovieLens data sets [5]. Finally,
+we report Nudge’s costs on matrices whose sizes match a range
+of large-scale recommender data sets described in Section 7.3.
+7.1
+Nudge’s recommendation quality
+In Figure 5, we compare the quality of the recommendations
+produced by Nudge and a suite of standard recommender
+algorithms (run in cleartext). These algorithms include
+
+--- Page 9 ---
+TopPopular
+ItemKNN
+GraphWalk
+ALS
+SVD
+Nudge
+MultVAE
+0.0
+0.1
+0.2
+0.3
+0.4
+0.5
+Recall@k: fraction of ground-
+truth items in the top-k recs,
+at k=20, 50, and 100
+better
+TopPopular
+ItemKNN
+GraphWalk
+ALS
+SVD
+Nudge
+MultVAE
+0.3
+0.4
+0.5
+0.6
+0.7
+0.8
+0.9
+1.0
+1.1
+nDCG@k normalized by that of
+Nudge, at k=20, 50, and 100
+better
+Figure 5: Nudge’s recommendation quality on the Netflix
+data set [7] matches that of the cleartext matrix-factorization
+algorithms (ALS, SVD), exceeds the textbook recommender
+algorithms (TopPopular, ItemKNN, GraphWalk), and is within
+12% of a deep-neural-network approach (MultVAE). We re-
+port numbers besides Nudge’s from the survey of Dacrema et
+al. [68]; their SVD/ALS baselines use embedding dimension
+푑= 55/푑= 146, while Nudge uses 푑= 50.
+• three textbook approaches: TopPopular, which recom-
+mends the most popular items [53], ItemKNN, a nearest-
+neighbor search on the items [150], and GraphWalk, a
+random walk on the user-item-interaction graph [50],
+• two matrix-factorization techniques: ALS, matrix factor-
+ization via alternating least squares [92], and SVD, the
+classic singular value decomposition [53], and
+• a recent, neural-network-based approach: MultVAE,
+which uses variational autoencoders [110].
+Experiment. To evaluate recommender quality, we run the
+following experiment, common in the recommendations liter-
+ature [68]: we hold out a fraction of a user’s ratings (i.e., “1”s
+in the binarized matrix), and then measure how often each
+algorithm recommends the held-out items that the user actu-
+ally rated. In more detail, we split the data set into training,
+validation, and test sets by selecting 10,000 users for each of
+the validation and test sets and, for each such user, including
+80% of their ratings in the training set and using the remaining
+20% as “ground truth” ratings in the validation and test sets
+respectively, as per prior work [68, 110]. (All other users’
+ratings are added to the training set.) We report performance
+on the test set, measuring the following standard metrics:
+• Recall at 푘: what fraction of the “ground-truth” ratings
+(i.e., items that the user rated highly, but this was held
+out from training) are in the top-푘recommended items?
+• Normalized discounted cumulative gain (nDCG) at 푘:
+how many of the “ground-truth” ratings are surfaced in
+the top-푘recommended items, weighted by each item’s
+rank in the top-푘list (with logarithmic discount) and
+normalized by the best-possible ranking [95]?
+For each metric, higher scores indicate better recommenda-
+tions and the maximum score is 1.
+Results. Figure 5 shows that Nudge’s recommendation qual-
+ity matches the matrix-factorization baselines and is within
+12% of the deep-neural-network approach. In particular, at
+cutoff 푘= 20, the textbook algorithms achieve a nDCG score
+of 0.11–0.26, the matrix-factorization algorithms achieve a
+nDCG score of 0.24–0.29, and the neural algorithm achieves a
+nDCG score of 0.31. Nudge achieves a nDCG of 0.29. More-
+over, at 푘= 20, Nudge’s recall score is 0.23—that is, 23% of
+the held-out, “ground-truth” items appear in the list of top-20
+recommendations produced by Nudge, on average.
+These results show that Nudge’s differences to a cleartext
+matrix-factorization algorithm (namely, performing a fixed
+number of steps of power iteration and using fixed-point arith-
+metic with deferred truncations and approximate normaliza-
+tions) do not noticeably affect its recommendation quality.
+Finally, we measure the quality of Nudge’s recommender
+algorithm using 10-fold cross-validation (by partitioning the
+users into 10 folds and performing the evaluation experiment
+on each fold); each of Nudge’s nDCG and recall scores at
+푘∈{20,50,100} remain the same as in Figure 5.
+7.2
+Nudge’s private matrix factorization
+In Table 6, we benchmark the main performance overhead in
+Nudge: private matrix factorization (Section 5). Asymptot-
+ically, for a fixed embedding dimension 푑and with 푚users
+and 푛items, Nudge’s compute scales as 푂(푚푛) and its com-
+munication scales as 푂(푚+푛). Concretely, Nudge factors the
+full Netflix data set—which contains 76× more users, 4.5×
+more items, and 50× more ratings than the largest data set
+previously used for private recommendation—in 50 min of
+wall-clock time, with 40 GB of communication between the
+three Nudge servers, running on a local-area network. In total,
+this costs $37 on AWS. On a wide-area network, the wall-
+clock time increases to 1h 13 mins and the communication
+stays the same (costing $54 on AWS).
+Nudge outperforms prior private-matrix-factorization sys-
+tems and 3PC baselines, as we describe next.
+Prior private recommender systems. A range of prior works
+perform private matrix factorization with semi-honest security:
+Nikolaenko et al. [133] use garbled circuits to run gradient
+descent between two non-colluding parties. The GraphSC
+system [130] parallelizes these garbled-circuits computations.
+
+--- Page 10 ---
+Runtime
+System
+Non-colluding
+servers
+Algorithm
+Dim. 푑
+Rounds
+Server-to-server
+comm. (GB)
+LAN
+WAN
+Cores
+Subset of MovieLens100K: 940 users, 40 movies, and 14,683 ratings.
+Nikolaenko et al.♣[133]
+2
+gradient descent
+-
+1
+1,330
+29 hr
+-
+32
+Nudge
+3
+power iteration
+8
+7,080
+0.1
+2.8 sec
+34.1 sec
+6
+MovieLens100K: 943 users, 1,682 movies, and 100K ratings.
+PIRSONA♠[157]
+4
+gradient descent
+8
+-
+4.6
+-
+11.7 mins
+32
+Nudge
+3
+power iteration
+8
+7,080
+0.5
+10.7 sec
+51.8 sec
+6
+MovieLens1M: 6,040 users, 3,883 movies, and 1 million ratings.
+GraphSC♣[130]
+2
+gradient descent
+10
+1
+78,125
+est. 11 days
+-
+128
+Nudge in MP-SPDZ [101]
+3
+power iteration
+10
+11,057,010
+1.5
+52.4 min
+est. 1.3 days
+48
+Nudge
+3
+power iteration
+10
+9,150
+1.4
+32.8 sec
+1.8 min
+48
+Netflix: 463,435 users, 17,769 movies, and 56 million ratings.
+Nudge
+3
+power iteration
+50
+75,750
+38.9
+50.2 min
+1h 13 min
+576
+Table 6: Nudge runs faster and incurs less communication than prior systems for private matrix factorization. We bold the best
+performance on each data set, running Nudge on fewer cores than prior work. All systems provide semi-honest security. We
+report the performance and configurations specified in each paper, using - to indicate unknown values. We scale the costs for
+Nikolaenko el al. [133] and PIRSONA [157], who report a single iteration of gradient descent, linearly according to the fact that
+gradient descent requires 10 iterations on the subset of MovieLens100K (as used by Kim et al. [102]) and 20 iterations on the full
+MovieLens100K (as used by recommender libraries [93]). Column 8 gives the total number of cores used across all parties. ♣We
+estimate communication based on microbenchmarks and the linear scaling described. ♠We compute PIRSONA’s communication
+using Table 1. PIRSONA’s WAN setup diverges from ours: it runs on 4 servers in different availability zones.
+Unlike Nudge, these protocols require only two non-colluding
+servers, use a single round of interaction, and have asymp-
+totically better computation (that scales with the number of
+ratings, rather than the product of users and items 푚푛). At the
+same time, however, they incur asymptotically larger server-
+to-server communication costs (that scale with the number of
+ratings, rather than the sum of users and items 푚+푛). In con-
+crete terms, these systems have over four orders of magnitude
+higher communication and compute costs than Nudge.
+In particular, Nikolaenko et al. [133] run on a subset of
+the MovieLens100K data set: they report 29 hrs (using 32
+cores) and over 1 TB of server-to-server communication to
+run gradient descent; Nudge factors the same data set in 2.8
+sec (using 6 cores) and 0.1 GB. GraphSC [130] run on the
+MovieLens1M data set: they report 11 days of compute (using
+128 cores) and over 76 TB of communication; Nudge factors
+the same data set in 33 seconds (using 48 cores) and 1.4 GB.
+We expect very recent, state-of-the-art techniques for SIMD
+garbling [77] to shave an order of magnitude off of GraphSC’s
+computation and communication, though they do not evalu-
+ate on the matrix-factorization task. Other new techniques
+for communication-efficient garbling [116] could shrink the
+communication, but would further increase the compute.
+Again using two non-colluding servers, Kim et al. [102]
+improve the cost of garbled-circuit-based matrix factorization
+with homomorphic encryption, at the cost of leaking which
+users rated which items. (The authors propose to obfuscate
+this leakage by having each user log some fake ratings.) They
+require 15 mins (using 6 cores) and 5.7 GB on the same sub-
+set of MovieLens100K. Nudge remains 320× faster while
+incurring 57× less communication.
+Finally, PIRSONA [157] performs private matrix factor-
+ization by running gradient descent in a bespoke multi-party
+computation between four semi-honest, non-colluding parties.
+Like Nudge, PIRSONA’s communication scales as 푂(푚+푛).
+PIRSONA reports 11.7 mins (using 32 cores) and 4.6 GB to
+run full gradient descent on the MovieLens100K data set on a
+WAN setup. Nudge factors the same data set in 51.8 seconds
+(using 6 cores) and 0.5 GB on our WAN setup—saving 8× in
+communication and requiring one fewer non-colluding party.
+Baseline: Three-party arithmetic computation. To evalu-
+ate the impact of Nudge’s three-party protocols for truncation
+and normalization (Section 4.3), we re-implement and bench-
+mark Nudge’s same power iteration algorithm, written as a
+matrix-vector program, using the MP-SPDZ framework [101].
+Like Nudge, MP-SPDZ performs secure computation using
+replicated secret sharing over a power-of-two ring; however,
+where Nudge uses function secret sharing for non-linear op-
+
+--- Page 11 ---
+100
+1 K
+10 K
+100 K
+1 M
+Number of users
+5 min
+10 min
+30 min
+1 hr
+2 hr
+5 hr
+10 hr
+Server time in Nudge (over LAN)
+Netflix
+18 K items
+Criteo
+700 items
+Yelp
+148 K items
+Steam
+15 K items
+Pinterest
+10 K items
+Microsoft news
+160 K items
+100
+1 K
+10 K
+100 K
+1 M
+Number of users
+20 GB
+40 GB
+80 GB
+160 GB
+400 GB
+800 GB
+1.6 TBServer-server communication in Nudge
+10 K items
+50 K items
+100 K items
+500 K items
+1 M items
+Dataset
+Netflix
+18 K items
+Criteo
+700 items
+Yelp
+148 K items
+Steam
+15 K items
+Pinterest
+10 K items
+Microsoft news
+160 K items
+Figure 7: Nudge privately factors matrices with millions of users or items. We measure Nudge’s wall-clock time and server-
+to-server communication on matrices of increasing size, keeping the number of items constant (up to 1 TB in size after secret
+sharing, which translates to 푚푛≤3.4×1010 with 푚users and 푛items). For context, we show Nudge’s performance on matrices
+of the size of public recommendation data sets. In each case, Nudge produces embeddings of dimension 푑= 50, requires 75,750
+rounds, and runs on three 192-core machines. For large 푚or 푛, we measure costs with 푑= 5 or 푑= 2 and extrapolate linearly.
+erations, MP-SPDZ instead converts to binary secret shares
+(as we disallow leaky probabilistic truncations). As a result,
+on the MovieLens1M data set, the MP-SPDZ baseline has
+approximately the same communication cost as Nudge, but it
+requires three orders of magnitude more rounds of interaction.
+This increased interaction translates to 95× slower runtime in
+a LAN setting or 1040× slower runtime in a WAN setting.
+Baseline: No privacy. Dacrema et al. [68] report the cost of
+running non-private SVD as 50.53 s on the Netflix data set
+(compared to Nudge’s 50 mins); they use one p3.2xlarge
+AWS instance with 8 vCPUs, 30 GB of RAM, and one GPU.
+As a result, their non-private matrix factorization of Netflix
+costs roughly $0.05 on AWS, while Nudge’s costs $37.
+7.3
+Scaling Nudge to larger data sets
+Popular recommender systems handle many millions to bil-
+lions of users/items. In Figure 7, we scale Nudge’s private
+matrix factorization to data sets with millions of users or items.
+As mentioned earlier, given 푚users and 푛items, Nudge’s
+compute costs grow as 푂(푚푛) and its communication costs
+grow as 푂(푚+푛). The constant factors within these asymp-
+totics play an important role: because of lazy truncation (Sec-
+tion 5.2), the constant in front of the “푚” term in the commu-
+nication is dwarfed by that in front of the “푛” term, causing
+the concrete communication to be dominated by the number
+of items 푛as soon as 푛grows sufficiently large.
+In addition to synthetic benchmarks, we measure Nudge’s
+runtime and server-to-server communication costs when pri-
+vately factoring matrices whose sizes match those of public
+recommendation data sets. On a LAN setup, we measure that:
+• Nudge factors a Criteo ads data set [6] (with 푚= 6.1M
+users and 푛= 700 ad campaigns) in 1.5 h and 125 GB.
+• Nudge factors a Yelp data set [8] (with 푚= 279K users
+and 푛= 148K businesses) in 8h and 248 GB.
+• Nudge factors a Steam data set [137] (with 푚= 2.5M
+users and 푛= 15K video games) in 4.7 hr and 78 GB.
+• Nudge factors a Pinterest data set [61] (with 푚= 55K
+users and 푛= 10K photos) in under 10 mins and 20 GB.
+• Nudge factors a Microsoft-News data set [163] (with
+푚= 50K users and 푛= 160K articles) in 3 hr and 263 GB.
+7.4
+Nudge’s end-to-end performance
+In Table 8, we break down the end-to-end costs of serving
+private recommendations with Nudge, both analytically and
+as measured on the Netflix data set.
+With distributed point functions, the user-to-server commu-
+nication to log a rating scales logarithmically with the number
+of items 푛(concretely, 694 bytes). Each of the three Nudge
+servers then performs 푂(푛log푛) operations to log the secret-
+shared submission, done in tens of milliseconds of latency and
+at a throughput of hundreds of submissions per second. The
+servers perform a one-time check that the final secret-shared
+matrix U is well-formed, which requires scanning over the
+matrix (done in 7.7 min) and exchanging 64 bytes. Finally,
+
+--- Page 12 ---
+Analytical cost
+As implemented
+Logging a rating.
+User work
+푂(휆log푛+ 푏) ops
+User-server comm. 2log푛(휆+8) +2푏bits
+694 bytes
+Server work
+푂(푛log푛) ops
+0.03 s
+Server throughput
+>270 queries/s
+Checking that a matrix of ratings is well-formed.
+Server-server comm.
+4푏bits
+64 bytes
+Server work
+푂(푚푛) ops
+7.7 min
+Fetching recommendations.
+User-server comm.
+푂(푛푏) bits
+298 KB
+User-perceived latency
+0.38 s
+Server work
+푂(푛푑) ops
+0.04 s
+Server throughput
+>110 queries/s
+Table 8: Nudge’s costs for data collection (step 1) and fetching
+recommendations (step 3) scale with the number of items 푛,
+dimension 푑, bit length 푏of the ring, and PRF seed length 휆.
+We report concrete costs on the Netflix data set (Table 6).
+fetching recommendations requires a user to download 푂(푛)
+bits from each server (concretely, 298 KB), which takes 0.38s.
+The servers again handle hundreds of requests per second.
+8
+Extension: Scaling up Nudge
+with dimensionality reduction
+While Nudge can privately factor million-user data sets in
+hours, Nudge’s compute grows as the product of users, items,
+and embedding dimension 푑푚푛—which becomes a bottleneck
+when applied to sufficiently massive data sets. (This issue
+does not befall cleartext matrix-factorization systems: they
+can take advantage of the matrix U’s inherent sparsity, whereas
+the Nudge servers who only see secret shares of ⟦U⟧cannot.)
+Nudge can overcome this scalability bottleneck with dimen-
+sionality reduction via random projection [114]. Johnson and
+Lindenstrauss [97] showed that projecting a matrix onto a
+random, low-dimensional sketch S approximately preserves
+the distances between its rows. Papadimitriou, Raghavan,
+Tamaki, and Vempala [136, Theorem 4] showed that com-
+pressing a matrix in this way before factoring it incurs only
+a small loss in accuracy: for an error parameter 0 < 휖< 0.5,
+the two-step process of (a) projecting the matrix U ∈R푚×푛
+down to a smaller, sketched version ˆU := U · S ∈R푚×푠with
+푠= Ω(log푛/휖2), and then (b) factoring ˆU, gives a (1 + 휖)-
+approximation to factoring the original U (in Frobenius norm,
+with appropriately chosen embedding dimension). Random
+projection is a data-oblivious, linear computation, making it
+well suited for multi-party computation.
+Applying this technique, Nudge’s compute does not need to
+scale as 푂(푑푚푛). Rather, the three Nudge servers can jointly
+sample a sketch matrix S ∈R푛×푠, locally apply it to their secret
+shares ⟦U⟧to obtain ⟦ˆU⟧:= ⟦U⟧· S, and run their private
+matrix factorization on ⟦ˆU⟧from there. We describe this
+process in the full version. Crucially, though the servers know
+the sketch S, applying it to the matrix U on the right side treats
+all users’ data symmetrically (and thus does not affect Nudge’s
+anonymity property). As a result, Nudge’s compute can scale
+as 푂(푚푛+ 푑푚log푛/휖2), or even 푂(푚√푛+ 푑푚log푛/휖2) with
+more aggressive sparse sketching [108].
+When the number of items 푛is sufficiently large, we expect
+dimensionality reduction to give substantial improvements:
+for example, on the Common Crawl data set with 364 M web
+pages [140], sketching with standard parameters [1] shrinks
+the dimension 푛= 364 M to down to 푠≤17,000. Running
+Nudge at this scale would be bottlenecked by the cost of per-
+forming two passes over the original matrix U ∈R푚×푛(one
+to sketch it down at the beginning, and one to recover the item
+embeddings at the end), not the time to perform private power
+iteration on the 20,000× smaller matrix ˆU ∈R푚×푠.
+9
+Extension:
+Enhancing Nudge’s privacy protections
+Recommendations with differential privacy. A sequence
+of works studies differentially private algorithms for princi-
+pal component analysis [44, 60], low-rank matrix approxi-
+mation [100], power iteration [23, 84, 85, 132], and matrix-
+factorization-based recommendations [69,117,122,139,153].
+Differential privacy offers the guarantee that the learned item
+embeddings B cannot leak any one user’s rating vector with
+high probability. This guarantee is complementary to the
+privacy property provided by Nudge (that no party learns any-
+thing about the user inputs beyond the item embeddings B),
+and approaches to achieving it integrate neatly into Nudge.
+In particular, Dwork et al. [60] show that, to achieve differ-
+ential privacy, it suffices to add gaussian noise to each entry
+of the matrix U⊤U ∈R푛×푛. Following this approach, Nudge
+can provide differential privacy with two extra steps:
+• After collecting ratings, the three Nudge servers normal-
+ize each row of the matrix ⟦U⟧(by dividing the 푖th row
+in ⟦U⟧by the number of ratings submitted by user 푖).
+• Each pair of servers picks a matrix in R푛×푛with i.i.d.
+gaussian entries and splits it across all three servers with
+replicated secret sharing. (This requires no communi-
+cation, using PRFs.) The servers sum these matrices to
+⟦E⟧∈R푛×푛. At each step of power iteration, when the
+servers compute Mul(⟦U⊤⟧,Mul(⟦U⟧,⟦v⟧)), they add
+to this Mul(⟦E⟧,⟦v⟧). This incurs no communication.
+On the Netflix data set [7], we measure that power iteration
+extended in this way to provide (휖,훿)-differential privacy with
+휖= 1 and 훿= 2−40 achieves a nDCG@20 score of 0.24 (as
+
+--- Page 13 ---
+defined in Section 7.1). McSherry and Mironov similarly con-
+clude that retrofitting recommender systems with differential
+privacy does not cause large degradations in quality [122].
+Recommendations on aggregate data. To further prevent
+user-level information from being revealed via the item em-
+beddings B, certain use cases of Nudge could compute recom-
+mendations over aggregate user data as opposed to individual
+user data. To give an example: Nudge can first aggregate users
+by zip code, and then provide private yet personalized recom-
+mendations of the form “users in area X often click on Y.”
+This would allow a private search engine [91] to rank websites
+about local businesses, local governments, etc. higher if they
+are geographically relevant to a user. One benefit is that the
+dimension 푚would now correspond to the number of aggre-
+gated user “categories” (rather than the total number of users),
+letting Nudge factor a far smaller matrix. One limitation is
+that the servers must know which users to aggregate over, so
+this mapping cannot be based on highly sensitive data.
+10
+Discussion: Nudge applications
+Nudge shows the potential viability of other applications:
+Collaborative recommendations. With Nudge, multiple
+services could jointly compute recommendations without ever
+sharing user data. For example, Netflix, Hulu, and Disney+
+could jointly train a recommendation model that leverages
+ratings across all three platforms. Or, LinkedIn and Facebook
+could compute friend recommendations across a joint version
+of their social networks. Or, Amazon and Instagram could
+compute recommendations across a user’s joint purchase and
+watch history. In this setting, multiple non-colluding parties,
+who could each run a Nudge server, already exist.
+Beyond recommendation. Nudge’s core power-iteration algo-
+rithm computes a low-rank approximation of a secret-shared
+matrix. Low-rank matrix approximations form the computa-
+tional backbone of data-mining tasks like principal component
+analysis [88], information-retrieval tasks like learning low-
+dimensional embeddings [55,136] and autoencoders [24,30],
+link-analysis tasks like PageRank [82, 135], graph-analysis
+tasks like spectral clustering [111], and data-compression
+tasks like matrix denoising [94,99]. By expressing power iter-
+ation as a matrix-vector program and optimizing its low-level
+gates, Nudge shows that these applications could be executed
+on large, secret-shared matrices, data sets, or graphs.
+11
+Related Work
+Multiple approaches preserve user privacy in recommender
+systems, with the goal of protecting the sensitive data needed
+to train recommendation models [129].
+A first approach relies on trusted execution environ-
+ments [13, 56] but is vulnerable to attacks on the underly-
+ing hardware [46, 76]. A second approach uses federated
+learning [121] to share only intermediate model parameters
+(not the original user data) with the recommender system,
+though an honest-but-curious server may still deduce user rat-
+ings [39,78,112,155]. Protocols combining federated learning
+with secure aggregation [26,120,143] address this leakage, but
+inherently involve all users in the many-round training process
+and reveal intermediate model versions to users and servers. A
+third approach uses cryptographic tools to ensure that no party
+can learn users’ training data, as long as the two or more parties
+processing the data do not collude [36,64,102,130,133,157].
+As shown in Section 7.2, Nudge improves on the cost and
+scale of these cryptographic systems. Other work assumes
+pre-trained deep learning models exist, and shows how to pri-
+vately serve recommendations given such public models [72].
+Nudge, which at its core performs private matrix factor-
+ization, is related to systems for privacy-preserving principal
+component analysis [14,28,47,66,70]. The work of Cho et
+al. [47] works in the same setting as Nudge but offers different
+security guarantees: it uses leaky truncation protocols [38] and
+random projection in a way that breaks user anonymity [51].
+Other works [14,66,70] factor a matrix that is sharded across
+a handful of parties (e.g., a few hospitals performing joint data
+analysis), allowing them to perform many computations lo-
+cally. In contrast, Nudge factors a matrix that depends on data
+from potentially millions of users. Relative to the most per-
+formant private PCA system [70], Nudge runs on two orders
+of magnitude larger matrices.
+Extensive research applies multi-party computation to pri-
+vate ML inference and training across two parties [37, 41,
+67, 79, 80, 87, 96, 98, 124–126, 146, 162, 165], three par-
+ties [22,42,59,106,107,125,138,142,149,154,156,158–160],
+or more [43,54,106,115]. Nudge diverges from these works
+in that, rather than running general-purpose gradient descent,
+it uses a simple algorithm from numerical linear algebra (Sec-
+tion 5.1). Nevertheless, Nudge shares many common tech-
+niques: using three parties to evaluate non-interactive matrix-
+vector products [27,45,107,125,156,157] and function secret
+sharing [32] for non-linear gates [12,33,79–81,96,147,149,
+154,158,164]. Nudge contributes new three-party protocols
+for truncation and normalization.
+12
+Conclusion
+Nudge is a recommender system that provides strong privacy
+by splitting trust across three servers. We show how matrix
+factorization is well-suited to three-party computation, and
+contribute an efficient and scalable design and implementation.
+We leave open three questions: first, to provide malicious
+security; second, to run across more parties while tolerating
+the compromise of several of them; third, to serve private
+recommendations with only two non-colluding parties without
+harming Nudge’s performance.
+
+--- Page 14 ---
+Acknowledgments. We thank our anonymous shepherd and
+the USENIX Security reviewers. We thank Sam Hopkins
+and Ainesh Bakshi for conversations about matrix decomposi-
+tion, Elette Boyle and Mayank Rathee for conversations about
+three-party computation, David Wu for conversations about
+private PCA, and Elaine Shi, Xiao Wang, Kartik Nayak, and
+Adithya Vadapalli for conversations about related work. Nick-
+olai Zeldovich, Mayank Rathee, Derek Leung, Ariel Szekely,
+and Ryan Lehmkuhl provided feedback on an early draft. This
+work was supported by gifts from Apple, Google, and Meta,
+and NSF 2452708. Alexandra Henzinger was supported by
+the NSF GRFP under Grant No. 2141064; this work was
+done in part while visiting the Simons Institute for the Theory
+of Computing. Dan Boneh was supported by NSF SATC-
+1804222.
+Ethical Considerations
+The stakeholders in this work include the authors, as well as
+companies and organizations that may use Nudge to generate
+recommendations and users that may submit ratings to Nudge.
+We did not identify any significant potential harms to the au-
+thors during the research process. For users that may submit
+ratings to Nudge: Nudge provides stronger privacy properties
+than deployed cleartext recommendation algorithms, where
+the provider learns both the model and user ratings. One po-
+tential harm is that, in Nudge, some information about user rat-
+ings is revealed via the model, which is the output of Nudge’s
+matrix-factorization protocol. We discuss how to mitigate this
+with differential privacy in Section 9. For companies or orga-
+nizations deploying Nudge: Nudge’s recommendation quality
+is not as good as that of a neural-network-based approach (Fig-
+ure 5), the cost of training the model is higher than on cleartext
+data, and the protocol requires three non-colluding servers.
+However, companies and organizations do not have access
+to user ratings in the clear, which has the potential to reduce
+liability, which may be particularly important for some appli-
+cations. Upon weighing the potential benefits and harms of
+our work using the principle of “beneficence” from the Menlo
+Report [58], we concluded that the benefits of completing the
+research outweighed the potential harms.
+Open Science
+Our
+full
+Nudge
+system
+code
+is
+open
+sourced
+at:
+https://zenodo.org/records/17968761. We evaluate
+Nudge on the released Netflix prize [7] and MovieLens [5]
+data sets. We also use the size of existing recommender data
+sets [6, 8, 61, 137, 163] to report Nudge’s performance on
+matrices with the same dimensions.
+References
+[1] The johnson-lindenstrauss bound for embedding
+with random projections.
+scikit-learn.org/
+stable/auto_examples/miscellaneous/plot_
+johnson_lindenstrauss_bound.html.
+[2] Prio server. github.com/divviup/prio-server.
+[3] Spotify. github.com/spotify/annoy.
+[4] Twitter’s recommendation algorithm. blog.x.com/
+engineering/en_us/topics/open-source/
+2023/twitter-recommendation-algorithm.
+[5] Movielens 1m dataset. grouplens.org/datasets/
+movielens/1m/, 2003.
+[6] Criteo
+dataset.
+huggingface.co/datasets/
+criteo/criteo-attribution-dataset, 2017.
+[7] Netflix prize data.
+www.kaggle.com/datasets/
+netflix-inc/netflix-prize-data, 2019.
+[8] Yelp
+dataset.
+www.kaggle.com/datasets/
+yelp-dataset/yelp-dataset, 2022.
+[9] Vertexai search for commerce,
+manage models.
+https://docs.cloud.google.com/retail/docs/manage-
+models, 2025.
+[10] Ittai Abraham, Benny Pinkas, and Avishay Yanai.
+Blinder–scalable, robust anonymous committed broad-
+cast. In ACM SIGSAC, 2020.
+[11] Amit Agarwal, Elette Boyle, Niv Gilboa, Yuval Ishai,
+Mahimna Kelkar, and Yiping Ma. Compressing unit-
+vector correlations via sparse pseudorandom genera-
+tors. In EUROCRYPT, 2024.
+[12] Amit Agarwal, Stanislav Peceny, Mariana Raykova,
+Phillipp Schoppmann, and Karn Seth. Communication-
+efficient secure logistic regression. In EuroS&P, 2024.
+[13] Esma Aïmeur, Gilles Brassard, José M Fernandez,
+and Flavien Serge Mani Onana. Alambic: a privacy-
+preserving recommender system for electronic com-
+merce. Int. J. Inf. Secur., 7(5), 2008.
+[14] Mohammad Al-Rubaie, Pei-yuan Wu, J Morris Chang,
+and Sun-Yuan Kung.
+Privacy-preserving PCA on
+horizontally-partitioned data. In IEEE DSC, 2017.
+[15] Bobby Allyn.
+Google to delete search data
+of millions who used ’incognito’ mode,
+2024.
+www.npr.org/2024/04/01/1242019127/google-
+incognito-mode-settlement-search-history.
+
+--- Page 15 ---
+[16] Vito Walter Anelli, Alejandro Bellogín, Tommaso
+Di Noia, Dietmar Jannach, and Claudio Pomo. Top-N
+recommendation algorithms: A quest for the state-of-
+the-art. In ACM UMAP, 2022.
+[17] Apple and Google.
+Exposure notification privacy-
+preserving analytics (ENPA) white paper. 2021.
+[18] Apple Inc. iCloud private relay overview. Technical
+report, Apple Inc., Cupertino, CA, December 2021.
+[19] Toshinori Araki, Assi Barak, Jun Furukawa, Marcel
+Keller, Yehuda Lindell, Kazuma Ohara, and Hikaru
+Tsuchida. Generalizing the SPDZ compiler for other
+protocols. In CCS, 2018.
+[20] Toshinori Araki, Jun Furukawa, Yehuda Lindell, Ariel
+Nof, and Kazuma Ohara. High-throughput semi-honest
+secure three-party computation with an honest majority.
+In CCS, 2016.
+[21] Apple Developer Article. Getting up-to-date calling
+and blocking information for your app. developer.ap-
+ple.com/documentation/identitylookup/getting-up-to-
+date-calling-and-blocking-information-for-your-app.
+[22] Nuttapong Attrapadung, Koki Hamada, Dai Ikarashi,
+Ryo Kikuchi, Takahiro Matsuda, Ibuki Mishina, Hi-
+raku Morita, and Jacob CN Schuldt. Adam in private:
+Secure and fast training of deep neural networks with
+adaptive moment estimation. arXiv:2106.02203, 2021.
+[23] Maria-Florina Balcan, Simon Shaolei Du, Yining
+Wang, and Adams Wei Yu.
+An improved gap-
+dependency analysis of the noisy power method. In
+COLT, 2016.
+[24] Pierre Baldi and Kurt Hornik. Neural networks and
+principal component analysis: Learning from examples
+without local minima. Neural networks, 2(1), 1989.
+[25] Shafi Bashar and Alex Gillmor.
+Scaling col-
+laborative filtering with PySpark.
+engineering-
+blog.yelp.com/2018/05/scaling-collaborative-filtering-
+with-pyspark.html, May 2018.
+[26] James Bell-Clark, Adrià Gascón, Baiyu Li, Mariana
+Raykova, and Phillipp Schoppmann. Willow: Secure
+aggregation with one-shot clients. In CRYPTO, 2025.
+[27] Remco Bloemen, Bryan Gillespie, Daniel Kales,
+Philipp Sippl, and Roman Walch. Large-scale MPC:
+Scaling private iris code uniqueness checks to millions
+of users. arXiv:2405.04463, 2024.
+[28] Dan Bogdanov, Liina Kamm, Sven Laur, and Ville
+Sokk. Implementation and evaluation of an algorithm
+for cryptographically private principal component anal-
+ysis on genomic data. TCBB, 15(5), 2018.
+[29] Dan Boneh, Elette Boyle, Henry Corrigan-Gibbs, Niv
+Gilboa, and Yuval Ishai. Zero-knowledge proofs on
+secret-shared data via fully linear PCPs. In CRYPTO,
+2019.
+[30] Hervé Bourlard and Yves Kamp. Auto-association by
+multilayer perceptrons and singular value decomposi-
+tion. Biological cybernetics, 59(4), 1988.
+[31] Elette Boyle, Nishanth Chandran, Niv Gilboa, Di-
+vya Gupta, Yuval Ishai, Nishant Kumar, and Mayank
+Rathee. Function secret sharing for mixed-mode and
+fixed-point secure computation.
+In EUROCRYPT,
+2021.
+[32] Elette Boyle, Niv Gilboa, and Yuval Ishai. Function
+secret sharing: Improvements and extensions. In CCS,
+2016.
+[33] Elette Boyle, Niv Gilboa, and Yuval Ishai. Secure
+computation with preprocessing via function secret
+sharing. In TCC, 2019.
+[34] Justin Brickell and Vitaly Shmatikov. The cost of pri-
+vacy: destruction of data-mining utility in anonymized
+data publishing. In SIGKDD, 2008.
+[35] Joseph A Calandrino, Ann Kilzer, Arvind Narayanan,
+Edward W Felten, and Vitaly Shmatikov. ”You might
+also like:” privacy risks of collaborative filtering. In
+IEEE S&P, 2011.
+[36] John Canny. Collaborative filtering with privacy via
+factor analysis. In SIGIR, 2002.
+[37] Sergiu Carpov, Kevin Deforth, Nicolas Gama, Mariya
+Georgieva, Dimitar Jetchev, Jonathan Katz, Iraklis
+Leontiadis, Mohsen Mohammadi, Abson Sae-Tang,
+and Marius Vuille. Manticore: Efficient framework
+for scalable secure multiparty computation protocols.
+Cryptology ePrint Archive, 2021.
+[38] Octavian Catrina and Amitabh Saxena. Secure compu-
+tation with fixed-point numbers. In FC, 2010.
+[39] Di Chai, Leye Wang, Kai Chen, and Qiang Yang. Se-
+cure federated matrix factorization. IEEE Intelligent
+Systems, 36(5), 2020.
+[40] Kelvin
+Chan.
+Tiktok
+fined
+$600
+million
+for
+china
+data
+transfers
+that
+broke
+eu
+pri-
+vacy
+rules,
+2025.
+apnews.com/article/tiktok-
+ireland-european-union-data-privacy-regulation-
+d386ec74becc716905d7f686d6a448e2.
+[41] Nishanth Chandran, Divya Gupta, Aseem Rastogi,
+Rahul Sharma, and Shardul Tripathi.
+EzPC: Pro-
+grammable and efficient secure two-party computation
+for machine learning. In EuroS&P, 2019.
+
+--- Page 16 ---
+[42] Harsh Chaudhari, Ashish Choudhury, Arpita Patra, and
+Ajith Suresh. Astra: High throughput 3PC over rings
+with application to secure prediction. In CCSW, 2019.
+[43] Harsh Chaudhari, Rahul Rachuri, and Ajith Suresh.
+Trident: Efficient 4pc framework for privacy preserving
+machine learning. arXiv:1912.02631, 2019.
+[44] Kamalika Chaudhuri, Anand D Sarwate, and Kaushik
+Sinha.
+A near-optimal algorithm for differentially-
+private principal components. The Journal of Machine
+Learning Research, 14(1), 2013.
+[45] Hao Chen, Miran Kim, Ilya Razenshteyn, Dragos Ro-
+taru, Yongsoo Song, and Sameer Wagh. Maliciously
+secure matrix multiplication with applications to pri-
+vate deep learning. In ASIACRYPT, 2020.
+[46] Zitai Chen, Georgios Vasilakis, Kit Murdock, Edward
+Dean, David Oswald, and Flavio D Garcia. VoltPil-
+lager: Hardware-based fault injection attacks against
+intel SGX enclaves using the SVID voltage scaling
+interface. In USENIX Sec, 2021.
+[47] Hyunghoon Cho, David J Wu, and Bonnie Berger. Se-
+cure genome-wide association analysis using multi-
+party computation. Nature biotechnology, 36(6), 2018.
+[48] Benny Chor, Oded Goldreich, Eyal Kushilevitz, and
+Madhu Sudan. Private information retrieval. In FOCS,
+1995.
+[49] Federal Trade Commission.
+Google and youtube
+will pay record $170 million for alleged violations
+of children’s privacy law, 2019. www.ftc.gov/news-
+events/news/press-releases/2019/09/google-youtube-
+will-pay-record-170-million-alleged-violations-
+childrens-privacy-law.
+[50] Colin Cooper, Sang Hyuk Lee, Tomasz Radzik, and
+Yiannis Siantos. Random walks in recommender sys-
+tems: exact computation and simulations. In WWW,
+2014.
+[51] Henry Corrigan-Gibbs and Dan Boneh. Prio: Private,
+robust, and scalable computation of aggregate statistics.
+In NSDI, 2017.
+[52] Paul Covington, Jay Adams, and Emre Sargin. Deep
+neural networks for youtube recommendations. In Rec-
+Sys, 2016.
+[53] Paolo Cremonesi, Yehuda Koren, and Roberto Turrin.
+Performance of recommender algorithms on top-n rec-
+ommendation tasks. In RecSys, 2010.
+[54] Anders Dalskov, Daniel Escudero, and Marcel Keller.
+Fantastic four: Honest-Majority Four-Party secure com-
+putation with malicious security. In USENIX Sec, 2021.
+[55] Scott Deerwester, Susan T Dumais, George W Furnas,
+Thomas Landauer, and Richard Harshman. Indexing
+by latent semantic analysis. J. Am. Soc. Inf. Sci., 41(6),
+1990.
+[56] Akash Dhasade, Nevena Dresevic, Anne-Marie Ker-
+marrec, and Rafael Pires. TEE-based decentralized
+recommender systems: The raw data sharing redemp-
+tion. In IPDPS, 2022.
+[57] Roger Dingledine, Nick Mathewson, and Paul Syver-
+son. Tor: The second-generation onion router. In
+USENIX Sec, 2004.
+[58] David Dittrich and Erin Kenneally.
+Annoy.
+The
+Menlo Report:
+Ethical Principles Guiding Infor-
+mation and Communication Technology Research,
+2012.
+catalog.caida.org/paper/2012_menlo_
+report_actual_formatted.
+[59] Ye Dong, Chen Xiaojun, Weizhan Jing, Li Kaiyun,
+and Weiping Wang. Meteor: Improved secure 3-party
+neural network inference with reducing online commu-
+nication costs. In ACM Web Conference, 2023.
+[60] Cynthia Dwork, Kunal Talwar, Abhradeep Thakurta,
+and Li Zhang. Analyze gauss: optimal bounds for
+privacy-preserving principal component analysis. In
+STOC, 2014.
+[61] Travis Ebesu, Bin Shen, and Yi Fang. Collaborative
+memory network for recommendation systems. In SI-
+GIR, 2018.
+[62] Annie Edmundson.
+The rise (and lessons learned)
+of ML models to personalize content on home (part
+i).
+engineering.atspotify.com/2021/11/the-rise-and-
+lessons-learned-of-ml-models-to-personalize-content-
+on-home-part-i, 2021.
+[63] Steven Englehardt. Next steps in privacy-preserving
+telemetry
+with
+prio.
+blog.mozilla.org/secu-
+rity/2019/06/06/next-steps-in-privacy-preserving-
+telemetry-with-prio/.
+[64] Zekeriya Erkin, Michael Beye, Thijs Veugen, and Regi-
+nald L Lagendijk. Efficiently computing private rec-
+ommendations. In ICASSP, 2011.
+[65] Daniel Escudero, Satrajit Ghosh, Marcel Keller, Rahul
+Rachuri, and Peter Scholl.
+Improved primitives
+for MPC over mixed arithmetic-binary circuits. In
+CRYPTO, 2020.
+[66] Xiaoyu Fan, Guosai Wang, Kun Chen, Xu He, and Wei
+Xu. PPCA: Privacy-preserving principal component
+analysis using secure multiparty computation (MPC).
+arXiv:2105.07612, 2021.
+
+--- Page 17 ---
+[67] Jun Feng, Yefan Wu, Hong Sun, Shunli Zhang, and
+Debin Liu. Panther: Practical secure two-party neural
+network inference. Trans. Info. For. Sec., 2025.
+[68] Maurizio Ferrari Dacrema, Simone Boglio, Paolo Cre-
+monesi, and Dietmar Jannach. A troubling analysis of
+reproducibility and progress in recommender systems
+research. TOIS, 39(2), 2021.
+[69] Arik Friedman, Shlomo Berkovsky, and Mohamed Ali
+Kaafar. A differential privacy framework for matrix
+factorization recommender systems. UMUAI, 26, 2016.
+[70] David Froelicher, Hyunghoon Cho, Manaswitha Edu-
+palli, Joao Sa Sousa, Jean-Philippe Bossuat, Apos-
+tolos Pyrgelis, Juan R Troncoso-Pastoriza, Bonnie
+Berger, and Jean-Pierre Hubaux. Scalable and privacy-
+preserving federated principal component analysis. In
+IEEE S&P, 2023.
+[71] Srivatsava
+Ranjit
+Ganta,
+Shiva
+Prasad
+Ka-
+siviswanathan, and Adam Smith.
+Composition
+attacks and auxiliary information in data privacy. In
+SIGKDD, 2008.
+[72] Karthik Garimella, Austin Ebel, Gabrielle De Micheli,
+and Brandon Reagen. HE-LRM: Encrypted deep learn-
+ing recommendation models using fully homomorphic
+encryption. arXiv:2506.18150, 2025.
+[73] Adrià Gascón, Phillipp Schoppmann, Borja Balle, Mar-
+iana Raykova, Jack Doerner, Samee Zahur, and David
+Evans. Privacy-preserving distributed linear regression
+on high-dimensional data. In PETS, 2017.
+[74] Gene H Golub and Charles F Van Loan. Matrix com-
+putations. JHU press, 2013.
+[75] Michael Greenacre, Patrick JF Groenen, Trevor Hastie,
+Alfonso Iodice d’Enza, Angelos Markos, and Elena
+Tuzhilina. Principal component analysis. Nature Re-
+views Methods Primers, 2(1), 2022.
+[76] Daniel Gruss, Moritz Lipp, Michael Schwarz, Daniel
+Genkin, Jonas Juffinger, Sioli O’Connell, Wolfgang
+Schoechl, and Yuval Yarom. Another flip in the wall
+of Rowhammer defenses. In IEEE S&P, 2018.
+[77] Tianyao Gu, Afonso Tinoco, Sri Harish Govinda Rajan,
+and Elaine Shi. PicoGRAM: Practical garbled RAM
+from Decisional Diffie-Hellman. In CRYPTO, 2025.
+[78] Xiao Guo, Xiang Li, Xiangyu Chang, Shusen Wang,
+and Zhihua Zhang. Fedpower: privacy-preserving dis-
+tributed eigenspace estimation. Machine Learning,
+113(11), 2024.
+[79] Kanav Gupta, Nishanth Chandran, Divya Gupta,
+Jonathan Katz, and Rahul Sharma. Shark: Actively
+secure inference using function secret sharing. In IEEE
+S&P, 2025.
+[80] Kanav Gupta, Neha Jawalkar, Ananta Mukherjee, Nis-
+hanth Chandran, Divya Gupta, Ashish Panwar, and
+Rahul Sharma. Sigma: Secure GPT inference with
+function secret sharing. Cryptology ePrint Archive,
+2023.
+[81] Kanav Gupta, Deepak Kumaraswamy, Nishanth Chan-
+dran, and Divya Gupta. Llama: A low latency math
+library for secure inference. Cryptology ePrint Archive,
+2022.
+[82] Pankaj Gupta, Ashish Goel, Jimmy Lin, Aneesh
+Sharma, Dong Wang, and Reza Zadeh. Wtf: The who
+to follow service at twitter. In WWW, 2013.
+[83] Nathan Halko, Per-Gunnar Martinsson, and Joel A
+Tropp.
+Finding structure with randomness: Proba-
+bilistic algorithms for constructing approximate matrix
+decompositions. SIAM review, 53(2), 2011.
+[84] Moritz Hardt and Eric Price. The noisy power method:
+A meta algorithm with applications. Advances in neural
+information processing systems, 27, 2014.
+[85] Moritz Hardt and Aaron Roth.
+Beyond worst-case
+analysis in private singular vector computation. In
+STOC, 2013.
+[86] Christopher Harth-Kitzerow, Ajith Suresh, and Georg
+Carle. Truncation untangled: Scaling fixed-point arith-
+metic for privacy-preserving machine learning to large
+models and datasets. Cryptology ePrint Archive, 2024.
+[87] Christopher Harth-Kitzerow, Yongqin Wang, Rachit
+Rajat, Georg Carle, and Murali Annavaram. PIGEON:
+A high throughput framework for private inference of
+neural networks using secure multiparty computation.
+In PETS, 2025.
+[88] Trevor Hastie, Robert Tibshirani, Jerome H Friedman,
+and Jerome H Friedman. The elements of statistical
+learning: data mining, inference, and prediction, vol-
+ume 2. Springer, 2009.
+[89] Xiangnan He, Lizi Liao, Hanwang Zhang, Liqiang Nie,
+Xia Hu, and Tat-Seng Chua. Neural collaborative fil-
+tering. In WWW, 2017.
+[90] Xinran He, Junfeng Pan, Ou Jin, Tianbing Xu, Bo Liu,
+Tao Xu, Yanxin Shi, Antoine Atallah, Ralf Herbrich,
+Stuart Bowers, et al. Practical lessons from predicting
+clicks on ads at facebook. In AdKDD, 2014.
+
+--- Page 18 ---
+[91] Alexandra Henzinger, Emma Dauterman, Henry
+Corrigan-Gibbs, and Nickolai Zeldovich. Private web
+search with Tiptoe. In SOSP, 2023.
+[92] Yifan Hu, Yehuda Koren, and Chris Volinsky. Collabo-
+rative filtering for implicit feedback datasets. In ICDM,
+2008.
+[93] Nicolas Hug. Surprise: A python library for recom-
+mender systems. J. Open Source Softw., 5(52), 2020.
+[94] Prateek Jain, Praneeth Netrapalli, and Sujay Sanghavi.
+Low-rank matrix completion using alternating mini-
+mization. In STOC, 2013.
+[95] Kalervo Järvelin and Jaana Kekäläinen. Cumulated
+gain-based evaluation of ir techniques. ACM TOIS,
+20(4), 2002.
+[96] Neha Jawalkar, Kanav Gupta, Arkaprava Basu, Nis-
+hanth Chandran, Divya Gupta, and Rahul Sharma.
+Orca: FSS-based secure training and inference with
+GPUs. In IEEE S&P, 2024.
+[97] William B Johnson, Joram Lindenstrauss, et al. Exten-
+sions of lipschitz mappings into a hilbert space. Con-
+temporary mathematics, 26(1), 1984.
+[98] Chiraag Juvekar, Vinod Vaikuntanathan, and Anantha
+Chandrakasan. GAZELLE: A low latency framework
+for secure neural network inference. In USENIX Sec,
+2018.
+[99] Samruddhi Kahu and Reena Rahate. Image compres-
+sion using singular value decomposition. IJOART, 2(8),
+2013.
+[100] Michael Kapralov and Kunal Talwar. On differentially
+private low rank approximation. In SODA, 2013.
+[101] Marcel Keller. MP-SPDZ: A versatile framework for
+multi-party computation. In ACM SIGSAC, 2020.
+[102] Jinsu Kim, Dongyoung Koo, Yuna Kim, Hyunsoo
+Yoon, Junbum Shin, and Sungwook Kim. Efficient
+privacy-preserving matrix factorization for recommen-
+dation via fully homomorphic encryption. TOPS, 21(4),
+2018.
+[103] Brian Knott, Shobha Venkataraman, Awni Hannun,
+Shubho Sengupta, Mark Ibrahim, and Laurens van der
+Maaten. Crypten: Secure multi-party computation
+meets machine learning. Advances in Neural Informa-
+tion Processing Systems, 34, 2021.
+[104] Yehuda Koren, Robert Bell, and Chris Volinsky. Ma-
+trix factorization techniques for recommender systems.
+Computer, 42(8), 2009.
+[105] Stan Korzilius and Berry Schoenmakers. Divisions
+and square roots with tight error analysis from newton–
+raphson iteration in secure fixed-point arithmetic. Cryp-
+tography, 7(3), 2023.
+[106] Nishat Koti, Mahak Pancholi, Arpita Patra, and
+Ajith Suresh. SWIFT: Super-fast and robust privacy-
+preserving machine learning. In USENIX Sec, 2021.
+[107] Nishant Kumar, Mayank Rathee, Nishanth Chandran,
+Divya Gupta, Aseem Rastogi, and Rahul Sharma.
+Cryptflow: Secure tensorflow inference. In IEEE S&P,
+2020.
+[108] Ping Li, Trevor J Hastie, and Kenneth W Church. Very
+sparse random projections. In SIGKDD, 2006.
+[109] Yun Li, Yufei Duan, Zhicong Huang, Cheng Hong,
+Chao Zhang, and Yifan Song. Efficient 3PC for binary
+circuits with application to Maliciously-Secure DNN
+inference. In USENIX Sec, 2023.
+[110] Dawen Liang, Rahul G Krishnan, Matthew D Hoff-
+man, and Tony Jebara. Variational autoencoders for
+collaborative filtering. In WWW, 2018.
+[111] Frank Lin and William W Cohen. Power iteration
+clustering. 2010.
+[112] Guanyu Lin, Feng Liang, Weike Pan, and Zhong Ming.
+Fedrec: Federated recommendation with explicit feed-
+back. IEEE Intelligent Systems, 36(5):21–30, 2020.
+[113] Yehuda Lindell. How to simulate it–a tutorial on the
+simulation proof technique. Tutorials on the Founda-
+tions of Cryptography., 2017.
+[114] Nathan Linial, Eran London, and Yuri Rabinovich. The
+geometry of graphs and some of its algorithmic appli-
+cations. Combinatorica, 15(2), 1995.
+[115] Fengrun Liu, Xiang Xie, and Yu Yu. Scalable multi-
+party computation protocols for machine learning in
+the honest-majority setting. In USENIX Sec, 2024.
+[116] Hanlin Liu, Xiao Wang, Kang Yang, and Yu Yu. BitGC:
+garbled circuits with 1 bit per gate. In EUROCRYPT,
+2025.
+[117] Ziqi Liu, Yu-Xiang Wang, and Alexander Smola. Fast
+differentially private matrix factorization. In RecSys,
+2015.
+[118] Wen-jie Lu, Yixuan Fang, Zhicong Huang, Cheng
+Hong, Chaochao Chen, Hunter Qu, Yajin Zhou, and
+Kui Ren.
+Faster secure multiparty computation of
+adaptive gradient descent. In Workshop on Privacy-
+Preserving Machine Learning in Practice, 2020.
+
+--- Page 19 ---
+[119] Hidde Lycklama, Lukas Burkhalter, Alexander Viand,
+Nicolas Küchler, and Anwar Hithnawi. Rofl: Robust-
+ness of secure federated learning. In IEEE S&P.
+[120] Yiping Ma, Jess Woods, Sebastian Angel, Antigoni
+Polychroniadou, and Tal Rabin. Flamingo: Multi-round
+single-server secure aggregation with applications to
+private federated learning. In IEEE S&P, 2023.
+[121] Brendan McMahan, Eider Moore, Daniel Ramage, Seth
+Hampson, and Blaise Aguera y Arcas. Communication-
+efficient learning of deep networks from decentralized
+data. In Artificial intelligence and statistics, 2017.
+[122] Frank McSherry and Ilya Mironov. Differentially pri-
+vate recommender systems: Building privacy into the
+netflix prize contenders. In ACM SIGKDD, 2009.
+[123] RV Mises and Hilda Pollaczek-Geiringer. Praktische
+verfahren der gleichungsauflösung. ZAMM-Journal of
+Applied Mathematics and Mechanics, 9(1), 1929.
+[124] Pratyush Mishra, Ryan Lehmkuhl, Akshayaram Srini-
+vasan, Wenting Zheng, and Raluca Ada Popa. Delphi:
+A cryptographic inference system for neural networks.
+In USENIX Sec, 2020.
+[125] Payman Mohassel and Peter Rindal. ABY3: A mixed
+protocol framework for machine learning. In CCS,
+2018.
+[126] Payman Mohassel and Yupeng Zhang. SecureML: A
+system for scalable privacy-preserving machine learn-
+ing. In IEEE S&P, 2017.
+[127] Kit Murdock, David Oswald, Flavio D Garcia,
+Jo Van Bulck, Daniel Gruss, and Frank Piessens. Plun-
+dervolt: Software-based fault injection attacks against
+Intel SGX. In IEEE S&P, 2020.
+[128] Christopher
+Musco.
+The
+power
+method
+and
+spectral
+methods
+for
+graph
+partitioning.
+www.cs.princeton.edu/courses/archive/
+fall18/cos521/Lectures/lec14.pdf, 2018.
+[129] Arvind Narayanan and Vitaly Shmatikov. Robust de-
+anonymization of large sparse datasets. In IEEE S&P,
+2008.
+[130] Kartik Nayak, Xiao Shaun Wang, Stratis Ioannidis, Udi
+Weinsberg, Nina Taft, and Elaine Shi. GraphSC: Par-
+allel secure computation made easy. In IEEE S&P,
+2015.
+[131] Lily Hay Newman.
+A new google+ blunder
+exposed
+data
+from
+52.5
+million
+users,
+2018.
+www.wired.com/story/google-plus-bug-52-million-
+users-data-exposed/.
+[132] Julien Nicolas, César Sabater, Mohamed Maouche, So-
+nia Ben Mokhtar, and Mark Coates. Differentially
+private and decentralized randomized power method.
+arXiv:2411.01931, 2024.
+[133] Valeria Nikolaenko, Stratis Ioannidis, Udi Weinsberg,
+Marc Joye, Nina Taft, and Dan Boneh.
+Privacy-
+preserving matrix factorization. In CCS, 2013.
+[134] Valeria Nikolaenko, Udi Weinsberg, Stratis Ioanni-
+dis, Marc Joye, Dan Boneh, and Nina Taft. Privacy-
+preserving ridge regression on hundreds of millions of
+records. In IEEE S&P, 2013.
+[135] Lawrence Page, Sergey Brin, Rajeev Motwani, and
+Terry Winograd. The pagerank citation ranking: Bring-
+ing order to the web. 1999.
+[136] Christos H Papadimitriou, Hisao Tamaki, Prabhakar
+Raghavan, and Santosh Vempala. Latent semantic in-
+dexing: A probabilistic analysis. In PODS, 1998.
+[137] Apurva Pathak, Kshitiz Gupta, and Julian McAuley.
+Generating and personalizing bundle recommendations
+on steam. In SIGIR, 2017.
+[138] Arpita Patra and Ajith Suresh. BLAZE: Blazing fast
+privacy-preserving machine learning. In NDSS, 2020.
+[139] Huseyin Polat and Wenliang Du. SVD-based collabo-
+rative filtering with privacy. In SAC, 2005.
+[140] Colin Raffel, Noam Shazeer, Adam Roberts, Katherine
+Lee, Sharan Narang, Michael Matena, Yanqi Zhou, Wei
+Li, and Peter J. Liu. Exploring the limits of transfer
+learning with a unified text-to-text transformer, 2019.
+arxiv.org/abs/1910.10683.
+[141] Deevashwer Rathee, Mayank Rathee, Rahul Kranti Ki-
+ran Goli, Divya Gupta, Rahul Sharma, Nishanth Chan-
+dran, and Aseem Rastogi. SiRNN: A math library for
+secure RNN inference. In IEEE S&P, 2021.
+[142] Deevashwer Rathee, Mayank Rathee, Nishant Kumar,
+Nishanth Chandran, Divya Gupta, Aseem Rastogi, and
+Rahul Sharma. Cryptflow2: Practical 2-party secure
+inference. In ACM SIGSAC, 2020.
+[143] Mayank Rathee, Conghao Shen, Sameer Wagh, and
+Raluca Ada Popa. Elsa: Secure aggregation for fed-
+erated learning with malicious actors. In IEEE S&P,
+2023.
+[144] Steffen Rendle, Walid Krichene, Li Zhang, and John
+Anderson. Neural collaborative filtering vs. matrix
+factorization revisited. In RecSys, 2020.
+
+--- Page 20 ---
+[145] Steffen Rendle, Walid Krichene, Li Zhang, and Yehuda
+Koren. Revisiting the performance of iALS on item
+recommendation benchmarks. In RecSys, 2022.
+[146] M Sadegh Riazi, Christian Weinert, Oleksandr
+Tkachenko, Ebrahim M Songhori, Thomas Schneider,
+and Farinaz Koushanfar. Chameleon: A hybrid secure
+computation framework for machine learning applica-
+tions. In ASIACCS, 2018.
+[147] Théo Ryffel, Pierre Tholoniat, David Pointcheval,
+and Francis Bach. Ariann: Low-interaction privacy-
+preserving deep learning via function secret sharing.
+arXiv:2006.04593, 2020.
+[148] Yousef Saad. Numerical methods for large eigenvalue
+problems: revised edition. SIAM, 2011.
+[149] Manuel B. Santos, Dimitris Mouris, Mehmet Ugurbil,
+Stanislaw Jarecki, José Reis, Shubho Sengupta, and
+Miguel de Vega. Curl: Private LLMs through wavelet-
+encoded look-up tables. Cryptology ePrint Archive,
+Paper 2024/1127, 2024.
+[150] Badrul Sarwar, George Karypis, Joseph Konstan, and
+John Riedl. Item-based collaborative filtering recom-
+mendation algorithms. In WWW, 2001.
+[151] Noam Scheiber and Mike Isaac.
+Facebook
+halts ad targeting cited in bias complaints, 2019.
+www.nytimes.com/2019/03/19/technology/facebook-
+discrimination-ads.html.
+[152] Hans-Rudolf Schwarz. Methode der finiten Elemente,
+volume 47. Springer-Verlag, 2013.
+[153] Yilin Shen and Hongxia Jin. Privacy-preserving person-
+alized recommendation: An instance-based approach
+via differential privacy. In ICDM, 2014.
+[154] Kyle Storrier, Adithya Vadapalli, Allan Lyons, and
+Ryan Henry. Grotto: Screaming fast (2 + 1)-PC for
+Z2푛via (2, 2)-DPFs. In CSS, 2023.
+[155] Zehua Sun, Yonghui Xu, Yong Liu, Wei He, Lanju
+Kong, Fangzhao Wu, Yali Jiang, and Lizhen Cui. A
+survey on federated recommendation systems. IEEE
+Trans. Neural Netw., 36(1), 2024.
+[156] Sijun Tan, Brian Knott, Yuan Tian, and David J. Wu.
+CryptGPU: Fast privacy-preserving machine learning
+on the gpu. In IEEE S&P, 2021.
+[157] Adithya Vadapalli, Fattaneh Bayatbabolghani, and
+Ryan Henry. You may also like... privacy: Recom-
+mendation systems meet PIR. PETS, 2021.
+[158] Sameer Wagh. Pika: Secure computation using func-
+tion secret sharing over rings. PETS, 2022.
+[159] Sameer Wagh, Divya Gupta, and Nishanth Chandran.
+Securenn: 3-party secure computation for neural net-
+work training. PETS, 2019.
+[160] Sameer Wagh, Shruti Tople, Fabrice Benhamouda,
+Eyal Kushilevitz, Prateek Mittal, and Tal Rabin. Fal-
+con: Honest-majority maliciously secure framework
+for private deep learning. In PETS, 2021.
+[161] Hao Wang, Naiyan Wang, and Dit-Yan Yeung. Col-
+laborative deep learning for recommender systems. In
+SIGKDD, 2015.
+[162] Jean-Luc Watson, Sameer Wagh, and Raluca Ada Popa.
+Piranha: A GPU platform for secure computation. In
+USENIX Sec, 2022.
+[163] Fangzhao Wu, Ying Qiao, Jiun-Hung Chen, Chuhan
+Wu, Tao Qi, Jianxun Lian, Danyang Liu, Xing Xie,
+Jianfeng Gao, Winnie Wu, et al. Mind: A large-scale
+dataset for news recommendation. In Annual meeting
+of the association for computational linguistics, 2020.
+[164] Peng Yang, Zoe Lin Jiang, Shiqi Gao, Hongxiao Wang,
+Jun Zhou, Yangyiye Jin, Siu-Ming Yiu, and Junbin
+Fang. FssNN: communication-efficient secure neural
+network training via function secret sharing. Cryptol-
+ogy ePrint Archive, 2023.
+[165] Peng Yang, Zoe Lin Jiang, Shiqi Gao, Hongxiao Wang,
+Jun Zhou, Yangyiye Jin, Siu-Ming Yiu, and Junbin
+Fang. Communication-efficient secure neural network
+via key-reduced distributed comparison function. In
+ProvSec, 2025.
+[166] Martin Zbudila, Erik Pohle, Aysajan Abidin, and Bart
+Preneel. Master: maliciously secure truncation for
+replicated secret sharing without pre-processing. In
+CANS, 2024.
+[167] Shijie Zhang, Wei Yuan, and Hongzhi Yin. Compre-
+hensive privacy analysis on federated recommender
+system against attribute inference attacks. IEEE Trans.
+on Knowledge and Data Engineering, 36(3), 2023.
+[168] Lijing Zhou, Qingrui Song, Su Zhang, Ziyu Wang,
+Xianggui Wang, and Yong Li.
+Bicoptor 2.0:
+Addressing challenges in probabilistic truncation
+for enhanced privacy-preserving machine learning.
+arXiv:2309.04909, 2023.

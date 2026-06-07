@@ -1,0 +1,31 @@
+{
+  "ok": true,
+  "identity": "user",
+  "data": {
+    "document": {
+      "new_blocks": [
+        {
+          "block_id": "doxcnINjhQRCqAb5rkQncoQhZ7b",
+          "block_token": "TNUIwACOZhM8nUbxNLrc7f77nif",
+          "block_type": "whiteboard"
+        }
+      ],
+      "revision_id": 14,
+      "url": "https://bytedance.larkoffice.com/docx/TDhndVLEYo5KS0x3ejVcf08inid"
+    },
+    "log_id": "20260604004100F9C2E5F3F30879E22032",
+    "result": "success",
+    "warnings": [
+      "degrade_code=4007,msg=Unsupported tag <heading2> was escaped. Use only supported DocxXML tags or a configured tag alias",
+      "degrade_code=4007,msg=Unsupported tag <paragraph> was escaped. Use only supported DocxXML tags or a configured tag alias"
+    ]
+  },
+  "_notice": {
+    "update": {
+      "command": "lark-cli update",
+      "current": "1.0.34",
+      "latest": "1.0.46",
+      "message": "lark-cli 1.0.46 available, current 1.0.34, run: lark-cli update"
+    }
+  }
+}

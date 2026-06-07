@@ -1,0 +1,28 @@
+{
+  "ok": true,
+  "identity": "user",
+  "data": {
+    "document": {
+      "new_blocks": [
+        {
+          "block_id": "doxcndeJsG4lPpsxuE7zxQc5VNg",
+          "block_token": "HXHBwSuEThTz0ibOUMvcrtgAnQg",
+          "block_type": "whiteboard"
+        }
+      ],
+      "revision_id": 11,
+      "url": "https://bytedance.larkoffice.com/docx/TDhndVLEYo5KS0x3ejVcf08inid"
+    },
+    "log_id": "20260604000800BF4885F87A1497E6009A",
+    "result": "success",
+    "warnings": []
+  },
+  "_notice": {
+    "update": {
+      "command": "lark-cli update",
+      "current": "1.0.34",
+      "latest": "1.0.46",
+      "message": "lark-cli 1.0.46 available, current 1.0.34, run: lark-cli update"
+    }
+  }
+}

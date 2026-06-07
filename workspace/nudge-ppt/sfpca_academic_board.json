@@ -1,0 +1,758 @@
+{
+  "version": 2,
+  "nodes": [
+    {
+      "type": "frame",
+      "id": "root",
+      "layout": "vertical",
+      "gap": 18,
+      "padding": 30,
+      "alignItems": "stretch",
+      "width": "fit-content",
+      "height": "fit-content",
+      "fillColor": "#fbfcfd",
+      "borderColor": "#dee2e6",
+      "borderWidth": 1,
+      "children": [
+        {
+          "type": "frame",
+          "id": "header",
+          "layout": "horizontal",
+          "gap": 24,
+          "padding": 0,
+          "alignItems": "center",
+          "width": "fit-content",
+          "height": "fit-content",
+          "children": [
+            {
+              "type": "frame",
+              "id": "title-block",
+              "layout": "vertical",
+              "gap": 4,
+              "padding": 0,
+              "width": 1120,
+              "height": "fit-content",
+              "children": [
+                {
+                  "type": "text",
+                  "id": "title",
+                  "text": "SF-PCA: Privacy-Preserving Federated PCA",
+                  "fontSize": 24,
+                  "textColor": "#212529",
+                  "fontWeight": "bold",
+                  "width": "fit-content",
+                  "height": "fit-content"
+                },
+                {
+                  "type": "text",
+                  "id": "subtitle",
+                  "text": "Workflow over s data providers: local cleartext computation + MHE encrypted space + interactive collaboration.",
+                  "fontSize": 13,
+                  "textColor": "#6c757d",
+                  "width": "fit-content",
+                  "height": "fit-content"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "legend",
+              "layout": "horizontal",
+              "gap": 10,
+              "padding": 0,
+              "width": "fit-content",
+              "height": "fit-content",
+              "children": [
+                {
+                  "type": "rect",
+                  "id": "legend-local",
+                  "width": 150,
+                  "height": 34,
+                  "borderRadius": 17,
+                  "text": "local cleartext",
+                  "fillColor": "#E9F7EF",
+                  "borderColor": "#509863",
+                  "textColor": "#1F4F2A",
+                  "fontSize": 13
+                },
+                {
+                  "type": "rect",
+                  "id": "legend-enc",
+                  "width": 150,
+                  "height": 34,
+                  "borderRadius": 17,
+                  "text": "MHE ciphertext",
+                  "fillColor": "#EEF2F7",
+                  "borderColor": "#4A6FA5",
+                  "textColor": "#1A202C",
+                  "fontSize": 13
+                },
+                {
+                  "type": "rect",
+                  "id": "legend-interactive",
+                  "width": 150,
+                  "height": 34,
+                  "borderRadius": 17,
+                  "text": "interactive",
+                  "fillColor": "#F7F3E8",
+                  "borderColor": "#B59B5B",
+                  "textColor": "#4A3B10",
+                  "fontSize": 13
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "main",
+          "layout": "horizontal",
+          "gap": 18,
+          "padding": 0,
+          "alignItems": "stretch",
+          "width": "fit-content",
+          "height": "fit-content",
+          "children": [
+            {
+              "type": "frame",
+              "id": "participants",
+              "layout": "vertical",
+              "gap": 12,
+              "padding": 16,
+              "alignItems": "center",
+              "width": 250,
+              "height": 640,
+              "fillColor": "#F8F9FA",
+              "borderColor": "#DEE2E6",
+              "borderWidth": 1,
+              "children": [
+                {
+                  "type": "text",
+                  "id": "participants-title",
+                  "text": "Data Providers",
+                  "fontSize": 17,
+                  "textColor": "#212529",
+                  "fontWeight": "bold",
+                  "width": "fit-content",
+                  "height": "fit-content"
+                },
+                {
+                  "type": "rect",
+                  "id": "dp1",
+                  "width": 200,
+                  "height": 60,
+                  "borderRadius": 8,
+                  "text": "DP1\nholds A~_1 locally",
+                  "fillColor": "#FFFFFF",
+                  "borderColor": "#509863",
+                  "textColor": "#212529",
+                  "fontSize": 13
+                },
+                {
+                  "type": "rect",
+                  "id": "dp2",
+                  "width": 200,
+                  "height": 60,
+                  "borderRadius": 8,
+                  "text": "DP2\nholds A~_2 locally",
+                  "fillColor": "#FFFFFF",
+                  "borderColor": "#509863",
+                  "textColor": "#212529",
+                  "fontSize": 13
+                },
+                {
+                  "type": "rect",
+                  "id": "dps",
+                  "width": 200,
+                  "height": 60,
+                  "borderRadius": 8,
+                  "text": "DPs\nholds A~_s locally",
+                  "fillColor": "#FFFFFF",
+                  "borderColor": "#509863",
+                  "textColor": "#212529",
+                  "fontSize": 13
+                },
+                {
+                  "type": "rect",
+                  "id": "local-invariant",
+                  "width": 208,
+                  "height": 96,
+                  "borderRadius": 10,
+                  "text": "Invariant\nraw A~_i never leaves DP_i\nno pooled plaintext matrix",
+                  "fillColor": "#E9F7EF",
+                  "borderColor": "#509863",
+                  "textColor": "#1F4F2A",
+                  "fontSize": 13
+                },
+                {
+                  "type": "rect",
+                  "id": "security-model",
+                  "width": 208,
+                  "height": 78,
+                  "borderRadius": 10,
+                  "text": "Security model\nsemi-honest DPs\nsecure if one DP honest",
+                  "fillColor": "#FFFFFF",
+                  "borderColor": "#ADB5BD",
+                  "textColor": "#212529",
+                  "fontSize": 12
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "workflow",
+              "layout": "vertical",
+              "gap": 16,
+              "padding": 16,
+              "alignItems": "stretch",
+              "width": "fit-content",
+              "height": "fit-content",
+              "fillColor": "#FFFFFF",
+              "borderColor": "#DEE2E6",
+              "borderWidth": 1,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "workflow-row-1",
+                  "layout": "horizontal",
+                  "gap": 16,
+                  "padding": 0,
+                  "alignItems": "stretch",
+                  "width": "fit-content",
+                  "height": "fit-content",
+                  "children": [
+                    {
+                      "type": "rect",
+                      "id": "s1",
+                      "width": 210,
+                      "height": 86,
+                      "borderRadius": 10,
+                      "text": "Step 1 Setup\nDKeyGen: pk, evks\nagree p,w,psi,alpha,rho,Pi",
+                      "fillColor": "#FFFFFF",
+                      "borderColor": "#B59B5B",
+                      "textColor": "#212529",
+                      "fontSize": 13
+                    },
+                    {
+                      "type": "rect",
+                      "id": "s2",
+                      "width": 210,
+                      "height": 86,
+                      "borderRadius": 10,
+                      "text": "Step 2 Mean Calculation\naggregate local sums\nproduce encrypted o",
+                      "fillColor": "#FFFFFF",
+                      "borderColor": "#4A6FA5",
+                      "textColor": "#212529",
+                      "fontSize": 13
+                    },
+                    {
+                      "type": "rect",
+                      "id": "s3",
+                      "width": 210,
+                      "height": 86,
+                      "borderRadius": 10,
+                      "text": "Step 3 Random Projection\nlocal A~_i x Pi_i\nencrypt + aggregate P",
+                      "fillColor": "#FFFFFF",
+                      "borderColor": "#509863",
+                      "textColor": "#212529",
+                      "fontSize": 13
+                    },
+                    {
+                      "type": "rect",
+                      "id": "s4",
+                      "width": 260,
+                      "height": 86,
+                      "borderRadius": 10,
+                      "text": "Step 4 Power Iterations\nincrease spectral gap\nQR orthogonalization: QRT",
+                      "fillColor": "#FFFFFF",
+                      "borderColor": "#4A6FA5",
+                      "textColor": "#212529",
+                      "fontSize": 13
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "step4-branches",
+                  "layout": "horizontal",
+                  "gap": 16,
+                  "padding": 16,
+                  "alignItems": "stretch",
+                  "width": "fit-content",
+                  "height": "fit-content",
+                  "fillColor": "#F1F3F5",
+                  "borderColor": "#868E96",
+                  "borderWidth": 1,
+                  "children": [
+                    {
+                      "type": "rect",
+                      "id": "precomp",
+                      "width": 300,
+                      "height": 110,
+                      "borderRadius": 10,
+                      "text": "Precomp branch\nprecompute G_i = A~_i^T A~_i\nreuse G_i each iteration\nfewer multiplications",
+                      "fillColor": "#FFFFFF",
+                      "borderColor": "#4A6FA5",
+                      "textColor": "#212529",
+                      "fontSize": 13
+                    },
+                    {
+                      "type": "rect",
+                      "id": "seq",
+                      "width": 300,
+                      "height": 110,
+                      "borderRadius": 10,
+                      "text": "Seq branch\nsequentially multiply\nP by A~_i and A~_i^T\nno explicit covariance",
+                      "fillColor": "#FFFFFF",
+                      "borderColor": "#4A6FA5",
+                      "textColor": "#212529",
+                      "fontSize": 13
+                    },
+                    {
+                      "type": "rect",
+                      "id": "lazy",
+                      "width": 280,
+                      "height": 110,
+                      "borderRadius": 10,
+                      "text": "Key optimization\nlazy mean-centering\nkeep A~_i cleartext\ncorrect mean shift with encrypted o",
+                      "fillColor": "#E9F7EF",
+                      "borderColor": "#509863",
+                      "textColor": "#1F4F2A",
+                      "fontSize": 13
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "workflow-row-2",
+                  "layout": "horizontal",
+                  "gap": 16,
+                  "padding": 0,
+                  "alignItems": "stretch",
+                  "width": "fit-content",
+                  "height": "fit-content",
+                  "children": [
+                    {
+                      "type": "rect",
+                      "id": "s5",
+                      "width": 210,
+                      "height": 86,
+                      "borderRadius": 10,
+                      "text": "Step 5 Reduction\nsmall symmetric Z\nlazy mean-centering reused",
+                      "fillColor": "#FFFFFF",
+                      "borderColor": "#4A6FA5",
+                      "textColor": "#212529",
+                      "fontSize": 13
+                    },
+                    {
+                      "type": "rect",
+                      "id": "s6",
+                      "width": 210,
+                      "height": 86,
+                      "borderRadius": 10,
+                      "text": "Step 6 Eigendecomposition\nEigen on encrypted Z\niterative QRT + matmul",
+                      "fillColor": "#FFFFFF",
+                      "borderColor": "#4A6FA5",
+                      "textColor": "#212529",
+                      "fontSize": 13
+                    },
+                    {
+                      "type": "rect",
+                      "id": "s7",
+                      "width": 210,
+                      "height": 86,
+                      "borderRadius": 10,
+                      "text": "Step 7 Reconstruction\ncompute encrypted PCs W\nfinal power iteration + QRT",
+                      "fillColor": "#FFFFFF",
+                      "borderColor": "#4A6FA5",
+                      "textColor": "#212529",
+                      "fontSize": 13
+                    },
+                    {
+                      "type": "rect",
+                      "id": "s8",
+                      "width": 260,
+                      "height": 86,
+                      "borderRadius": 10,
+                      "text": "Step 8 Projection\neach DP projects local A~_i^T\nobtain encrypted A'_i",
+                      "fillColor": "#FFFFFF",
+                      "borderColor": "#509863",
+                      "textColor": "#212529",
+                      "fontSize": 13
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "encrypted-space",
+              "layout": "vertical",
+              "gap": 12,
+              "padding": 16,
+              "alignItems": "center",
+              "width": 290,
+              "height": 640,
+              "fillColor": "#EEF2F7",
+              "borderColor": "#4A6FA5",
+              "borderWidth": 1,
+              "children": [
+                {
+                  "type": "text",
+                  "id": "enc-title",
+                  "text": "MHE encrypted space",
+                  "fontSize": 17,
+                  "textColor": "#1A202C",
+                  "fontWeight": "bold",
+                  "width": "fit-content",
+                  "height": "fit-content"
+                },
+                {
+                  "type": "rect",
+                  "id": "enc-o",
+                  "width": 230,
+                  "height": 56,
+                  "borderRadius": 8,
+                  "text": "o\nencrypted global means",
+                  "fillColor": "#FFFFFF",
+                  "borderColor": "#4A6FA5",
+                  "textColor": "#212529",
+                  "fontSize": 13
+                },
+                {
+                  "type": "rect",
+                  "id": "enc-p",
+                  "width": 230,
+                  "height": 56,
+                  "borderRadius": 8,
+                  "text": "P\nencrypted sketch",
+                  "fillColor": "#FFFFFF",
+                  "borderColor": "#4A6FA5",
+                  "textColor": "#212529",
+                  "fontSize": 13
+                },
+                {
+                  "type": "rect",
+                  "id": "enc-z",
+                  "width": 230,
+                  "height": 56,
+                  "borderRadius": 8,
+                  "text": "Z\nsmall encrypted matrix",
+                  "fillColor": "#FFFFFF",
+                  "borderColor": "#4A6FA5",
+                  "textColor": "#212529",
+                  "fontSize": 13
+                },
+                {
+                  "type": "rect",
+                  "id": "enc-w",
+                  "width": 230,
+                  "height": 56,
+                  "borderRadius": 8,
+                  "text": "W\nencrypted principal components",
+                  "fillColor": "#FFFFFF",
+                  "borderColor": "#4A6FA5",
+                  "textColor": "#212529",
+                  "fontSize": 13
+                },
+                {
+                  "type": "rect",
+                  "id": "enc-ap",
+                  "width": 230,
+                  "height": 56,
+                  "borderRadius": 8,
+                  "text": "A'_i\nencrypted projected data",
+                  "fillColor": "#FFFFFF",
+                  "borderColor": "#4A6FA5",
+                  "textColor": "#212529",
+                  "fontSize": 13
+                },
+                {
+                  "type": "rect",
+                  "id": "dkeyswitch",
+                  "width": 230,
+                  "height": 80,
+                  "borderRadius": 10,
+                  "text": "optional DKeySwitch\nre-encrypt or decrypt\nto designated entities",
+                  "fillColor": "#F7F3E8",
+                  "borderColor": "#B59B5B",
+                  "textColor": "#4A3B10",
+                  "fontSize": 12
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "interaction-layer",
+          "layout": "horizontal",
+          "gap": 14,
+          "padding": 14,
+          "alignItems": "center",
+          "width": "fit-content",
+          "height": "fit-content",
+          "fillColor": "#F7F3E8",
+          "borderColor": "#B59B5B",
+          "borderWidth": 1,
+          "children": [
+            {
+              "type": "text",
+              "id": "interaction-title",
+              "text": "Interactive layer:",
+              "fontSize": 15,
+              "textColor": "#4A3B10",
+              "fontWeight": "bold",
+              "width": "fit-content",
+              "height": "fit-content"
+            },
+            {
+              "type": "rect",
+              "id": "xi",
+              "width": 230,
+              "height": 46,
+              "borderRadius": 8,
+              "text": "collective aggregation Xi",
+              "fillColor": "#FFFFFF",
+              "borderColor": "#B59B5B",
+              "textColor": "#212529",
+              "fontSize": 13
+            },
+            {
+              "type": "rect",
+              "id": "mhe-ops",
+              "width": 270,
+              "height": 46,
+              "borderRadius": 8,
+              "text": "DKeyGen / DBootstrap / DKeySwitch",
+              "fillColor": "#FFFFFF",
+              "borderColor": "#B59B5B",
+              "textColor": "#212529",
+              "fontSize": 13
+            },
+            {
+              "type": "rect",
+              "id": "qrt-note",
+              "width": 300,
+              "height": 46,
+              "borderRadius": 8,
+              "text": "QRT / QR orthogonalization in Steps 4, 6, 7",
+              "fillColor": "#FFFFFF",
+              "borderColor": "#B59B5B",
+              "textColor": "#212529",
+              "fontSize": 13
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "connector",
+      "connector": {
+        "from": "dp2",
+        "to": "s1",
+        "fromAnchor": "right",
+        "toAnchor": "left",
+        "lineShape": "straight",
+        "lineColor": "#ADB5BD",
+        "lineWidth": 1,
+        "endArrow": "arrow"
+      }
+    },
+    {
+      "type": "connector",
+      "connector": {
+        "from": "s1",
+        "to": "s2",
+        "fromAnchor": "right",
+        "toAnchor": "left",
+        "lineShape": "straight",
+        "lineColor": "#ADB5BD",
+        "lineWidth": 1,
+        "endArrow": "arrow"
+      }
+    },
+    {
+      "type": "connector",
+      "connector": {
+        "from": "s2",
+        "to": "s3",
+        "fromAnchor": "right",
+        "toAnchor": "left",
+        "lineShape": "straight",
+        "lineColor": "#ADB5BD",
+        "lineWidth": 1,
+        "endArrow": "arrow"
+      }
+    },
+    {
+      "type": "connector",
+      "connector": {
+        "from": "s3",
+        "to": "s4",
+        "fromAnchor": "right",
+        "toAnchor": "left",
+        "lineShape": "straight",
+        "lineColor": "#ADB5BD",
+        "lineWidth": 1,
+        "endArrow": "arrow"
+      }
+    },
+    {
+      "type": "connector",
+      "connector": {
+        "from": "s4",
+        "to": "precomp",
+        "fromAnchor": "bottom",
+        "toAnchor": "top",
+        "lineShape": "straight",
+        "lineColor": "#ADB5BD",
+        "lineWidth": 1,
+        "endArrow": "arrow"
+      }
+    },
+    {
+      "type": "connector",
+      "connector": {
+        "from": "s4",
+        "to": "seq",
+        "fromAnchor": "bottom",
+        "toAnchor": "top",
+        "lineShape": "straight",
+        "lineColor": "#ADB5BD",
+        "lineWidth": 1,
+        "endArrow": "arrow"
+      }
+    },
+    {
+      "type": "connector",
+      "connector": {
+        "from": "lazy",
+        "to": "s5",
+        "fromAnchor": "bottom",
+        "toAnchor": "top",
+        "lineShape": "straight",
+        "lineColor": "#ADB5BD",
+        "lineWidth": 1,
+        "endArrow": "arrow"
+      }
+    },
+    {
+      "type": "connector",
+      "connector": {
+        "from": "s5",
+        "to": "s6",
+        "fromAnchor": "right",
+        "toAnchor": "left",
+        "lineShape": "straight",
+        "lineColor": "#ADB5BD",
+        "lineWidth": 1,
+        "endArrow": "arrow"
+      }
+    },
+    {
+      "type": "connector",
+      "connector": {
+        "from": "s6",
+        "to": "s7",
+        "fromAnchor": "right",
+        "toAnchor": "left",
+        "lineShape": "straight",
+        "lineColor": "#ADB5BD",
+        "lineWidth": 1,
+        "endArrow": "arrow"
+      }
+    },
+    {
+      "type": "connector",
+      "connector": {
+        "from": "s7",
+        "to": "s8",
+        "fromAnchor": "right",
+        "toAnchor": "left",
+        "lineShape": "straight",
+        "lineColor": "#ADB5BD",
+        "lineWidth": 1,
+        "endArrow": "arrow"
+      }
+    },
+    {
+      "type": "connector",
+      "connector": {
+        "from": "s2",
+        "to": "enc-o",
+        "fromAnchor": "right",
+        "toAnchor": "left",
+        "lineShape": "straight",
+        "lineColor": "#ADB5BD",
+        "lineWidth": 1,
+        "endArrow": "arrow"
+      }
+    },
+    {
+      "type": "connector",
+      "connector": {
+        "from": "s3",
+        "to": "enc-p",
+        "fromAnchor": "right",
+        "toAnchor": "left",
+        "lineShape": "straight",
+        "lineColor": "#ADB5BD",
+        "lineWidth": 1,
+        "endArrow": "arrow"
+      }
+    },
+    {
+      "type": "connector",
+      "connector": {
+        "from": "s5",
+        "to": "enc-z",
+        "fromAnchor": "right",
+        "toAnchor": "left",
+        "lineShape": "straight",
+        "lineColor": "#ADB5BD",
+        "lineWidth": 1,
+        "endArrow": "arrow"
+      }
+    },
+    {
+      "type": "connector",
+      "connector": {
+        "from": "s7",
+        "to": "enc-w",
+        "fromAnchor": "right",
+        "toAnchor": "left",
+        "lineShape": "straight",
+        "lineColor": "#ADB5BD",
+        "lineWidth": 1,
+        "endArrow": "arrow"
+      }
+    },
+    {
+      "type": "connector",
+      "connector": {
+        "from": "s8",
+        "to": "enc-ap",
+        "fromAnchor": "right",
+        "toAnchor": "left",
+        "lineShape": "straight",
+        "lineColor": "#ADB5BD",
+        "lineWidth": 1,
+        "endArrow": "arrow"
+      }
+    },
+    {
+      "type": "connector",
+      "connector": {
+        "from": "enc-ap",
+        "to": "dkeyswitch",
+        "fromAnchor": "bottom",
+        "toAnchor": "top",
+        "lineShape": "straight",
+        "lineColor": "#ADB5BD",
+        "lineWidth": 1,
+        "endArrow": "arrow"
+      }
+    }
+  ]
+}

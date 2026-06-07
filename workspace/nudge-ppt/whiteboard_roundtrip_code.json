@@ -1,0 +1,16 @@
+{
+  "ok": true,
+  "identity": "user",
+  "data": {
+    "code": "flowchart LR\n  U[\"用户\u003cbr/\u003e评分向量 u(i)\"] -- \"secret-share\" --\u003e S[\"三台非串谋服务器\u003cbr/\u003eS0 / S1 / S2\"]\n  S --\u003e C1[\"Private data collection\u003cbr/\u003e收集 secret-shared ratings\"]\n  C1 --\u003e M[\"Private matrix factorization\u003cbr/\u003ePower Iteration on U^T U\"]\n  M --\u003e B[\"公开聚合模型 B\u003cbr/\u003eitem embeddings\"]\n  M --\u003e A[\"secret-shared A\u003cbr/\u003euser embeddings\"]\n  A --\u003e R[\"推荐分数 shares\u003cbr/\u003ea(i) · B\"]\n  R --\u003e Client[\"用户本地重构\u003cbr/\u003etop-k recommendations\"]\n\n  subgraph Alg[\"核心算法步骤\"]\n    P1[\"1. 初始化随机向量 v\"]\n    P2[\"2. SetOrthogonal(v,B)\u003cbr/\u003e移除已求方向\"]\n    P3[\"3. v ← U^T(Uv)\"]\n    P4[\"4. Truncate + Normalize\"]\n    P5[\"5. 写入 B 的第 i 行\"]\n    P1 --\u003e P2 --\u003e P3 --\u003e P4 --\u003e P5\n  end\n\n  M --\u003e Alg\n\n  subgraph MPC[\"3PC / FSS 优化点\"]\n    O1[\"线性大块：矩阵-向量乘法\u003cbr/\u003ereplicated secret sharing 非交互\"]\n    O2[\"非线性小块：截断与归一化\u003cbr/\u003eFSS + Newton-Raphson\"]\n    O3[\"通信复杂度 O(m+n)\u003cbr/\u003e计算复杂度 O(mn)\"]\n    O1 --\u003e O2 --\u003e O3\n  end\n\n  M --\u003e MPC\n\n  subgraph Eval[\"实验结论\"]\n    E1[\"Netflix: 463K users / 17K items / 56M ratings\"]\n    E2[\"私有训练：50 min / 40 GB server-to-server\"]\n    E3[\"nDCG@20 = 0.29\u003cbr/\u003e接近明文矩阵分解\"]\n    E4[\"局限：需要 3 个非串谋服务器\u003cbr/\u003e不防 2 台及以上串谋\"]\n    E1 --\u003e E2 --\u003e E3 --\u003e E4\n  end\n\n  S --\u003e Eval\n\n  classDef blue fill:#edf4ff,stroke:#0f2f68,color:#0f172a\n  classDef red fill:#fff1f1,stroke:#c00000,color:#0f172a\n  classDef green fill:#eefbf1,stroke:#2e7d50,color:#0f172a\n  classDef dark fill:#111827,stroke:#111827,color:#ffffff\n  class U,Client,B blue\n  class S,M dark\n  class P1,P2,P3,P4,P5,O1,O2,O3 green\n  class E1,E2,E3,E4 red\n",
+    "syntax_type": "mermaid"
+  },
+  "_notice": {
+    "update": {
+      "command": "lark-cli update",
+      "current": "1.0.34",
+      "latest": "1.0.46",
+      "message": "lark-cli 1.0.46 available, current 1.0.34, run: lark-cli update"
+    }
+  }
+}

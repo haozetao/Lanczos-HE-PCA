@@ -1,0 +1,802 @@
+{
+  "version": 2,
+  "nodes": [
+    {
+      "type": "frame",
+      "id": "root",
+      "layout": "vertical",
+      "gap": 18,
+      "padding": 32,
+      "alignItems": "stretch",
+      "width": "fit-content",
+      "height": "fit-content",
+      "fillColor": "#fbfcff",
+      "borderColor": "#d9e0ec",
+      "borderWidth": 1,
+      "children": [
+        {
+          "type": "frame",
+          "id": "header",
+          "layout": "horizontal",
+          "gap": 24,
+          "padding": 0,
+          "alignItems": "center",
+          "width": "fit-content",
+          "height": "fit-content",
+          "children": [
+            {
+              "type": "frame",
+              "id": "title-block",
+              "layout": "vertical",
+              "gap": 4,
+              "padding": 0,
+              "width": 940,
+              "height": "fit-content",
+              "children": [
+                {
+                  "type": "text",
+                  "id": "title",
+                  "text": "Nudge: Private Recommendation Protocol",
+                  "fontSize": 28,
+                  "textColor": "#0f172a",
+                  "fontWeight": "bold",
+                  "width": "fit-content",
+                  "height": "fit-content"
+                },
+                {
+                  "type": "text",
+                  "id": "subtitle",
+                  "text": "Three non-colluding servers jointly train a matrix-factorization recommender without observing individual ratings.",
+                  "fontSize": 13,
+                  "textColor": "#64748b",
+                  "width": "fit-content",
+                  "height": "fit-content"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "legend",
+              "layout": "horizontal",
+              "gap": 10,
+              "padding": 0,
+              "width": "fit-content",
+              "height": "fit-content",
+              "children": [
+                {
+                  "type": "rect",
+                  "id": "legend-hidden",
+                  "width": 128,
+                  "height": 36,
+                  "borderRadius": 18,
+                  "text": "hidden",
+                  "fillColor": "#edf4ff",
+                  "borderColor": "#3b82f6",
+                  "textColor": "#0f2f68",
+                  "fontSize": 13
+                },
+                {
+                  "type": "rect",
+                  "id": "legend-revealed",
+                  "width": 128,
+                  "height": 36,
+                  "borderRadius": 18,
+                  "text": "revealed",
+                  "fillColor": "#fff1f1",
+                  "borderColor": "#c00000",
+                  "textColor": "#8a1111",
+                  "fontSize": 13
+                },
+                {
+                  "type": "rect",
+                  "id": "legend-compute",
+                  "width": 128,
+                  "height": 36,
+                  "borderRadius": 18,
+                  "text": "3PC / FSS",
+                  "fillColor": "#eefbf1",
+                  "borderColor": "#2e7d50",
+                  "textColor": "#166534",
+                  "fontSize": 13
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "body",
+          "layout": "horizontal",
+          "gap": 18,
+          "padding": 0,
+          "alignItems": "stretch",
+          "width": "fit-content",
+          "height": "fit-content",
+          "children": [
+            {
+              "type": "frame",
+              "id": "protocol-panel",
+              "layout": "vertical",
+              "gap": 14,
+              "padding": 20,
+              "alignItems": "stretch",
+              "width": "fit-content",
+              "height": "fit-content",
+              "fillColor": "#ffffff",
+              "borderColor": "#cbd5e1",
+              "borderWidth": 1,
+              "children": [
+                {
+                  "type": "text",
+                  "id": "protocol-title",
+                  "text": "A. Protocol pipeline and participant responsibilities",
+                  "fontSize": 17,
+                  "textColor": "#0f172a",
+                  "fontWeight": "bold",
+                  "width": "fit-content",
+                  "height": "fit-content"
+                },
+                {
+                  "type": "frame",
+                  "id": "protocol-columns",
+                  "layout": "horizontal",
+                  "gap": 14,
+                  "padding": 0,
+                  "alignItems": "stretch",
+                  "width": "fit-content",
+                  "height": "fit-content",
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "col-users",
+                      "layout": "vertical",
+                      "gap": 10,
+                      "padding": 12,
+                      "alignItems": "center",
+                      "width": 188,
+                      "height": 490,
+                      "fillColor": "#f8fbff",
+                      "borderColor": "#d5e4ff",
+                      "borderWidth": 1,
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "h-users",
+                          "text": "Participants\nUsers",
+                          "fontSize": 14,
+                          "textColor": "#0f2f68",
+                          "fontWeight": "bold",
+                          "width": "fit-content",
+                          "height": "fit-content"
+                        },
+                        {
+                          "type": "rect",
+                          "id": "rating-vector",
+                          "width": 156,
+                          "height": 72,
+                          "borderRadius": 10,
+                          "text": "rating vector uᵢ\nprivate preference profile",
+                          "fillColor": "#edf4ff",
+                          "borderColor": "#3b82f6",
+                          "textColor": "#0f172a",
+                          "fontSize": 13
+                        },
+                        {
+                          "type": "rect",
+                          "id": "user-submit",
+                          "width": 156,
+                          "height": 72,
+                          "borderRadius": 10,
+                          "text": "submit encoded ratings\nwithout revealing positions",
+                          "fillColor": "#ffffff",
+                          "borderColor": "#94a3b8",
+                          "textColor": "#1f2937",
+                          "fontSize": 12
+                        },
+                        {
+                          "type": "rect",
+                          "id": "client-reconstruct",
+                          "width": 156,
+                          "height": 72,
+                          "borderRadius": 10,
+                          "text": "locally reconstruct\ntop-k recommendations",
+                          "fillColor": "#edf4ff",
+                          "borderColor": "#3b82f6",
+                          "textColor": "#0f172a",
+                          "fontSize": 13
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "col-sharing",
+                      "layout": "vertical",
+                      "gap": 10,
+                      "padding": 12,
+                      "alignItems": "center",
+                      "width": 210,
+                      "height": 490,
+                      "fillColor": "#f7fff9",
+                      "borderColor": "#c8ecd3",
+                      "borderWidth": 1,
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "h-sharing",
+                          "text": "Private collection",
+                          "fontSize": 14,
+                          "textColor": "#166534",
+                          "fontWeight": "bold",
+                          "width": "fit-content",
+                          "height": "fit-content"
+                        },
+                        {
+                          "type": "rect",
+                          "id": "dpf",
+                          "width": 176,
+                          "height": 76,
+                          "borderRadius": 10,
+                          "text": "succinct secret sharing\nDistributed Point Functions",
+                          "fillColor": "#eefbf1",
+                          "borderColor": "#2e7d50",
+                          "textColor": "#14532d",
+                          "fontSize": 13
+                        },
+                        {
+                          "type": "rect",
+                          "id": "wellformed",
+                          "width": 176,
+                          "height": 66,
+                          "borderRadius": 10,
+                          "text": "well-formedness check\nbinary rating validity",
+                          "fillColor": "#fff7ed",
+                          "borderColor": "#f59e0b",
+                          "textColor": "#7c2d12",
+                          "fontSize": 12
+                        },
+                        {
+                          "type": "rect",
+                          "id": "matrix-u",
+                          "width": 176,
+                          "height": 76,
+                          "borderRadius": 10,
+                          "text": "secret-shared matrix\n⟦U⟧ ∈ R^{m×n}",
+                          "fillColor": "#edf4ff",
+                          "borderColor": "#3b82f6",
+                          "textColor": "#0f172a",
+                          "fontSize": 14
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "col-servers",
+                      "layout": "vertical",
+                      "gap": 10,
+                      "padding": 12,
+                      "alignItems": "center",
+                      "width": 260,
+                      "height": 490,
+                      "fillColor": "#f8fafc",
+                      "borderColor": "#cbd5e1",
+                      "borderWidth": 1,
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "h-servers",
+                          "text": "Three non-colluding servers",
+                          "fontSize": 14,
+                          "textColor": "#0f172a",
+                          "fontWeight": "bold",
+                          "width": "fit-content",
+                          "height": "fit-content"
+                        },
+                        {
+                          "type": "frame",
+                          "id": "server-row",
+                          "layout": "horizontal",
+                          "gap": 8,
+                          "padding": 0,
+                          "width": "fit-content",
+                          "height": "fit-content",
+                          "children": [
+                            {
+                              "type": "rect",
+                              "id": "s0",
+                              "width": 68,
+                              "height": 48,
+                              "borderRadius": 8,
+                              "text": "S₀",
+                              "fillColor": "#111827",
+                              "borderColor": "#111827",
+                              "textColor": "#ffffff",
+                              "fontSize": 17
+                            },
+                            {
+                              "type": "rect",
+                              "id": "s1",
+                              "width": 68,
+                              "height": 48,
+                              "borderRadius": 8,
+                              "text": "S₁",
+                              "fillColor": "#111827",
+                              "borderColor": "#111827",
+                              "textColor": "#ffffff",
+                              "fontSize": 17
+                            },
+                            {
+                              "type": "rect",
+                              "id": "s2",
+                              "width": 68,
+                              "height": 48,
+                              "borderRadius": 8,
+                              "text": "S₂",
+                              "fillColor": "#111827",
+                              "borderColor": "#111827",
+                              "textColor": "#ffffff",
+                              "fontSize": 17
+                            }
+                          ]
+                        },
+                        {
+                          "type": "rect",
+                          "id": "linear-kernel",
+                          "width": 220,
+                          "height": 76,
+                          "borderRadius": 10,
+                          "text": "linear kernel\nU·v and Uᵀ·v\nreplicated sharing, no interaction",
+                          "fillColor": "#edf4ff",
+                          "borderColor": "#3b82f6",
+                          "textColor": "#0f172a",
+                          "fontSize": 12
+                        },
+                        {
+                          "type": "rect",
+                          "id": "nonlinear-kernel",
+                          "width": 220,
+                          "height": 76,
+                          "borderRadius": 10,
+                          "text": "nonlinear primitives\nTruncₜ and Normalize\nFSS + Newton-Raphson",
+                          "fillColor": "#fff1f1",
+                          "borderColor": "#c00000",
+                          "textColor": "#0f172a",
+                          "fontSize": 12
+                        },
+                        {
+                          "type": "rect",
+                          "id": "embedding-a",
+                          "width": 220,
+                          "height": 66,
+                          "borderRadius": 10,
+                          "text": "secret-shared user factors\n⟦A⟧",
+                          "fillColor": "#edf4ff",
+                          "borderColor": "#3b82f6",
+                          "textColor": "#0f172a",
+                          "fontSize": 13
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "col-algorithm",
+                      "layout": "vertical",
+                      "gap": 10,
+                      "padding": 12,
+                      "alignItems": "center",
+                      "width": 250,
+                      "height": 490,
+                      "fillColor": "#fbfff7",
+                      "borderColor": "#d7ecc8",
+                      "borderWidth": 1,
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "h-algorithm",
+                          "text": "Private matrix factorization",
+                          "fontSize": 14,
+                          "textColor": "#166534",
+                          "fontWeight": "bold",
+                          "width": "fit-content",
+                          "height": "fit-content"
+                        },
+                        {
+                          "type": "rect",
+                          "id": "step-init",
+                          "width": 216,
+                          "height": 44,
+                          "borderRadius": 8,
+                          "text": "1. sample random vector v",
+                          "fillColor": "#ffffff",
+                          "borderColor": "#2e7d50",
+                          "textColor": "#1f2937",
+                          "fontSize": 12
+                        },
+                        {
+                          "type": "rect",
+                          "id": "step-orth",
+                          "width": 216,
+                          "height": 44,
+                          "borderRadius": 8,
+                          "text": "2. SetOrthogonal(v, B)",
+                          "fillColor": "#ffffff",
+                          "borderColor": "#2e7d50",
+                          "textColor": "#1f2937",
+                          "fontSize": 12
+                        },
+                        {
+                          "type": "rect",
+                          "id": "step-multiply",
+                          "width": 216,
+                          "height": 54,
+                          "borderRadius": 8,
+                          "text": "3. v ← Uᵀ(Uv)",
+                          "fillColor": "#ffffff",
+                          "borderColor": "#2e7d50",
+                          "textColor": "#1f2937",
+                          "fontSize": 13
+                        },
+                        {
+                          "type": "rect",
+                          "id": "step-normalize",
+                          "width": 216,
+                          "height": 44,
+                          "borderRadius": 8,
+                          "text": "4. truncate and normalize",
+                          "fillColor": "#ffffff",
+                          "borderColor": "#2e7d50",
+                          "textColor": "#1f2937",
+                          "fontSize": 12
+                        },
+                        {
+                          "type": "rect",
+                          "id": "step-write",
+                          "width": 216,
+                          "height": 54,
+                          "borderRadius": 8,
+                          "text": "5. publish next row of B",
+                          "fillColor": "#fff1f1",
+                          "borderColor": "#c00000",
+                          "textColor": "#8a1111",
+                          "fontSize": 13
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "col-output",
+                      "layout": "vertical",
+                      "gap": 10,
+                      "padding": 12,
+                      "alignItems": "center",
+                      "width": 220,
+                      "height": 490,
+                      "fillColor": "#fffafa",
+                      "borderColor": "#f0c4c4",
+                      "borderWidth": 1,
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "h-output",
+                          "text": "Model and recommendation",
+                          "fontSize": 14,
+                          "textColor": "#8a1111",
+                          "fontWeight": "bold",
+                          "width": "fit-content",
+                          "height": "fit-content"
+                        },
+                        {
+                          "type": "rect",
+                          "id": "model-b",
+                          "width": 184,
+                          "height": 82,
+                          "borderRadius": 10,
+                          "text": "public item factors\nB ∈ R^{d×n}",
+                          "fillColor": "#fff1f1",
+                          "borderColor": "#c00000",
+                          "textColor": "#8a1111",
+                          "fontSize": 14
+                        },
+                        {
+                          "type": "rect",
+                          "id": "score",
+                          "width": 184,
+                          "height": 82,
+                          "borderRadius": 10,
+                          "text": "private scoring\nuᵢ · BᵀB\nreturned as shares",
+                          "fillColor": "#ffffff",
+                          "borderColor": "#94a3b8",
+                          "textColor": "#1f2937",
+                          "fontSize": 12
+                        },
+                        {
+                          "type": "rect",
+                          "id": "topk",
+                          "width": 184,
+                          "height": 70,
+                          "borderRadius": 10,
+                          "text": "top-k list\nvisible only to client",
+                          "fillColor": "#edf4ff",
+                          "borderColor": "#3b82f6",
+                          "textColor": "#0f172a",
+                          "fontSize": 13
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "side-panel",
+              "layout": "vertical",
+              "gap": 12,
+              "padding": 18,
+              "alignItems": "stretch",
+              "width": 330,
+              "height": "fill-container",
+              "fillColor": "#ffffff",
+              "borderColor": "#cbd5e1",
+              "borderWidth": 1,
+              "children": [
+                {
+                  "type": "text",
+                  "id": "side-title",
+                  "text": "B. Security and evidence",
+                  "fontSize": 17,
+                  "textColor": "#0f172a",
+                  "fontWeight": "bold",
+                  "width": "fit-content",
+                  "height": "fit-content"
+                },
+                {
+                  "type": "rect",
+                  "id": "hidden-card",
+                  "width": 286,
+                  "height": 128,
+                  "borderRadius": 12,
+                  "text": "Hidden from each server\n• user-item positions\n• rating values\n• private intermediate vectors",
+                  "fillColor": "#edf4ff",
+                  "borderColor": "#3b82f6",
+                  "textColor": "#0f172a",
+                  "fontSize": 13
+                },
+                {
+                  "type": "rect",
+                  "id": "leakage-card",
+                  "width": 286,
+                  "height": 118,
+                  "borderRadius": 12,
+                  "text": "Explicit leakage\n• final aggregate B\n• ratings count per user\n• timing / submission metadata",
+                  "fillColor": "#fff1f1",
+                  "borderColor": "#c00000",
+                  "textColor": "#0f172a",
+                  "fontSize": 13
+                },
+                {
+                  "type": "rect",
+                  "id": "limits-card",
+                  "width": 286,
+                  "height": 104,
+                  "borderRadius": 12,
+                  "text": "Limits of the model\n• semi-honest adversary\n• fails under ≥2 colluding servers\n• aggregate B may reveal population trends",
+                  "fillColor": "#fff7ed",
+                  "borderColor": "#f59e0b",
+                  "textColor": "#0f172a",
+                  "fontSize": 12
+                },
+                {
+                  "type": "rect",
+                  "id": "eval-card",
+                  "width": 286,
+                  "height": 118,
+                  "borderRadius": 12,
+                  "text": "Empirical anchor\nNetflix: 463K users / 17K items\n56M ratings · 50 min training\n40 GB server-server traffic\nnDCG@20 = 0.29",
+                  "fillColor": "#f8fafc",
+                  "borderColor": "#64748b",
+                  "textColor": "#0f2f68",
+                  "fontSize": 12
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "connector",
+      "connector": {
+        "from": "rating-vector",
+        "to": "dpf",
+        "fromAnchor": "right",
+        "toAnchor": "left",
+        "lineShape": "straight",
+        "lineColor": "#64748b",
+        "lineWidth": 1,
+        "endArrow": "arrow"
+      }
+    },
+    {
+      "type": "connector",
+      "connector": {
+        "from": "dpf",
+        "to": "matrix-u",
+        "fromAnchor": "bottom",
+        "toAnchor": "top",
+        "lineShape": "straight",
+        "lineColor": "#2e7d50",
+        "lineWidth": 1,
+        "endArrow": "arrow"
+      }
+    },
+    {
+      "type": "connector",
+      "connector": {
+        "from": "matrix-u",
+        "to": "server-row",
+        "fromAnchor": "right",
+        "toAnchor": "left",
+        "lineShape": "straight",
+        "lineColor": "#64748b",
+        "lineWidth": 1,
+        "endArrow": "arrow"
+      }
+    },
+    {
+      "type": "connector",
+      "connector": {
+        "from": "linear-kernel",
+        "to": "nonlinear-kernel",
+        "fromAnchor": "bottom",
+        "toAnchor": "top",
+        "lineShape": "straight",
+        "lineColor": "#64748b",
+        "lineWidth": 1,
+        "endArrow": "arrow"
+      }
+    },
+    {
+      "type": "connector",
+      "connector": {
+        "from": "nonlinear-kernel",
+        "to": "step-multiply",
+        "fromAnchor": "right",
+        "toAnchor": "left",
+        "lineShape": "straight",
+        "lineColor": "#2e7d50",
+        "lineWidth": 1,
+        "endArrow": "arrow"
+      }
+    },
+    {
+      "type": "connector",
+      "connector": {
+        "from": "step-init",
+        "to": "step-orth",
+        "fromAnchor": "bottom",
+        "toAnchor": "top",
+        "lineShape": "straight",
+        "lineColor": "#2e7d50",
+        "lineWidth": 1,
+        "endArrow": "arrow"
+      }
+    },
+    {
+      "type": "connector",
+      "connector": {
+        "from": "step-orth",
+        "to": "step-multiply",
+        "fromAnchor": "bottom",
+        "toAnchor": "top",
+        "lineShape": "straight",
+        "lineColor": "#2e7d50",
+        "lineWidth": 1,
+        "endArrow": "arrow"
+      }
+    },
+    {
+      "type": "connector",
+      "connector": {
+        "from": "step-multiply",
+        "to": "step-normalize",
+        "fromAnchor": "bottom",
+        "toAnchor": "top",
+        "lineShape": "straight",
+        "lineColor": "#2e7d50",
+        "lineWidth": 1,
+        "endArrow": "arrow"
+      }
+    },
+    {
+      "type": "connector",
+      "connector": {
+        "from": "step-normalize",
+        "to": "step-write",
+        "fromAnchor": "bottom",
+        "toAnchor": "top",
+        "lineShape": "straight",
+        "lineColor": "#2e7d50",
+        "lineWidth": 1,
+        "endArrow": "arrow"
+      }
+    },
+    {
+      "type": "connector",
+      "connector": {
+        "from": "step-write",
+        "to": "model-b",
+        "fromAnchor": "right",
+        "toAnchor": "left",
+        "lineShape": "straight",
+        "lineColor": "#c00000",
+        "lineWidth": 1,
+        "endArrow": "arrow"
+      }
+    },
+    {
+      "type": "connector",
+      "connector": {
+        "from": "model-b",
+        "to": "score",
+        "fromAnchor": "bottom",
+        "toAnchor": "top",
+        "lineShape": "straight",
+        "lineColor": "#64748b",
+        "lineWidth": 1,
+        "endArrow": "arrow"
+      }
+    },
+    {
+      "type": "connector",
+      "connector": {
+        "from": "score",
+        "to": "topk",
+        "fromAnchor": "bottom",
+        "toAnchor": "top",
+        "lineShape": "straight",
+        "lineColor": "#64748b",
+        "lineWidth": 1,
+        "endArrow": "arrow"
+      }
+    },
+    {
+      "type": "connector",
+      "connector": {
+        "from": "topk",
+        "to": "client-reconstruct",
+        "fromAnchor": "left",
+        "toAnchor": "right",
+        "lineShape": "straight",
+        "lineColor": "#3b82f6",
+        "lineWidth": 1,
+        "endArrow": "arrow"
+      }
+    },
+    {
+      "type": "connector",
+      "connector": {
+        "from": "matrix-u",
+        "to": "hidden-card",
+        "fromAnchor": "right",
+        "toAnchor": "left",
+        "lineShape": "straight",
+        "lineColor": "#3b82f6",
+        "lineWidth": 1,
+        "endArrow": "none"
+      }
+    },
+    {
+      "type": "connector",
+      "connector": {
+        "from": "model-b",
+        "to": "leakage-card",
+        "fromAnchor": "right",
+        "toAnchor": "left",
+        "lineShape": "straight",
+        "lineColor": "#c00000",
+        "lineWidth": 1,
+        "endArrow": "none"
+      }
+    }
+  ]
+}
